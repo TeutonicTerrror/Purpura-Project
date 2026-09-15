@@ -1,0 +1,337 @@
+{
+  "manifest_version": 3,
+  "minimum_chrome_version": "120",
+  "name": "__MSG_extensionName__",
+  "version": "1.0.4",
+  "description": "__MSG_extensionDescription__",
+  "default_locale": "en",
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting",
+    "declarativeNetRequest",
+    "alarms"
+  ],
+  "optional_permissions": [
+    "webRequest"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "home.html",
+    "default_icon": {
+      "16": "images/icons/default/Purpura_Default_Logo_16.png",
+      "48": "images/icons/default/Purpura_Default_Logo_48.png",
+      "128": "images/icons/default/Purpura_Default_Logo_128.png"
+    }
+  },
+  "icons": {
+    "16": "images/icons/default/Purpura_Default_Logo_16.png",
+    "48": "images/icons/default/Purpura_Default_Logo_48.png",
+    "128": "images/icons/default/Purpura_Default_Logo_128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "host_permissions": [
+    "*://*.roblox.com/*",
+    "https://apis.roblox.com/*",
+    "https://games.roblox.com/*",
+    "https://*.rbxcdn.com/*",
+    "https://www.thecolorapi.com/*"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "offline_mode",
+        "enabled": false,
+        "path": "rules/offline-mode.json"
+      }
+    ]
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "images/*",
+        "css/*",
+        "js/*",
+        "data/*",
+        "content/core/ppa.js",
+        "content/core/ssi.js",
+        "content/feat/serv/sie.js",
+        "content/feat/cust/aeditor/react/*",
+        "content/feat/cust/aeditor/three/*"
+      ],
+      "matches": [
+        "*://*.roblox.com/*"
+      ]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.roblox.com/*"
+      ],
+      "js": [
+        "content/core/smi.js",
+        "content/feat/cust/unc.js",
+        "content/feat/cat/rconv.js",
+        "content/feat/cat/biv.js",
+        "content/feat/cat/slr.js",
+        "content/feat/cat/rr.js",
+        "content/feat/cat/pfl.js",
+        "content/feat/cat/oilp.js",
+        "content/ui/pt.js",
+        "content/ui/gr.js",
+        "content/ui/pg.js",
+        "content/feat/priv/qs.js",
+        "content/feat/serv/si.js",
+        "content/misc/rp.js",
+        "content/feat/cust/bwr.js",
+        "content/feat/cust/hdb.js",
+        "content/feat/misc/up.js",
+        "content/feat/misc/tse.js",
+        "content/feat/cust/pb.js",
+        "content/feat/cust/pcr.js",
+        "content/feat/soc/lo.js",
+        "content/feat/cust/bc.js",
+        "content/feat/cust/sap.js",
+        "content/feat/priv/lb.js",
+        "content/feat/priv/bsn.js",
+        "content/feat/misc/es.js",
+        "content/feat/game/pt.js",
+        "content/feat/game/glw.js",
+        "content/feat/soc/as.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/*/bundles/*",
+        "*://*.roblox.com/*/catalog/*",
+        "*://*.roblox.com/*/library/*",
+        "*://*.roblox.com/*/marketplace/*",
+        "*://*.roblox.com/*/store/asset/*",
+        "*://*.roblox.com/bundles/*",
+        "*://*.roblox.com/catalog/*",
+        "*://*.roblox.com/library/*",
+        "*://*.roblox.com/marketplace/*",
+        "*://*.roblox.com/store/asset/*"
+      ],
+      "js": [
+        "content/feat/cat/explr.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/*/bundles/*",
+        "*://*.roblox.com/*/catalog/*",
+        "*://*.roblox.com/*/library/*",
+        "*://*.roblox.com/*/marketplace/*",
+        "*://*.roblox.com/*/store/asset/*",
+        "*://*.roblox.com/bundles/*",
+        "*://*.roblox.com/catalog/*",
+        "*://*.roblox.com/library/*",
+        "*://*.roblox.com/marketplace/*",
+        "*://*.roblox.com/store/asset/*"
+      ],
+      "js": [
+        "content/feat/cat/nr.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/*"
+      ],
+      "js": [
+        "content/api/api.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/*"
+      ],
+      "js": [
+        "content/core/settings.js",
+        "content/core/sk-migrate.js",
+        "content/core/ld.js",
+        "content/core/spc.js",
+        "content/feat/cust/stm.js",
+        "content/feat/cust/thm.js",
+        "content/core/bat.js",
+        "content/feat/cust/frpt.js",
+        "content/feat/cust/ia.js",
+        "content/feat/misc/dva.js",
+        "content/feat/soc/ghos.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/*"
+      ],
+      "js": [
+        "content/core/pcb.js",
+        "content/core/ssc.js",
+        "content/core/frpt-main.js",
+        "content/core/bc-main.js",
+        "content/core/ia-main.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/*"
+      ],
+      "exclude_matches": [
+        "*://create.roblox.com/*",
+        "*://devforum.roblox.com/*"
+      ],
+      "js": [
+        "content/feat/cust/sdbr.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/my/avatar*"
+      ],
+      "js": [
+        "content/feat/cust/r6w.js",
+        "content/feat/cust/ac.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/my/avatar*"
+      ],
+      "js": [
+        "content/feat/cust/rae.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/users/*"
+      ],
+      "js": [
+        "content/feat/soc/cb.js",
+        "content/feat/soc/ce.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/users/*/friends*",
+        "*://*.roblox.com/users/friends*"
+      ],
+      "js": [
+        "content/feat/soc/fo.js",
+        "content/feat/soc/mpt.js",
+        "content/feat/soc/bf.js",
+        "content/feat/soc/fm.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/users/*/profile"
+      ],
+      "js": [
+        "content/feat/soc/mpt.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/games/*"
+      ],
+      "js": [
+        "content/feat/serv/bd.js",
+        "content/feat/game/go.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/home"
+      ],
+      "js": [
+        "content/feat/game/qp.js",
+        "content/core/ob.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/*/home*",
+        "*://*.roblox.com/home*"
+      ],
+      "js": [
+        "content/feat/cust/hpt.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/charts*"
+      ],
+      "js": [
+        "content/feat/game/ps.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/my/account*"
+      ],
+      "js": [
+        "content/feat/game/pt-ropro-import.js",
+        "content/ui/psp.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/games/store-section/7191592908*"
+      ],
+      "js": [
+        "content/ui/pst.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/purpura-themes*"
+      ],
+      "css": [
+        "css/purpura-page.css"
+      ],
+      "js": [
+        "content/feat/cust/themes-page.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "*://*.roblox.com/purpura-time*"
+      ],
+      "css": [
+        "css/purpura-page.css"
+      ],
+      "js": [
+        "content/feat/game/pt-ropro-import.js",
+        "content/feat/game/pt-dashboard.js"
+      ],
+      "run_at": "document_start"
+    }
+  ]
+}

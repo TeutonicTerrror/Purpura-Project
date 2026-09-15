@@ -1,0 +1,61 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_1_2)">
+<g filter="url(#filter0_n_1_2)">
+<circle cx="256" cy="256" r="256" fill="#0F0F14"/>
+<circle cx="256" cy="256" r="249.75" stroke="url(#womensDayGradient)" stroke-width="12.5"/>
+</g>
+<g filter="url(#filter1_d_1_2)">
+<path d="M144 418V138H272C297.6 138 319.6 142.133 338 150.4C356.667 158.667 371.067 170.667 381.2 186.4C391.333 201.867 396.4 220.267 396.4 241.6C396.4 262.667 391.333 280.933 381.2 296.4C371.067 311.867 356.667 323.867 338 332.4C319.6 340.667 297.6 344.8 272 344.8H188L223.2 310.4V418H144ZM223.2 318.8L188 282.4H267.2C283.733 282.4 296 278.8 304 271.6C312.267 264.4 316.4 254.4 316.4 241.6C316.4 228.533 312.267 218.4 304 211.2C296 204 283.733 200.4 267.2 200.4H188L223.2 164V318.8Z" fill="url(#womensDayGradient)"/>
+<path d="M210 92L232 139H188L210 92Z" fill="url(#womensDayGradient)"/>
+<path d="M144 92V139H188L144 92Z" fill="url(#womensDayGradient)"/>
+<path d="M232 139H277V93L232 139Z" fill="url(#womensDayGradient)"/>
+</g>
+<g filter="url(#filter2_d_1_2)">
+<circle cx="144" cy="87" r="8" fill="url(#womensDayGradient)"/>
+</g>
+<g filter="url(#filter3_d_1_2)">
+<circle cx="210" cy="87" r="8" fill="url(#womensDayGradient)"/>
+</g>
+<g filter="url(#filter4_d_1_2)">
+<circle cx="277" cy="87" r="8" fill="url(#womensDayGradient)"/>
+</g>
+</g>
+<defs>
+<linearGradient id="womensDayGradient" gradientUnits="userSpaceOnUse" x1="256" y1="79" x2="256" y2="418">
+<stop offset="0%" stop-color="#8626A8"/>
+<stop offset="50%" stop-color="#2ECC71"/>
+<stop offset="100%" stop-color="#F5F5F5"/>
+</linearGradient>
+<filter id="filter0_n_1_2" x="0" y="0" width="512" height="512" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feTurbulence type="fractalNoise" baseFrequency="0.25 0.25" stitchTiles="stitch" numOctaves="3" result="noise" seed="7196" />
+<feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise" />
+<feComponentTransfer in="alphaNoise" result="coloredNoise1">
+<feFuncA type="discrete" tableValues="1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "/>
+</feComponentTransfer>
+<feComposite operator="in" in2="shape" in="coloredNoise1" result="noise1Clipped" />
+<feFlood flood-color="rgba(29, 27, 27, 0.25)" result="color1Flood" />
+<feComposite operator="in" in2="noise1Clipped" in="color1Flood" result="color1" />
+<feMerge result="effect1_noise_1_2">
+<feMergeNode in="shape" />
+<feMergeNode in="color1" />
+</feMerge>
+</filter>
+<filter id="filter1_d_1_2" x="144" y="92" width="265.4" height="334" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feDropShadow dx="9" dy="4" stdDeviation="2" flood-color="#4A1560" flood-opacity="0.25"/>
+</filter>
+<filter id="filter2_d_1_2" x="136" y="79" width="29" height="24" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feDropShadow dx="9" dy="4" stdDeviation="2" flood-color="#4A1560" flood-opacity="0.2"/>
+</filter>
+<filter id="filter3_d_1_2" x="202" y="79" width="29" height="24" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feDropShadow dx="9" dy="4" stdDeviation="2" flood-color="#4A1560" flood-opacity="0.2"/>
+</filter>
+<filter id="filter4_d_1_2" x="269" y="79" width="29" height="24" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feDropShadow dx="9" dy="4" stdDeviation="2" flood-color="#4A1560" flood-opacity="0.2"/>
+</filter>
+<clipPath id="clip0_1_2">
+<rect width="512" height="512" fill="white"/>
+</clipPath>
+</defs>
+</svg>

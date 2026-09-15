@@ -1,0 +1,86 @@
+{
+  "robloxLight": {
+    "name": "Roblox Light",
+    "description": "How to blind yourself--err I mean Native Roblox Light Mode.",
+    "author": "Roblox",
+    "colors": {
+      "swatch0": "#ffffff",
+      "swatch1": "#f2f2f5",
+      "swatch2": "#e0e0e8",
+      "swatch3": "#1a1a2e",
+      "swatch4": "#6366f1"
+    }
+  },
+  "robloxDark": {
+    "name": "Roblox Dark",
+    "description": "Native Roblox Dark Mode.",
+    "author": "Roblox",
+    "colors": {
+      "swatch0": "#191b20",
+      "swatch1": "#23252b",
+      "swatch2": "#2e3037",
+      "swatch3": "#eceef2",
+      "swatch4": "#6b8cce"
+    }
+  },
+  "purpuraCore": {
+    "name": "Purpura Core",
+    "description": "Purpura's signature purple core.",
+    "author": "Purpura",
+    "base": "dark-theme",
+    "colors": {
+      "surface0": "#0f0618",
+      "surface100": "#0f0618",
+      "surface200": "#1c0f2c",
+      "surface300": "#241438",
+      "mainText": "#f5f0ff",
+      "secondaryText": "#c4b5e8",
+      "playButton": "#22c55e"
+    }
+  },
+  "midnight": {
+    "name": "Midnight",
+    "description": "Near-black theme that is easy on the eyes.",
+    "author": "Purpura",
+    "base": "dark-theme",
+    "colors": {
+      "surface0": "#000000",
+      "surface100": "#000000",
+      "surface200": "#0c0d10",
+      "surface300": "#121318",
+      "mainText": "#eceef2",
+      "secondaryText": "#9298a2",
+      "playButton": "#3a8c4e"
+    }
+  },
+  "muted": {
+    "name": "Light (-)",
+    "description": "A light mode usable by dark mode users, a more muted version of Roblox's bright light theme.",
+    "author": "Purpura",
+    "base": "light-theme",
+    "colors": {
+      "surface0": "#f0f1f4",
+      "surface100": "#f0f1f4",
+      "surface200": "#f5f6f9",
+      "surface300": "#dcdee4",
+      "mainText": "#1a1a2e",
+      "secondaryText": "#4a4a5e",
+      "playButton": "#16a34a"
+    }
+  },
+  "teutonicAesthetic": {
+    "name": "Teutonic Aesthetic",
+    "description": "The TeutonicTerror core, a signature crimson palette.",
+    "author": "Purpura",
+    "base": "dark-theme",
+    "colors": {
+      "surface0": "#220002",
+      "surface100": "#220002",
+      "surface200": "#3d050a",
+      "surface300": "#5a0812",
+      "mainText": "#fff5f5",
+      "secondaryText": "#d48086",
+      "playButton": "#e02020"
+    }
+  }
+}

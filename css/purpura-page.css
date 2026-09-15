@@ -1,0 +1,11 @@
+/*
+ * Purpura Extension
+ * Copyright © 2026 TeutonicTerror
+ * Licensed under the GNU General Public License v3.0.
+ */
+.request-error-page-content,
+.default-error-page,
+.error-page,
+#error-page {
+    display: none !important;
+}
