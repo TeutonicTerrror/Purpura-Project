@@ -9,7 +9,7 @@ Copyright © 2026 TeutonicTerror.
 The following files and assets are not licensed under the GNU General Public
 License version 3.0 and are not open-source assets:
 
-* images/
+* assets/images/
 
 The `images/` directory contains branding, logos, artwork, and other visual
 assets. These materials remain under their respective copyrights and licenses.
@@ -662,4 +662,3 @@ copy of the Program in return for a fee.
 
                      END OF TERMS AND CONDITIONS
 
-  

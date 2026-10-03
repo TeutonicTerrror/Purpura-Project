@@ -1,0 +1,238 @@
+{
+  "si": {
+    "enabled": true,
+    "info": {
+      "region": true,
+      "ping": true,
+      "fps": true,
+      "serverVersion": false,
+      "serverId": false
+    }
+  },
+  "bd": {
+    "enabled": true,
+    "showDatabase": true,
+    "roundToWholeNumbers": true
+  },
+  "pg": false,
+  "plt": true,
+  "glw": false,
+  "go": {
+    "enabled": true,
+    "launchPopup": false
+  },
+  "pb": {
+    "enabled": false,
+    "binds": [
+      {
+        "key": "G",
+        "name": "Groups",
+        "url": "https://www.roblox.com/communities/",
+        "enabled": false,
+        "isDefault": true
+      },
+      {
+        "key": "I",
+        "name": "Inventory",
+        "url": "https://www.roblox.com/users/{userID}/inventory",
+        "enabled": false,
+        "isDefault": true
+      },
+      {
+        "key": "C",
+        "name": "Catalog",
+        "url": "https://www.roblox.com/catalog",
+        "enabled": false,
+        "isDefault": true
+      },
+      {
+        "key": "E",
+        "name": "Avatar Editor",
+        "url": "https://www.roblox.com/my/avatar",
+        "enabled": false,
+        "isDefault": true
+      },
+      {
+        "key": "F",
+        "name": "Friends",
+        "url": "https://www.roblox.com/users/friends",
+        "enabled": false,
+        "isDefault": true
+      },
+      {
+        "key": "S",
+        "name": "Studio",
+        "url": "https://create.roblox.com/",
+        "enabled": false,
+        "isDefault": true
+      },
+      {
+        "key": "R",
+        "name": "Games",
+        "url": "https://www.roblox.com/charts",
+        "enabled": false,
+        "isDefault": true
+      },
+      {
+        "key": "P",
+        "name": "Purpura Settings",
+        "url": "https://www.roblox.com/my/account?purpura=info#!/info",
+        "enabled": false,
+        "isDefault": true
+      }
+    ]
+  },
+  "hpt": {
+    "enabled": true,
+    "todaysGamePicks": false,
+    "continuePlaying": false,
+    "recommendedGames": false,
+    "favoriteGames": false,
+    "standoutGames": false,
+    "friends": false,
+    "gamesMissing": false,
+    "peopleYouMayKnow": false,
+    "underratedGames": false,
+    "homeLayout": [
+      "friends",
+      "pinnedGames",
+      "continuePlaying",
+      "recommendedGames",
+      "favoriteGames",
+      "todaysGamePicks",
+      "standoutGames",
+      "gamesMissing",
+      "peopleYouMayKnow",
+      "underratedGames"
+    ],
+    "homePageButton": false
+  },
+  "unc": true,
+  "uncConfig": {
+    "enabled": true,
+    "sections": {
+      "charts": true,
+      "marketplace": true,
+      "create": true,
+      "groups": true
+    }
+  },
+  "bwr": {
+    "enabled": false
+  },
+  "gr": true,
+  "up": true,
+  "tse": true,
+  "qp": true,
+  "ghos": {
+    "enabled": false,
+    "webRequestPermission": false
+  },
+  "as": {
+    "enabled": true,
+    "filters": true
+  },
+  "ia": true,
+  "ac": true,
+  "rae": false,
+  "nr": true,
+  "rconv": true,
+  "biv": true,
+  "explr": true,
+  "rr": true,
+  "slr": {
+    "enabled": false,
+    "placeId": ""
+  },
+  "thm": {
+    "enabled": true,
+    "selected": "none",
+    "customColors": null,
+    "customThemes": []
+  },
+  "lb": true,
+  "sap": true,
+  "bc": true,
+  "bcAutoRefresh": true,
+  "sdbr": {
+    "enabled": false,
+    "sidebarLayout": [
+      "home",
+      "charts",
+      "profile",
+      "friends",
+      "avatar",
+      "catalog",
+      "groups",
+      "messages",
+      "trade",
+      "purpuraSettings"
+    ],
+    "hiddenButtons": [
+      "trade",
+      "purpuraSettings"
+    ]
+  },
+  "pcr": {
+    "enabled": false,
+    "preset": "default",
+    "cursor": "auto",
+    "name": "Default",
+    "type": "preset",
+    "trailEffects": false
+  },
+  "pt": {
+    "enabled": false,
+    "favicon": {
+      "type": "purpura"
+    },
+    "titleFormat": "{n} Purpura"
+  },
+  "spc-legacy": false,
+  "spc": {
+    "enabled": false,
+    "mode": "offline"
+  },
+  "qs": {
+    "enabled": true,
+    "themeIntegration": true
+  },
+  "hdb": true,
+  "stm": false,
+  "fm": false,
+  "ce": true,
+  "fo": true,
+  "mpt": true,
+  "bf": true,
+  "lo": true,
+  "rat": {
+    "enabled": false,
+    "theme": "Normal Roblox"
+  },
+  "lts": false,
+  "thmEnabled": true,
+  "frpt": false,
+  "bsn": false,
+  "dva": false,
+  "r6w": true,
+  "pfl": true,
+  "oilp": true,
+  "es": {
+    "enabled": true,
+    "userSearch": true,
+    "gameSearch": true,
+    "friendSearch": true,
+    "focusKey": true
+  },
+  "cs": true,
+  "grev": true,
+  "ssl": true,
+  "otp": { "enabled": false, "threshold": "50" },
+  "pwi": true,
+  "lc": {
+    "enabled": true,
+    "likeDislike": true,
+    "players": true,
+    "visits": true
+  }
+}

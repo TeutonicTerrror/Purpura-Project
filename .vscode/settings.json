@@ -1,0 +1,16 @@
+{
+  "editor.formatOnSave": false,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.trimAutoWhitespace": true,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.eol": "\n",
+  "files.associations": {
+    "*.md": "markdown"
+  },
+  "search.exclude": {
+    "build/**": true,
+    "node_modules/**": true
+  }
+}

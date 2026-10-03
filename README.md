@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/PURPURA_TEXT.svg" alt="Purpura" width="520">
+  <img src="assets/images/icons/PURPURA_TEXT.svg" alt="Purpura" width="520">
 </p>
 
 <p align="center">
@@ -57,6 +57,22 @@ Install directly from the [Chrome Web Store](https://chromewebstore.google.com/d
 
 </details>
 
+### Option 3: Build from source
+
+<details>
+<summary><strong>Expand instructions</strong></summary>
+
+Requires Node.js `20.19+` or `22.12+`.
+
+```bash
+npm install
+npm run build
+```
+
+Then open `chrome://extensions`, enable **Developer Mode**, and load the `build/chromium` folder unpacked. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full development workflow.
+
+</details>
+
 ---
 
 ## License
@@ -65,8 +81,8 @@ Purpura source code is licensed under the **GNU General Public License v3.0** un
 
 The following assets are **not** covered by GPL-3.0:
 
-- `images/` contains Purpura branding and other visual assets. Purpura branding remains under the copyrights of TeutonicTerror and is not covered by GPL-3.0 unless explicitly stated. Other assets in this directory remain subject to their respective copyrights and licenses.
-- `content/feat/cust/aeditor/three/` -- Three.js r128, licensed separately under the **MIT License** (Copyright 2010-2021 Three.js Authors). You are free to reuse Three.js under its own MIT terms.
+- `assets/images/` contains Purpura branding and other visual assets. Purpura branding remains under the copyrights of TeutonicTerror and is not covered by GPL-3.0 unless explicitly stated. Other assets in this directory remain subject to their respective copyrights and licenses.
+- `src/content/feat/cust/aeditor/three/` -- Three.js r128, licensed separately under the **MIT License** (Copyright 2010-2021 Three.js Authors). You are free to reuse Three.js under its own MIT terms.
 
 ---
 
@@ -74,7 +90,7 @@ The following assets are **not** covered by GPL-3.0:
 
 - **Contributors:** https://github.com/TeutonicTerrror/Purpura-Project/graphs/contributors
 - **Testers:** CJiggy, Deluxis
-- **Inspiration and region help:** Valra
+- **Inspiration:** Valra & Alexop
 - **Development:** TeutonicTerror and [contributors](https://github.com/TeutonicTerrror/Purpura-Project/graphs/contributors)
 
 ---

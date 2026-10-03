@@ -1,0 +1,2032 @@
+{
+  "botDetector_analysisDatabase": {
+    "message": "Base de datos de análisis"
+  },
+  "botDetector_analyzed": {
+    "message": "Analizados $PLAYERS$ jugadores en $SERVERS$ servidores",
+    "placeholders": {
+      "PLAYERS": {
+        "content": "$1"
+      },
+      "SERVERS": {
+        "content": "$2"
+      }
+    }
+  },
+  "botDetector_analyzedCached": {
+    "message": "Analizados $PLAYERS$ jugadores en $SERVERS$ servidores (guardado)",
+    "placeholders": {
+      "PLAYERS": {
+        "content": "$1"
+      },
+      "SERVERS": {
+        "content": "$2"
+      }
+    }
+  },
+  "botDetector_analyzing": {
+    "message": "Escaneando servidores..."
+  },
+  "botDetector_cachedError": {
+    "message": "Usando resultados guardados (error de escaneo)"
+  },
+  "botDetector_cachedFallback": {
+    "message": "Usando resultados guardados (el escaneo en vivo falló: $REASON$)",
+    "placeholders": {
+      "REASON": {
+        "content": "$1"
+      }
+    }
+  },
+  "botDetector_cachedResults": {
+    "message": "Resultados guardados"
+  },
+  "botDetector_calculating": {
+    "message": "calculando…"
+  },
+  "botDetector_couldNotGatherData": {
+    "message": "No se pudieron recopilar suficientes datos o límite excedido."
+  },
+  "botDetector_couldNotScan": {
+    "message": "No se pudo escanear en este momento."
+  },
+  "botDetector_dataset": {
+    "message": "Conjunto de datos"
+  },
+  "botDetector_extraNotes": {
+    "message": "Notas adicionales"
+  },
+  "botDetector_gameInfo": {
+    "message": "Información del juego"
+  },
+  "botDetector_gameName": {
+    "message": "Nombre del juego:"
+  },
+  "botDetector_lastScan": {
+    "message": "Último escaneo: $TIME$",
+    "placeholders": {
+      "TIME": {
+        "content": "$1"
+      }
+    }
+  },
+  "botDetector_message": {
+    "message": "Mensaje"
+  },
+  "botDetector_noCachedData": {
+    "message": "No hay datos guardados disponibles"
+  },
+  "botDetector_noThumbnailData": {
+    "message": "No hay datos de miniaturas disponibles."
+  },
+  "botDetector_note1": {
+    "message": "1. Los bots se estiman heurísticamente mediante hashes de miniaturas de avatar -- son aproximaciones."
+  },
+  "botDetector_note2": {
+    "message": "2. Los desarrolladores casi nunca son responsables de los bots; no uses esto como herramienta de acoso."
+  },
+  "botDetector_percentBots": {
+    "message": "El $PERCENT$% de los jugadores parecen ser bots",
+    "placeholders": {
+      "PERCENT": {
+        "content": "$1"
+      }
+    }
+  },
+  "botDetector_percentEstimation": {
+    "message": "Estimación del porcentaje"
+  },
+  "botDetector_playercount": {
+    "message": "Jugadores:"
+  },
+  "botDetector_samples": {
+    "message": "($COUNT$ muestras)",
+    "placeholders": {
+      "COUNT": {
+        "content": "$1"
+      }
+    }
+  },
+  "botDetector_scanError": {
+    "message": "Error de escaneo"
+  },
+  "botDetector_scanFailed": {
+    "message": "Fallo en el escaneo: $REASON$",
+    "placeholders": {
+      "REASON": {
+        "content": "$1"
+      }
+    }
+  },
+  "botDetector_scanning": {
+    "message": "Escaneando..."
+  },
+  "botDetector_scanningProgress": {
+    "message": "Escaneando... ($DONE$/$TOTAL$)",
+    "placeholders": {
+      "DONE": {
+        "content": "$1"
+      },
+      "TOTAL": {
+        "content": "$2"
+      }
+    }
+  },
+  "botDetector_title": {
+    "message": "Detector de bots de Purpura"
+  },
+  "botDetector_triedScanning": {
+    "message": "Se intentó escanear $SERVERS$ servidores, se obtuvieron $THUMBS$ miniaturas",
+    "placeholders": {
+      "SERVERS": {
+        "content": "$1"
+      },
+      "THUMBS": {
+        "content": "$2"
+      }
+    }
+  },
+  "botDetector_unknown": {
+    "message": "Desconocido"
+  },
+  "botDetector_viewAnalysisData": {
+    "message": "Ver datos de análisis"
+  },
+  "botDetector_viewDatabase": {
+    "message": "Ver base de datos"
+  },
+  "common_cancel": {
+    "message": "Cancelar"
+  },
+  "common_delete": {
+    "message": "Eliminar"
+  },
+  "common_disabled": {
+    "message": "Deshabilitado"
+  },
+  "common_enabled": {
+    "message": "Habilitado"
+  },
+  "common_no": {
+    "message": "No"
+  },
+  "common_save": {
+    "message": "Guardar"
+  },
+  "common_yes": {
+    "message": "Sí"
+  },
+  "explr_download": {
+    "message": "Descargar"
+  },
+  "explr_noAssets": {
+    "message": "No se encontraron recursos"
+  },
+  "explr_preview": {
+    "message": "Previsualizar"
+  },
+  "explr_title": {
+    "message": "Explorador de artículos"
+  },
+  "extensionDescription": {
+    "message": "La suite definitiva de mejoras para Roblox con temas, una barra lateral rediseñada y funciones de calidad de vida."
+  },
+  "extensionName": {
+    "message": "Purpura | Roblox Enhanced"
+  },
+  "gameLauncher_emptySubtitle": {
+    "message": "Empieza a escribir para ver resultados"
+  },
+  "gameLauncher_emptyTitle": {
+    "message": "Busca cualquier juego de Roblox"
+  },
+  "gameLauncher_joinSmallest": {
+    "message": "Unirse al servidor más pequeño"
+  },
+  "gameLauncher_noResults": {
+    "message": "No se encontraron resultados"
+  },
+  "gameLauncher_play": {
+    "message": "Jugar"
+  },
+  "gameLauncher_recentGames": {
+    "message": "Juegos recientes"
+  },
+  "gameLauncher_searchPlaceholder": {
+    "message": "Buscar juegos..."
+  },
+  "gameLauncher_searchResults": {
+    "message": "Resultados de búsqueda"
+  },
+  "gameLauncher_searching": {
+    "message": "Buscando..."
+  },
+  "gameLauncher_sortNameAsc": {
+    "message": "Nombre: A a Z"
+  },
+  "gameLauncher_sortNameDesc": {
+    "message": "Nombre: Z a A"
+  },
+  "gameLauncher_sortPlayersAsc": {
+    "message": "Jugadores: de menor a mayor"
+  },
+  "gameLauncher_sortPlayersDesc": {
+    "message": "Jugadores: de mayor a menor"
+  },
+  "gameLauncher_title": {
+    "message": "Lanzador de juegos"
+  },
+  "gameOutfits_chooseOutfit": {
+    "message": "Elige tu traje antes de jugar"
+  },
+  "gameOutfits_equipped": {
+    "message": "¡Equipado!"
+  },
+  "gameOutfits_failed": {
+    "message": "Falló"
+  },
+  "gameOutfits_loading": {
+    "message": "Cargando trajes..."
+  },
+  "gameOutfits_noOutfits": {
+    "message": "No se encontraron trajes"
+  },
+  "gameOutfits_outfits": {
+    "message": "Trajes"
+  },
+  "gameOutfits_selectOutfit": {
+    "message": "Seleccionar traje"
+  },
+  "gameOutfits_skip": {
+    "message": "Omitir"
+  },
+  "gameOutfits_wear": {
+    "message": "Equipar"
+  },
+  "gameOutfits_wearing": {
+    "message": "Equipado"
+  },
+  "greetings_afternoon": {
+    "message": "Buenas tardes"
+  },
+  "greetings_chance": {
+    "message": "Probabilidad: $CHANCE$",
+    "placeholders": {
+      "CHANCE": {
+        "content": "$1"
+      }
+    }
+  },
+  "greetings_evening": {
+    "message": "Buenas noches"
+  },
+  "greetings_morning": {
+    "message": "Buenos días"
+  },
+  "lastOnline_lastSeen": {
+    "message": "Visto por última vez: $TIME$",
+    "placeholders": {
+      "TIME": {
+        "content": "$1"
+      }
+    }
+  },
+  "lastOnline_neverSeen": {
+    "message": "Nunca visto en línea"
+  },
+  "onboarding_desc": {
+    "message": "Purpura añade potentes mejoras a Roblox sin dejar de ser mayormente gratuito. Para comenzar:"
+  },
+  "onboarding_finish": {
+    "message": "Terminar"
+  },
+  "onboarding_getStarted": {
+    "message": "Comenzar"
+  },
+  "onboarding_gotIt": {
+    "message": "¡Entendido!"
+  },
+  "onboarding_next": {
+    "message": "Siguiente"
+  },
+  "onboarding_step1": {
+    "message": "Haz clic en el icono de engranaje en la cabecera de Roblox, luego selecciona \"Configuración de Purpura\"."
+  },
+  "onboarding_welcome": {
+    "message": "¡Bienvenido a Purpura!"
+  },
+  "pageBinds_navigating": {
+    "message": "Navegando a $PAGE$...",
+    "placeholders": {
+      "PAGE": {
+        "content": "$1"
+      }
+    }
+  },
+  "pageBinds_title": {
+    "message": "Page Binds"
+  },
+  "pinnedGames_add": {
+    "message": "Añadir"
+  },
+  "pinnedGames_addFolder": {
+    "message": "Añadir carpeta"
+  },
+  "pinnedGames_addToFolder": {
+    "message": "Añadir a carpeta"
+  },
+  "pinnedGames_allGames": {
+    "message": "Todos los juegos"
+  },
+  "pinnedGames_buildermanLives": {
+    "message": "Aquí vive builderman."
+  },
+  "pinnedGames_cancel": {
+    "message": "Cancelar"
+  },
+  "pinnedGames_close": {
+    "message": "Cerrar"
+  },
+  "pinnedGames_color": {
+    "message": "Color"
+  },
+  "pinnedGames_delete": {
+    "message": "Eliminar"
+  },
+  "pinnedGames_deleteFolderConfirm": {
+    "message": "¿Eliminar $NAME$?",
+    "placeholders": {
+      "NAME": {
+        "content": "$1"
+      }
+    }
+  },
+  "pinnedGames_deleteFolderEmpty": {
+    "message": "Esta carpeta está vacía."
+  },
+  "pinnedGames_deleteFolderTitle": {
+    "message": "¿Eliminar carpeta?"
+  },
+  "pinnedGames_deleteMovedToAll": {
+    "message": "$COUNT$ juego$PLURAL$ se moverá$PLURAL$ a Todos los juegos.",
+    "placeholders": {
+      "COUNT": {
+        "content": "$1"
+      },
+      "PLURAL": {
+        "content": "$2"
+      }
+    }
+  },
+  "pinnedGames_dragToReorder": {
+    "message": "Arrastrar para reorganizar"
+  },
+  "pinnedGames_editFolder": {
+    "message": "Editar carpeta"
+  },
+  "pinnedGames_folderName": {
+    "message": "Nombre de carpeta"
+  },
+  "pinnedGames_folderNamePlaceholder": {
+    "message": "ej. Juegos FPS"
+  },
+  "pinnedGames_folders": {
+    "message": "Carpetas"
+  },
+  "pinnedGames_getPremium": {
+    "message": "Obtener Premium"
+  },
+  "pinnedGames_helpText": {
+    "message": "Arrastra y suelta para reorganizar<br>Haz clic en una tarjeta para ir a su página<br>Usa Jugar / Más pequeño para unirse<br>Usa el icono de carpeta para organizar<br>Usa el icono de actualizar para sincronizar"
+  },
+  "pinnedGames_joinSmallestTooltip": {
+    "message": "Unirse al servidor más pequeño"
+  },
+  "pinnedGames_newFolder": {
+    "message": "Nueva carpeta"
+  },
+  "pinnedGames_noGames": {
+    "message": "Aún no hay juegos fijados"
+  },
+  "pinnedGames_pin": {
+    "message": "Fijar juego"
+  },
+  "pinnedGames_pinAction": {
+    "message": "Fijar"
+  },
+  "pinnedGames_pinned": {
+    "message": "Fijado"
+  },
+  "pinnedGames_pinnedGamesHeader": {
+    "message": "Juegos fijados"
+  },
+  "pinnedGames_playTooltip": {
+    "message": "Jugar"
+  },
+  "pinnedGames_playingCount": {
+    "message": "$COUNT$ jugando",
+    "placeholders": {
+      "COUNT": {
+        "content": "$1"
+      }
+    }
+  },
+  "pinnedGames_premiumFeature": {
+    "message": "Función Premium"
+  },
+  "pinnedGames_premiumFeatureDesc": {
+    "message": "Juegos fijados es una función Premium de Purpura. Organiza tus juegos favoritos, crea carpetas y únete a servidores al instante."
+  },
+  "pinnedGames_rename": {
+    "message": "Renombrar"
+  },
+  "pinnedGames_save": {
+    "message": "Guardar"
+  },
+  "pinnedGames_searchPlaceholder": {
+    "message": "Buscar juegos en esta carpeta…"
+  },
+  "pinnedGames_syncDetails": {
+    "message": "Sincronizar detalles"
+  },
+  "pinnedGames_title": {
+    "message": "Juegos fijados"
+  },
+  "pinnedGames_unpin": {
+    "message": "Desfijar"
+  },
+  "popup_accessDenied": {
+    "message": "Acceso denegado"
+  },
+  "popup_accountBanned": {
+    "message": "Cuenta baneada"
+  },
+  "popup_accountBannedFromExtension": {
+    "message": "Tu cuenta ha sido vetada del uso de la extensión Purpura."
+  },
+  "popup_accountBannedFromPremium": {
+    "message": "Tu cuenta ha sido vetada de las funciones premium de Purpura."
+  },
+  "popup_apiRateLimited": {
+    "message": "Límite de API superado"
+  },
+  "popup_banErrorContact": {
+    "message": "Si crees que este ban se emitió por error, ponte en contacto con soporte técnico en nuestro servidor de Discord."
+  },
+  "popup_bannedOn": {
+    "message": "Baneado el"
+  },
+  "popup_brandTagline": {
+    "message": "Moderniza tu experiencia en Roblox"
+  },
+  "popup_cancel": {
+    "message": "Cancelar"
+  },
+  "popup_checkGamePassManually": {
+    "message": "Comprobar Game Pass manualmente"
+  },
+  "popup_checkPremiumStatus": {
+    "message": "Haz clic para comprobar el estado Premium"
+  },
+  "popup_checkPrivacySettings": {
+    "message": "Verifica tu configuración de privacidad en Roblox"
+  },
+  "popup_close": {
+    "message": "Cerrar"
+  },
+  "popup_connectUnlockPremium": {
+    "message": "Conéctate para desbloquear Premium"
+  },
+  "popup_connecting": {
+    "message": "Conectando..."
+  },
+  "popup_contactSupport": {
+    "message": "Contactar soporte"
+  },
+  "popup_contactSupportDiscord": {
+    "message": "Contactar soporte en Discord"
+  },
+  "popup_debugActive": {
+    "message": "Activo"
+  },
+  "popup_debugBannedLabel": {
+    "message": "Baneado"
+  },
+  "popup_debugBloatwareRemover": {
+    "message": "Eliminador de bloatware"
+  },
+  "popup_debugBotDetector": {
+    "message": "Detector de bots"
+  },
+  "popup_debugConfigured": {
+    "message": "Configurado"
+  },
+  "popup_debugCookies": {
+    "message": "Cookies"
+  },
+  "popup_debugDisabled": {
+    "message": "Deshabilitado"
+  },
+  "popup_debugEnabled": {
+    "message": "Habilitado"
+  },
+  "popup_debugGameLauncherOmnibox": {
+    "message": "Lanzador de omnibox"
+  },
+  "popup_debugGameLauncherWidget": {
+    "message": "Lanzador de juegos"
+  },
+  "popup_debugGameOutfits": {
+    "message": "Trajes de juego"
+  },
+  "popup_debugGreetings": {
+    "message": "Saludos"
+  },
+  "popup_debugInactive": {
+    "message": "Inactivo"
+  },
+  "popup_debugLanguage": {
+    "message": "Idioma"
+  },
+  "popup_debugNo": {
+    "message": "No"
+  },
+  "popup_debugNone": {
+    "message": "Ninguno"
+  },
+  "popup_debugNotDetected": {
+    "message": "No detectado"
+  },
+  "popup_debugOnline": {
+    "message": "En línea"
+  },
+  "popup_debugPageBinds": {
+    "message": "Page Binds"
+  },
+  "popup_debugPinnedGames": {
+    "message": "Juegos fijados"
+  },
+  "popup_debugPlatform": {
+    "message": "Plataforma"
+  },
+  "popup_debugPremiumStatus": {
+    "message": "Estado Premium"
+  },
+  "popup_debugPurpuraCursors": {
+    "message": "Cursores Purpura"
+  },
+  "popup_debugPurpuraTabs": {
+    "message": "Pestañas Purpura"
+  },
+  "popup_debugThemeEditor": {
+    "message": "Theme Editor"
+  },
+  "popup_debugServerInfo": {
+    "message": "Info del servidor"
+  },
+  "popup_debugUncorporatify": {
+    "message": "Descorporativizar"
+  },
+  "popup_debugUserId": {
+    "message": "ID de usuario"
+  },
+  "popup_debugYes": {
+    "message": "Sí"
+  },
+  "popup_discord": {
+    "message": "Discord"
+  },
+  "popup_ensureLoggedIn": {
+    "message": "Asegúrate de haber iniciado sesión en Roblox"
+  },
+  "popup_enterCode": {
+    "message": "Por favor, introduce un código"
+  },
+  "popup_enterFullCode": {
+    "message": "Introduce el código completo de 8 caracteres"
+  },
+  "popup_expires": {
+    "message": "Expira"
+  },
+  "popup_failedToLink": {
+    "message": "Error al vincular la cuenta"
+  },
+  "popup_fundDevelopment": {
+    "message": "Financiar el desarrollo"
+  },
+  "popup_getPremium": {
+    "message": "Obtener Premium"
+  },
+  "popup_help": {
+    "message": "Ayuda"
+  },
+  "popup_joinCommunity": {
+    "message": "Únete a nuestra comunidad"
+  },
+  "popup_linkAccount": {
+    "message": "Vincular cuenta"
+  },
+  "popup_linkStep1": {
+    "message": "1. Únete al juego Portal de Purpura"
+  },
+  "popup_linkStep2": {
+    "message": "2. Obtén el código de la pantalla"
+  },
+  "popup_linkStep3": {
+    "message": "3. Introdúcelo a continuación"
+  },
+  "popup_linkStep4": {
+    "message": "4. Los códigos son de un solo uso y expiran en 2 minutos"
+  },
+  "popup_linkYourAccount": {
+    "message": "Vincula tu cuenta"
+  },
+  "popup_linkedNoPremium": {
+    "message": "✓ Cuenta vinculada, pero no se detectó Premium."
+  },
+  "popup_linkedNoPremiumRelink": {
+    "message": "Cuenta vinculada, pero no se detectó Premium. Solicita un nuevo código tras mejorar tu cuenta."
+  },
+  "popup_linkedPremiumConfirmed": {
+    "message": "¡Cuenta vinculada! Acceso Premium confirmado."
+  },
+  "popup_linkedPremiumConfirmedDays": {
+    "message": "¡Cuenta vinculada! Acceso Premium confirmado por $DAYS$ día$PLURAL$.",
+    "placeholders": {
+      "DAYS": {
+        "content": "$1"
+      },
+      "PLURAL": {
+        "content": "$2"
+      }
+    }
+  },
+  "popup_linkedWithPremium": {
+    "message": "✓ ¡Cuenta vinculada con acceso Premium!"
+  },
+  "popup_linking": {
+    "message": "Vinculando..."
+  },
+  "popup_loggedInAs": {
+    "message": "Sesión iniciada como"
+  },
+  "popup_loginToRoblox": {
+    "message": "Inicia sesión en Roblox para comprobar el estado Premium"
+  },
+  "popup_networkError": {
+    "message": "Error de red al conectar con Roblox"
+  },
+  "popup_noReasonProvided": {
+    "message": "No se proporcionó ninguna razón"
+  },
+  "popup_notLoggedIn": {
+    "message": "Sesión no iniciada"
+  },
+  "popup_openGame": {
+    "message": "Abrir juego"
+  },
+  "popup_openSettings": {
+    "message": "Abrir configuración de Purpura"
+  },
+  "popup_permanent": {
+    "message": "Permanente"
+  },
+  "popup_pleaseWaitRetry": {
+    "message": "Por favor, espera e inténtalo de nuevo"
+  },
+  "popup_possibleSolutions": {
+    "message": "Soluciones posibles:"
+  },
+  "popup_premium": {
+    "message": "Premium"
+  },
+  "popup_premiumCheckApiIssue": {
+    "message": "La comprobación automática Premium experimenta problemas con la API de Roblox."
+  },
+  "popup_premiumCheckFailed": {
+    "message": "Error en la comprobación Premium"
+  },
+  "popup_premiumFeature": {
+    "message": "Función Premium"
+  },
+  "popup_premiumFeatureDesc": {
+    "message": "Esta función requiere Purpura Premium. ¡Consigue acceso a todas las funciones premium!"
+  },
+  "popup_purpuraHub": {
+    "message": "Portal de Purpura"
+  },
+  "popup_purpuraStore": {
+    "message": "Tienda Purpura"
+  },
+  "popup_reason": {
+    "message": "Razón"
+  },
+  "popup_refreshingPages": {
+    "message": "Actualizando páginas"
+  },
+  "popup_retryAutoCheck": {
+    "message": "Reintentar comprobación automática"
+  },
+  "popup_robloxGroup": {
+    "message": "Grupo de Roblox"
+  },
+  "popup_robloxTabsUpdated": {
+    "message": "$COUNT$ pestaña$PLURAL$ de Roblox actualizada$PLURAL$",
+    "placeholders": {
+      "COUNT": {
+        "content": "$1"
+      },
+      "PLURAL": {
+        "content": "$2"
+      }
+    }
+  },
+  "popup_statusBanned": {
+    "message": "Baneado"
+  },
+  "popup_statusChecking": {
+    "message": "Comprobando..."
+  },
+  "popup_statusError": {
+    "message": "Error"
+  },
+  "popup_statusFreeTier": {
+    "message": "Nivel gratuito"
+  },
+  "popup_statusPremium": {
+    "message": "Premium"
+  },
+  "popup_statusRateLimited": {
+    "message": "Límite de API"
+  },
+  "popup_support": {
+    "message": "Apoyar en Ko-Fi"
+  },
+  "popup_supportWithRobux": {
+    "message": "Apoyar con Robux"
+  },
+  "popup_tryCacheReset": {
+    "message": "Prueba el botón de restablecer caché si está disponible"
+  },
+  "popup_unableGetUserInfo": {
+    "message": "No se pudo obtener la información de usuario de Roblox"
+  },
+  "popup_unknown": {
+    "message": "Desconocido"
+  },
+  "popup_waitAndRetry": {
+    "message": "Espera unos minutos e inténtalo de nuevo"
+  },
+  "purpuraStore_title": {
+    "message": "Tienda Purpura"
+  },
+  "quickPlay_play": {
+    "message": "Jugar"
+  },
+  "quickPlay_servers": {
+    "message": "Servidores"
+  },
+  "quickStatus_allUsers": {
+    "message": "Todos los usuarios"
+  },
+  "quickStatus_dark": {
+    "message": "Oscuro"
+  },
+  "quickStatus_everyone": {
+    "message": "Todos"
+  },
+  "quickStatus_experienceVisibility": {
+    "message": "Visibilidad de experiencia"
+  },
+  "quickStatus_followers": {
+    "message": "Seguidores"
+  },
+  "quickStatus_following": {
+    "message": "Siguiendo"
+  },
+  "quickStatus_friends": {
+    "message": "Amigos"
+  },
+  "quickStatus_friendsFollowing": {
+    "message": "Amigos, seguidores y personas que sigo"
+  },
+  "quickStatus_friendsFollowingShort": {
+    "message": "Amigos y personas que sigo"
+  },
+  "quickStatus_inStudio": {
+    "message": "En Studio"
+  },
+  "quickStatus_inventory": {
+    "message": "Visibilidad del inventario"
+  },
+  "quickStatus_joinStatus": {
+    "message": "Quién puede unirse"
+  },
+  "quickStatus_light": {
+    "message": "Claro"
+  },
+  "quickStatus_noOne": {
+    "message": "Nadie"
+  },
+  "quickStatus_offline": {
+    "message": "Desconectado"
+  },
+  "quickStatus_online": {
+    "message": "En línea"
+  },
+  "quickStatus_privateServer": {
+    "message": "Privacidad del servidor privado"
+  },
+  "quickStatus_saved": {
+    "message": "¡Guardado!"
+  },
+  "quickStatus_settingsTitle": {
+    "message": "Ajustes rápidos"
+  },
+  "quickStatus_subInventory": {
+    "message": "Quién puede ver tu inventario"
+  },
+  "quickStatus_subJoin": {
+    "message": "Quién puede ver tu experiencia actual y unirse"
+  },
+  "quickStatus_subOnline": {
+    "message": "Quién puede ver tu estado en línea"
+  },
+  "quickStatus_subServer": {
+    "message": "Quién puede acceder a tus servidores privados"
+  },
+  "quickStatus_subTheme": {
+    "message": "Alterna entre Claro, Oscuro o predeterminado del sistema"
+  },
+  "quickStatus_system": {
+    "message": "Predeterminado del sistema"
+  },
+  "quickStatus_theme": {
+    "message": "Tema"
+  },
+  "quickStatus_title": {
+    "message": "Estado"
+  },
+  "robuxConv_usd": {
+    "message": "(~$AMOUNT$ USD)",
+    "placeholders": {
+      "AMOUNT": {
+        "content": "$1"
+      }
+    }
+  },
+  "saveLots_balanceAfter": {
+    "message": "Saldo después de la compra: $AMOUNT$ Robux",
+    "placeholders": {
+      "AMOUNT": {
+        "content": "$1"
+      }
+    }
+  },
+  "saveLots_cancel": {
+    "message": "Cancelar"
+  },
+  "saveLots_confirmTitle": {
+    "message": "Confirmar Robux Saver"
+  },
+  "saveLots_estSavings": {
+    "message": "Ahorro estimado: $AMOUNT$ Robux",
+    "placeholders": {
+      "AMOUNT": {
+        "content": "$1"
+      }
+    }
+  },
+  "saveLots_launchPlace": {
+    "message": "ID de inicio del lugar: $PLACEID$",
+    "placeholders": {
+      "PLACEID": {
+        "content": "$1"
+      }
+    }
+  },
+  "saveLots_launchRoblox": {
+    "message": "Iniciar Roblox"
+  },
+  "saveLots_launchWarning": {
+    "message": "Roblox se iniciará y continuará el proceso de compra dentro del juego."
+  },
+  "saveLots_saveAmountRobux": {
+    "message": "Ahorrar $AMOUNT$ Robux",
+    "placeholders": {
+      "AMOUNT": {
+        "content": "$1"
+      }
+    }
+  },
+  "saveLots_saveRobux": {
+    "message": "Ahorrar Robux"
+  },
+  "saveLots_savings": {
+    "message": "Ahorra ~$PERCENT$%",
+    "placeholders": {
+      "PERCENT": {
+        "content": "$1"
+      }
+    }
+  },
+  "saveLots_target": {
+    "message": "Objetivo: $ITEM$",
+    "placeholders": {
+      "ITEM": {
+        "content": "$1"
+      }
+    }
+  },
+  "saveLots_total": {
+    "message": "Total: $AMOUNT$ Robux",
+    "placeholders": {
+      "AMOUNT": {
+        "content": "$1"
+      }
+    }
+  },
+  "sdbr_avatar": {
+    "message": "Avatar"
+  },
+  "sdbr_blog": {
+    "message": "Blog"
+  },
+  "sdbr_catalog": {
+    "message": "Tienda"
+  },
+  "sdbr_charts": {
+    "message": "Juegos"
+  },
+  "sdbr_create": {
+    "message": "Crear"
+  },
+  "sdbr_discover": {
+    "message": "Descubrir"
+  },
+  "sdbr_friends": {
+    "message": "Amigos"
+  },
+  "sdbr_groups": {
+    "message": "Grupos"
+  },
+  "sdbr_home": {
+    "message": "Inicio"
+  },
+  "sdbr_inventory": {
+    "message": "Inventario"
+  },
+  "sdbr_messages_desc": {
+    "message": "Agrega un botón de Mensajes a la barra lateral."
+  },
+  "sdbr_messages_label": {
+    "message": "Botón de Mensajes"
+  },
+  "sdbr_premium": {
+    "message": "Premium"
+  },
+  "sdbr_purpuraSettings": {
+    "message": "Purpura"
+  },
+  "sdbr_purpuraSettings_desc": {
+    "message": "Añade un botón de Ajustes de Purpura a la barra lateral."
+  },
+  "sdbr_purpuraSettings_label": {
+    "message": "Botón de Ajustes de Purpura"
+  },
+  "sdbr_robux": {
+    "message": "Robux"
+  },
+  "sdbr_settings": {
+    "message": "Configuración"
+  },
+  "sdbr_trade": {
+    "message": "Intercambios"
+  },
+  "sdbr_tradeButton_desc": {
+    "message": "Añade un botón de Intercambios a la barra lateral."
+  },
+  "sdbr_tradeButton_label": {
+    "message": "Botón de Intercambios"
+  },
+  "serverInfo_average": {
+    "message": "Medio"
+  },
+  "serverInfo_crowdSource": {
+    "message": "Región reportada por otros usuarios de Purpura"
+  },
+  "serverInfo_excellent": {
+    "message": "Excelente"
+  },
+  "serverInfo_fps": {
+    "message": "FPS"
+  },
+  "serverInfo_fpsUnavailableTooltip": {
+    "message": "FPS no disponible"
+  },
+  "serverInfo_full": {
+    "message": "Lleno"
+  },
+  "serverInfo_fullTooltip": {
+    "message": "El servidor está lleno"
+  },
+  "serverInfo_good": {
+    "message": "Bueno"
+  },
+  "serverInfo_inactive": {
+    "message": "Inactivo"
+  },
+  "serverInfo_inactiveTooltip": {
+    "message": "El servidor está inactivo"
+  },
+  "serverInfo_join": {
+    "message": "Unirse"
+  },
+  "serverInfo_joinSmallest": {
+    "message": "Unirse al servidor más pequeño"
+  },
+  "serverInfo_na": {
+    "message": "N/D"
+  },
+  "serverInfo_naTooltip": {
+    "message": "Región no disponible"
+  },
+  "serverInfo_performanceTooltip": {
+    "message": "Rendimiento $QUALITY$",
+    "placeholders": {
+      "QUALITY": {
+        "content": "$1"
+      }
+    }
+  },
+  "serverInfo_ping": {
+    "message": "Ping"
+  },
+  "serverInfo_pingQualityTooltip": {
+    "message": "Ping $QUALITY$",
+    "placeholders": {
+      "QUALITY": {
+        "content": "$1"
+      }
+    }
+  },
+  "serverInfo_pingUnavailableTooltip": {
+    "message": "Ping no disponible"
+  },
+  "serverInfo_poor": {
+    "message": "Malo"
+  },
+  "serverInfo_private": {
+    "message": "Privado"
+  },
+  "serverInfo_privateTooltip": {
+    "message": "Servidor privado o requiere compra"
+  },
+  "serverInfo_region": {
+    "message": "Región"
+  },
+  "serverInfo_unknown": {
+    "message": "Desconocido"
+  },
+  "avatarCycler_active": {
+    "message": "¡Cicladores activos!"
+  },
+  "avatarCycler_avatar": {
+    "message": "Avatar"
+  },
+  "avatarCycler_button": {
+    "message": "Ciclador de avatares"
+  },
+  "avatarCycler_clear": {
+    "message": "Borrar selección"
+  },
+  "avatarCycler_description": {
+    "message": "Selecciona al menos dos avatares guardados y elige con qué frecuencia Purpura debe alternar entre ellos."
+  },
+  "avatarCycler_disable": {
+    "message": "Desactivar"
+  },
+  "avatarCycler_interval": {
+    "message": "Intervalo (segundos)"
+  },
+  "avatarCycler_loadFailed": {
+    "message": "No se pudieron cargar los avatares. Inténtalo de nuevo."
+  },
+  "avatarCycler_loadMore": {
+    "message": "Cargar más"
+  },
+  "avatarCycler_loading": {
+    "message": "Cargando..."
+  },
+  "avatarCycler_loadingDetails": {
+    "message": "Cargando detalles del atuendo..."
+  },
+  "avatarCycler_saveFailed": {
+    "message": "No se pudieron guardar los ajustes de ciclo"
+  },
+  "avatarCycler_selectAtLeast": {
+    "message": "Selecciona al menos 2 avatares"
+  },
+  "avatarCycler_selectShort": {
+    "message": "Selecciona 2+"
+  },
+  "avatarCycler_selectStatus": {
+    "message": "Selecciona los avatares que quieres alternar. ($COUNT$ seleccionados)",
+    "placeholders": {
+      "COUNT": {
+        "content": "$1"
+      }
+    }
+  },
+  "avatarCycler_setButton": {
+    "message": "Establecer como cicladores ($COUNT$)",
+    "placeholders": {
+      "COUNT": {
+        "content": "$1"
+      }
+    }
+  },
+  "avatarCycler_title": {
+    "message": "Ciclador de avatares"
+  },
+  "settings_avatarSearch_desc": {
+    "message": "Añade una barra de búsqueda al editor de avatar para encontrar objetos rápidamente por su nombre."
+  },
+  "settings_avatarSearch_filters": {
+    "message": "Filtros de Objetos"
+  },
+  "settings_avatarSearch_filtersDesc": {
+    "message": "Añade filtros a la barra de búsqueda de avatar: nombre de creador, rango de precio, disponibilidad, efectos y limitados."
+  },
+  "settings_avatarSearch_label": {
+    "message": "Barra de búsqueda de avatar"
+  },
+  "settings_bloatwareRemover_desc": {
+    "message": "Elimina elementos innecesarios de la interfaz, contenido patrocinado y funciones promocionales en Roblox."
+  },
+  "settings_bloatwareRemover_label": {
+    "message": "Eliminador de bloatware"
+  },
+  "settings_botDetector_desc": {
+    "message": "Analiza servidores de juego para detectar actividad potencial de bots."
+  },
+  "settings_botDetector_label": {
+    "message": "Detector de bots"
+  },
+  "settings_botDetector_roundWhole": {
+    "message": "Redondear a porcentaje entero"
+  },
+  "settings_botDetector_roundWholeDesc": {
+    "message": "Redondea el porcentaje de bots al número entero más cercano (ej., '43%' en lugar de '42.9%')."
+  },
+  "settings_botDetector_showDatabase": {
+    "message": "Botón Mostrar base de datos"
+  },
+  "settings_botDetector_showDatabaseDesc": {
+    "message": "Muestra un botón para ver todas las miniaturas de jugadores analizadas durante la detección."
+  },
+  "settings_bundleItemViewer_desc": {
+    "message": "En las páginas de artículos que están dentro de un paquete, muestra de qué paquete proviene el artículo."
+  },
+  "settings_bundleItemViewer_label": {
+    "message": "Visor de Paquetes"
+  },
+  "settings_cat_avatar": {
+    "message": "Avatar"
+  },
+  "settings_cat_catalog": {
+    "message": "Catálogo"
+  },
+  "settings_cat_experimental": {
+    "message": "Experimental"
+  },
+  "settings_cat_friends": {
+    "message": "Amigos"
+  },
+  "settings_cat_games": {
+    "message": "Juegos"
+  },
+  "settings_cat_miscellanious": {
+    "message": "Miscelánea"
+  },
+  "settings_cat_navigation": {
+    "message": "Navegación"
+  },
+  "settings_cat_appearance": {
+    "message": "Apariencia"
+  },
+  "settings_cat_privacy": {
+    "message": "Privacidad"
+  },
+  "settings_cat_profiles": {
+    "message": "Perfiles"
+  },
+  "settings_credit_cjiggy": {
+    "message": "Probador súper importante que ayudó a asegurarse de que todo funcionara en los primeros días de Purpura. Él estuvo allí desde el día uno, y estoy increíblemente agradecido."
+  },
+  "settings_credit_deluxis": {
+    "message": "Otro probador notable que hizo informes de errores muy detallados y ayudó a eliminar cualquier error crítico."
+  },
+  "settings_credit_valra": {
+    "message": "Gran inspiración durante el desarrollo de Purpura y ayudó con gran parte del soporte inicial para el código relacionado con regiones."
+  },
+  "settings_credits_discord": {
+    "message": "servidor de Discord"
+  },
+  "settings_credits_footer": {
+    "message": "Gracias a todos los que contribuyeron a este proyecto. Únete a nuestro"
+  },
+  "settings_credits_subtitle": {
+    "message": "Agradecimientos especiales a todos los que apoyaron a Purpura."
+  },
+  "settings_credits_title": {
+    "message": "Créditos"
+  },
+  "settings_friendsManager_desc": {
+    "message": "Añade un botón a la página de amigos para gestionarlos en lote (eliminar/bloquear)."
+  },
+  "settings_friendsManager_label": {
+    "message": "Gestor de amigos"
+  },
+  "settings_playtime_desc": {
+    "message": "Registra cuánto tiempo pasas en juegos de Roblox, incluso cuando la pestaña está cerrada."
+  },
+  "settings_playtime_label": {
+    "message": "Rastreador de tiempo de juego"
+  },
+  "settings_playtime_import_title": {
+    "message": "Importar desde RoPro"
+  },
+  "settings_playtime_import_desc": {
+    "message": "Trae tu historial de tiempo de juego de RoPro a Purpura antes de desactivar RoPro."
+  },
+  "settings_playtime_import_btnTitle": {
+    "message": "Importa tu historial de tiempo de juego desde RoPro"
+  },
+  "settings_playtime_import_step1Title": {
+    "message": "Abre la consola de RoPro"
+  },
+  "settings_playtime_import_step1Desc": {
+    "message": "Ve a <code>chrome://extensions</code>, activa el <strong>modo de desarrollador</strong>, busca <strong>RoPro</strong> y haz clic en <strong>Service Worker</strong>."
+  },
+  "settings_playtime_import_step2Title": {
+    "message": "Ejecuta el script de exportación"
+  },
+  "settings_playtime_import_step2Desc": {
+    "message": "Pega el script de abajo en la consola y pulsa Intro. Si te lo pide, escribe <strong>allow pasting</strong> primero."
+  },
+  "settings_playtime_import_step3Title": {
+    "message": "Pega el resultado"
+  },
+  "settings_playtime_import_step3Desc": {
+    "message": "Haz clic derecho en el array impreso, elige <strong>Copy object</strong>, luego pégalo abajo y pulsa <strong>Importar</strong>."
+  },
+  "settings_playtime_import_gist": {
+    "message": "(o consigue el script desde el repositorio Gist)"
+  },
+  "settings_playtime_import_copy": {
+    "message": "Copiar"
+  },
+  "settings_playtime_import_copied": {
+    "message": "¡Copiado!"
+  },
+  "settings_playtime_import_copyFailed": {
+    "message": "Error al copiar"
+  },
+  "settings_playtime_import_cancel": {
+    "message": "Cancelar"
+  },
+  "settings_playtime_import_submit": {
+    "message": "Importar"
+  },
+  "settings_playtime_import_importing": {
+    "message": "Importando..."
+  },
+  "settings_playtime_import_errInvalidJson": {
+    "message": "JSON no válido. Asegúrate de haber copiado toda la salida."
+  },
+  "settings_playtime_import_errNotArray": {
+    "message": "Formato de datos no válido. Se esperaba un array de juegos."
+  },
+  "settings_playtime_import_errNoGames": {
+    "message": "No se encontraron juegos en los datos."
+  },
+  "settings_playtime_import_errEntry": {
+    "message": "Entrada no válida en la posición $1."
+  },
+  "settings_playtime_import_errMissingFields": {
+    "message": "A la entrada en la posición $1 le faltan campos obligatorios."
+  },
+  "settings_playtime_import_errBadTime": {
+    "message": "La entrada en la posición $1 tiene un valor time_played no válido."
+  },
+  "settings_playtime_import_errBadId": {
+    "message": "La entrada en la posición $1 tiene un id no válido."
+  },
+  "settings_playtime_import_errNoPlaytime": {
+    "message": "No se encontraron juegos con tiempo de juego en los datos."
+  },
+  "settings_playtime_import_errEmpty": {
+    "message": "Pega primero los datos copiados."
+  },
+  "settings_playtime_import_errFailed": {
+    "message": "Error al importar. Inténtalo de nuevo."
+  },
+  "settings_playtime_import_toast": {
+    "message": "Se importaron <strong>$1</strong> juegos ($2) de RoPro a tu rastreador."
+  },
+  "settings_gameLauncherWidget_desc": {
+    "message": "Un widget de búsqueda flotante para iniciar cualquier juego al instante desde cualquier página de Roblox."
+  },
+  "settings_gameLauncherWidget_label": {
+    "message": "Widget lanzador de juegos"
+  },
+  "settings_gameOutfits_desc1": {
+    "message": "Ver y equipar tus trajes guardados directamente desde las páginas de juegos."
+  },
+  "settings_gameOutfits_desc2": {
+    "message": "Añade una pestaña de 'Trajes' a la barra de navegación del juego."
+  },
+  "settings_shareServerLinks_label": { "message": "Compartir enlaces de servidores" },
+  "settings_shareServerLinks_desc": { "message": "Añade Copiar enlace a los servidores públicos. Los enlaces cortos caducan tras 30 días; si la API no está disponible, se usa un enlace completo. Los destinatarios no necesitan Purpura. No evita las restricciones de privacidad ni los servidores llenos." },
+  "shareServer_copy": { "message": "Copiar enlace" },
+  "shareServer_copied": { "message": "¡Copiado!" },
+  "shareServer_retry": { "message": "Reintentar" },
+  "shareServer_missing": { "message": "El ID del servidor aún no está disponible. Inténtalo de nuevo." },
+  "shareServer_manual": { "message": "Copia este enlace de servidor público:" },
+  "shareServer_fallback": { "message": "Se usa un enlace completo porque los enlaces cortos no están disponibles." },
+  "shareServer_expiry": { "message": "Los enlaces cortos caducan tras 30 días. El servidor puede cerrarse antes." },
+  "gameReviews_tab": {
+    "message": "Reseñas"
+  },
+  "settings_gameReviews_label": {
+    "message": "Reseñas de juegos"
+  },
+  "settings_gameReviews_desc": {
+    "message": "Lee valoraciones de la comunidad y publica reseñas con un nombre de Roblox no verificado. Las reseñas son públicas y se filtran las palabras malsonantes. Desactivar esta opción detiene las solicitudes de reseñas a la API."
+  },
+  "settings_outboundProtection_label": { "message": "Protección contra intercambios inseguros" },
+  "settings_outboundProtection_desc": { "message": "Cancela intercambios salientes que alcanzan el umbral de pérdida usando valores de Rolimon’s (RAP para artículos sin valor) y Robux tras la comisión. Desactivada por defecto; revisa hasta 10 intercambios recientes cada 30 segundos mientras Chrome funciona. Los datos ausentes o antiguos impiden cancelar. No garantiza proteger tu cuenta. Valores: Rolimon’s (rolimons.com)." },
+  "settings_outboundProtection_threshold": { "message": "Umbral" },
+  "settings_outboundProtection_thresholdDesc": { "message": "Porcentaje de pérdida, mayor que 0 y hasta 100 (50 por defecto). Un valor no válido impide cancelar. Las ofertas canceladas no se restauran automáticamente." },
+  "settings_projectedWarnings_label": { "message": "Advertencias de valor de intercambio proyectado" },
+  "settings_projectedWarnings_desc": { "message": "Muestra una advertencia con atribución en artículos del catálogo marcados como proyectados por Rolimon’s. El RAP inflado no es un valor fiable. La ausencia de advertencia no garantiza seguridad." },
+  "projected_unavailable": { "message": "La comprobación de artículos proyectados no está disponible. Este artículo no se ha comprobado; no supongas que es seguro." },
+  "projected_retry": { "message": "Reintentar comprobación" },
+  "projected_warning": { "message": "Artículo proyectado: su RAP puede estar inflado. Verifica su valor antes de intercambiar" },
+  "settings_liveCounters_label": { "message": "Contadores en vivo" },
+  "settings_liveCounters_desc": { "message": "Actualiza jugadores, visitas, me gusta, no me gusta y favoritos cada 15 segundos mientras la página está visible. Roblox puede actualizar sus totales por lotes." },
+  "settings_liveCounters_likeDislike": { "message": "Contadores de me gusta, no me gusta y favoritos" },
+  "settings_liveCounters_likeDislikeDesc": { "message": "Actualiza los totales de me gusta, no me gusta y favoritos con los últimos datos de Roblox." },
+  "settings_liveCounters_players": { "message": "Contador de jugadores" },
+  "settings_liveCounters_playersDesc": { "message": "Actualiza el número de jugadores activos en las páginas de juegos con datos en vivo." },
+  "settings_liveCounters_visits": { "message": "Contador de visitas" },
+  "settings_liveCounters_visitsDesc": { "message": "Actualiza el total de visitas en las páginas de juegos con datos en vivo." },
+  "settings_gameOutfits_label": {
+    "message": "Trajes de juego"
+  },
+  "settings_gameOutfits_launchPopup": {
+    "message": "Mostrar selector de traje al iniciar juego"
+  },
+  "settings_gameOutfits_launchPopupDesc": {
+    "message": "Muestra un diálogo para cambiar de traje al hacer clic en Jugar."
+  },
+  "settings_ghostProfiles_desc": {
+    "message": "Te permite ver los perfiles de usuarios baneados."
+  },
+  "settings_ghostProfiles_label": {
+    "message": "Perfiles fantasma"
+  },
+  "settings_ghostProfiles_webRequest": {
+    "message": "Permitir permiso webRequest"
+  },
+  "settings_ghostProfiles_webRequestDesc": {
+    "message": "Requerido para detectar perfiles redireccionados de usuarios baneados."
+  },
+  "settings_greetings_desc": {
+    "message": "Muestra saludos únicos con distintas rarezas al visitar Roblox."
+  },
+  "settings_greetings_helpTitle": {
+    "message": "Rarezas de saludos"
+  },
+  "settings_greetings_label": {
+    "message": "Saludos"
+  },
+  "settings_hideDownloadButton_desc": {
+    "message": "Oculta el botón de Descargar de la barra de navegación de Roblox."
+  },
+  "settings_hideDownloadButton_label": {
+    "message": "Ocultar botón de descarga"
+  },
+  "settings_freeRobloxPlusThemes_label": {
+    "message": "Temas gratuitos de Roblox Plus"
+  },
+  "settings_freeRobloxPlusThemes_desc": {
+    "message": "Te permite usar temas de Roblox Plus en el sitio sin Roblox Plus."
+  },
+  "frpt_notice": {
+    "message": "Selecciona y usa cualquier tema sin Roblox Plus."
+  },
+  "settings_homePageTweaks_continuePlaying": {
+    "message": "Ocultar Seguir jugando"
+  },
+  "settings_homePageTweaks_desc": {
+    "message": "Te permite reorganizar y personalizar la Página de Inicio de Roblox ocultando o mostrando secciones específicas, y cambiando el orden de las secciones visibles."
+  },
+  "settings_homePageTweaks_favoriteGames": {
+    "message": "Ocultar Juegos favoritos"
+  },
+  "settings_homePageTweaks_friends": {
+    "message": "Ocultar Amigos"
+  },
+  "settings_homePageTweaks_homePageButton": {
+    "message": "Botón de Inicio"
+  },
+  "settings_homePageTweaks_homePageButtonDesc": {
+    "message": "Agrega un botón a la página de inicio de Roblox, permitiendo editarla rápidamente."
+  },
+  "settings_homePageTweaks_label": {
+    "message": "Ajustes de página de inicio"
+  },
+  "settings_homePageTweaks_recommendedGames": {
+    "message": "Ocultar Recomendados para ti"
+  },
+  "settings_homePageTweaks_standoutGames": {
+    "message": "Ocultar Juegos destacados"
+  },
+  "settings_homePageTweaks_todaysGamePicks": {
+    "message": "Ocultar Selección de juegos de hoy"
+  },
+  "settings_betterContinue_autoRefresh_desc": {
+    "message": "Actualiza la sección Seguir jugando después de iniciar un juego, sin recargar la página."
+  },
+  "settings_betterContinue_autoRefresh_label": {
+    "message": "Actualización automática de Seguir jugando"
+  },
+  "settings_avatarCycler_desc": {
+    "message": "Alterna entre tus avatares guardados automáticamente en un intervalo personalizable."
+  },
+  "settings_avatarCycler_label": {
+    "message": "Ciclador de avatares"
+  },
+  "settings_infiniteAvatar_desc": {
+    "message": "Equipa hasta 10 accesorios y hasta 10 prendas de ropa en capas al personalizar tu avatar."
+  },
+  "settings_infiniteAvatar_label": {
+    "message": "Avatar infinito"
+  },
+  "settings_itemExplorer_desc": {
+    "message": "Añade un explorador en la página del artículo para previsualizar y descargar archivos de recursos disponibles."
+  },
+  "settings_itemExplorer_label": {
+    "message": "Explorador de artículos"
+  },
+  "settings_lastOnline_desc": {
+    "message": "Registra cuándo estuvieron los usuarios en línea por última vez. Solo funciona si se conectan después de activarlo."
+  },
+  "settings_lastOnline_label": {
+    "message": "Última vez en línea"
+  },
+  "settings_noRent_desc": {
+    "message": "Oculta todas las opciones de alquiler en el catálogo."
+  },
+  "settings_noRent_label": {
+    "message": "Sin alquiler"
+  },
+  "settings_pageBinds_addBind": {
+    "message": "Añadir atajo"
+  },
+  "settings_pageBinds_addCustomBind": {
+    "message": "+ Añadir atajo personalizado"
+  },
+  "settings_pageBinds_desc1": {
+    "message": "Crea atajos de teclado personalizados para navegar rápidamente entre páginas de Roblox."
+  },
+  "settings_pageBinds_desc2": {
+    "message": "Presiona la tecla en cualquier página de Roblox para navegar a la URL asignada."
+  },
+  "settings_pageBinds_label": {
+    "message": "Page Binds"
+  },
+  "settings_pageBinds_loadingBinds": {
+    "message": "Cargando Page Binds..."
+  },
+  "settings_pageBinds_namePlaceholder": {
+    "message": "Nombre (ej. Perfil)"
+  },
+  "settings_pageBinds_pressKey": {
+    "message": "Presiona una tecla..."
+  },
+  "settings_pageBinds_urlPlaceholder": {
+    "message": "URL (ej. https://www.roblox.com/...)"
+  },
+  "settings_pill_beta": {
+    "message": "Beta"
+  },
+  "settings_pill_beta_tooltip": {
+    "message": "Esta caracteristica esta en beta y puede ser inestable y causar problemas. Usar con precaucion."
+  },
+  "settings_pill_comingSoon": {
+    "message": "Próximamente"
+  },
+  "settings_pill_experimental": {
+    "message": "Experimental"
+  },
+  "settings_pill_experimental_tooltip": {
+    "message": "Esta caracteristica es experimental y puede romperse en cualquier momento. Usar con precaucion."
+  },
+  "settings_pill_deprecated": {
+    "message": "Obsoleto"
+  },
+  "settings_pill_deprecated_tooltip": {
+    "message": "Esta caracteristica esta obsoleta y ya no se mantiene. Ha sido desactivada."
+  },
+  "settings_pill_premium": {
+    "message": "Premium"
+  },
+  "settings_pinnedGames_desc": {
+    "message": "Guarda y organiza tus juegos favoritos para acceder rápidamente desde cualquier página de Roblox."
+  },
+  "settings_pinnedGames_label": {
+    "message": "Juegos fijados"
+  },
+  "settings_purpuraCursors_desc": {
+    "message": "Personaliza tu cursor con varios estilos al navegar por Roblox. Elige un ajuste preestablecido o sube tu propia imagen."
+  },
+  "settings_purpuraCursors_label": {
+    "message": "Cursores Purpura"
+  },
+  "settings_purpuraCursors_trailEffects": {
+    "message": "Efectos de rastro"
+  },
+  "settings_purpuraCursors_trailEffectsDesc": {
+    "message": "Muestra efectos de partículas animadas que siguen el movimiento de tu cursor"
+  },
+  "settings_purpuraSettings": {
+    "message": "Ajustes de Purpura"
+  },
+  "settings_purpuraTabs_desc1": {
+    "message": "Personaliza la apariencia de las pestañas del navegador en las páginas de Roblox."
+  },
+  "settings_purpuraTabs_desc2": {
+    "message": "Cambia el formato del título de la pestaña y el icono favicon."
+  },
+  "settings_purpuraTabs_label": {
+    "message": "Pestañas Purpura"
+  },
+  "settings_purpurasSelection_desc": {
+    "message": "Añade una sección seleccionada de 'Selección de Purpura' en la página de Juegos con joyas ocultas recomendadas de varios géneros."
+  },
+  "settings_purpurasSelection_label": {
+    "message": "Selección de Purpura"
+  },
+  "settings_quickPlay_desc": {
+    "message": "Muestra un botón de jugar superpuesto en las tarjetas de juego de la página de inicio para iniciar al instante."
+  },
+  "settings_quickPlay_label": {
+    "message": "Juego rápido"
+  },
+  "settings_quickStatusSwitcher_desc": {
+    "message": "Añade un botón de estado rápido a la barra de navegación para cambiar tu presencia en línea sin salir de la página."
+  },
+  "settings_quickStatusSwitcher_themeIntegration": {
+    "message": "Integración del Editor de Temas"
+  },
+  "settings_quickStatusSwitcher_themeIntegrationDesc": {
+    "message": "Añade tus temas personalizados y los temas preempaquetados de Purpura a la lista de temas de Configuración Rápida. No hace nada sin que la función Editor de Temas esté activada."
+  },
+  "settings_quickStatusSwitcher_label": {
+    "message": "Interruptor de estado rápido"
+  },
+  "settings_redesignedAvatarEditor_desc": {
+    "message": "Rediseña por completo el editor de avatares de Roblox."
+  },
+  "settings_redesignedAvatarEditor_label": {
+    "message": "Editor de avatar rediseñado"
+  },
+  "settings_remainingRobux_desc": {
+    "message": "Restaura la función que Roblox eliminó, mostrando tu saldo de Robux restante en el diálogo de confirmación de compra."
+  },
+  "settings_remainingRobux_label": {
+    "message": "Robux restantes"
+  },
+  "settings_reworkedSidebar_desc": {
+    "message": "Una renovación completa de la barra lateral de Roblox con un aspecto más moderno y limpio."
+  },
+  "settings_reworkedSidebar_label": {
+    "message": "Barra lateral renovada"
+  },
+  "settings_roThemer_desc1": {
+    "message": "Personaliza el tema de Roblox con esquemas de color avanzados y opciones de diseño."
+  },
+  "settings_roThemer_desc2": {
+    "message": "Elige un tema a continuación para aplicarlo a todo el sitio."
+  },
+  "settings_themeEditor_label": {
+    "message": "Theme Editor"
+  },
+  "settings_robloxAgeTheme_desc": {
+    "message": "Alterna entre los diferentes estilos de tema de edad de Roblox."
+  },
+  "settings_robloxAgeTheme_label": {
+    "message": "Temas de edad de Roblox"
+  },
+  "settings_robloxAgeTheme_theme": {
+    "message": "Tema"
+  },
+  "settings_robloxAgeTheme_themeDesc": {
+    "message": "Elige qué tema de edad de Roblox aplicar."
+  },
+  "settings_robuxConversations_desc": {
+    "message": "Añade el valor en USD del coste en Robux entre paréntesis junto a la cantidad en las páginas de artículos del catálogo."
+  },
+  "settings_robuxConversations_label": {
+    "message": "Conversiones de Robux"
+  },
+  "settings_saveLotsRobux_desc1": {
+    "message": "Añade un botón de Ahorrar Robux en los diálogos de compra."
+  },
+  "settings_saveLotsRobux_desc2": {
+    "message": "Las compras del catálogo y paquetes estiman un 40% de ahorro, y los pases de juego estiman un 10%."
+  },
+  "settings_saveLotsRobux_label": {
+    "message": "Ahorrar 10%-40% de Robux en compras"
+  },
+  "settings_saveLotsRobux_placeId": {
+    "message": "ID del lugar para el método del 40%"
+  },
+  "settings_saveLotsRobux_placeIdDesc": {
+    "message": "El ID de la experiencia utilizado para iniciar la compra mediante el método del 40% dentro del juego."
+  },
+  "settings_saveLotsRobux_placeIdPlaceholder": {
+    "message": "Introduce el ID del lugar..."
+  },
+  "slr_setup_title": {
+    "message": "Guía de Configuración de Robux Saver"
+  },
+  "slr_setup_warning_label": {
+    "message": "Importante:"
+  },
+  "slr_setup_warning_text": {
+    "message": "El dueño del grupo NO puede ser la misma cuenta con la que compras. Usa una cuenta alternativa asegurada con 2FA y una contraseña fuerte y única."
+  },
+  "slr_setup_step1": {
+    "message": "Crea un grupo en tu cuenta alternativa."
+  },
+  "slr_setup_step2": {
+    "message": "En Roblox Studio (con la cuenta alternativa), crea un nuevo Baseplate."
+  },
+  "slr_setup_step3": {
+    "message": "Inserta un Script en ServerScriptService llamado PurpuraPurchaseHandler."
+  },
+  "slr_setup_step4": {
+    "message": "Pega el código Lua de abajo en ese script."
+  },
+  "slr_setup_step5": {
+    "message": "En Configuración del Juego > Monetización, activa Ventas de Terceros."
+  },
+  "slr_setup_step6": {
+    "message": "Publica en Roblox bajo tu grupo."
+  },
+  "slr_setup_step7": {
+    "message": "Copia el ID del Lugar de la URL e ingrésalo en la configuración de Robux Saver."
+  },
+  "slr_setup_step1Title": {
+    "message": "Crea un grupo"
+  },
+  "slr_setup_step2Title": {
+    "message": "Abre un Baseplate en Studio"
+  },
+  "slr_setup_step3Title": {
+    "message": "Añade el script de compras"
+  },
+  "slr_setup_step4Title": {
+    "message": "Pega el código Lua"
+  },
+  "slr_setup_step5Title": {
+    "message": "Activa las Ventas de Terceros"
+  },
+  "slr_setup_step6Title": {
+    "message": "Publica bajo tu grupo"
+  },
+  "slr_setup_step7Title": {
+    "message": "Establece tu ID de Lugar"
+  },
+  "slr_setup_close": {
+    "message": "Cerrar"
+  },
+  "slr_setup_copy": {
+    "message": "Copiar"
+  },
+  "slr_setup_copied": {
+    "message": "¡Copiado!"
+  },
+  "slr_setup_payouts_label": {
+    "message": "Pagos:"
+  },
+  "slr_setup_payouts_text": {
+    "message": "Solo el dueño del grupo puede retirar los Robux ahorrados."
+  },
+  "slr_setup_pending_label": {
+    "message": "Robux Pendientes:"
+  },
+  "slr_setup_pending_text": {
+    "message": "Los fondos estarán pendientes durante aproximadamente un mes antes de poder retirarlos."
+  },
+  "slr_setup_gotit": {
+    "message": "Entendido"
+  },
+  "settings_search_noResults": {
+    "message": "No se encontraron ajustes"
+  },
+  "settings_search_placeholder": {
+    "message": "Buscar ajustes..."
+  },
+  "settings_crowdServers_desc": {
+    "message": "Comparte las regiones de servidor que resuelves con otros usuarios de Purpura, para que incluso los servidores llenos que Roblox no informa puedan mostrar una región. Totalmente anónimo: no requiere cuenta y nunca se envían datos personales."
+  },
+  "settings_crowdServers_label": {
+    "message": "Regiones de servidor comunitarias"
+  },
+  "settings_crowdServers_recommended": {
+    "message": "Muy recomendado dejarlo activado. Cuanta más gente comparta, más precisas serán las regiones de servidor para todos, y puedes desactivarlo cuando quieras."
+  },
+  "settings_serverInfo_desc": {
+    "message": "Muestra información del servidor de juego como el ping, la región y los FPS en las páginas de juegos."
+  },
+  "settings_serverInfo_label": {
+    "message": "Información del servidor"
+  },
+  "settings_statusSpoofer_desc": {
+    "message": "Simula tu estado en línea para aparecer desconectado o mostrar que estás en Studio."
+  },
+  "settings_statusSpoofer_label": {
+    "message": "Simulador de estado"
+  },
+  "settings_statusSpoofer_mode": {
+    "message": "Modo"
+  },
+  "settings_statusSpoofer_modeDesc": {
+    "message": "Elige qué estado simular."
+  },
+  "settings_statusSpoofer_note": {
+    "message": "**Nota:** Puede tardar hasta 5 minutos en actualizarse y debes mantener la pestaña abierta para que persista."
+  },
+  "settings_streamerMode_desc": {
+    "message": "Oculta información confidencial como tu nombre de usuario, saldo de Robux, correo y teléfono. Ideal al transmitir o grabar."
+  },
+  "settings_streamerMode_helpTitle": {
+    "message": "Información oculta"
+  },
+  "settings_streamerMode_label": {
+    "message": "Modo Streamer"
+  },
+  "settings_blurSerialNumbers_label": {
+    "message": "Difuminar números de serie"
+  },
+  "settings_blurSerialNumbers_desc": {
+    "message": "Oculta los números de serie de artículos limitados en las páginas de intercambio."
+  },
+  "settings_disableVideoAutoplay_label": {
+    "message": "Desactivar reproducción automática de videos"
+  },
+  "settings_disableVideoAutoplay_desc": {
+    "message": "Evita que los videos se reproduzcan automáticamente en el sitio web de Roblox."
+  },
+  "settings_tabs_custom": {
+    "message": "Personalizado"
+  },
+  "settings_tabs_preview": {
+    "message": "Vista previa"
+  },
+  "settings_tabs_tabIcon": {
+    "message": "Icono de pestaña"
+  },
+  "settings_tabs_titleFormat": {
+    "message": "Formato de título de pestaña"
+  },
+  "settings_tabs_titleHint": {
+    "message": "Usa {title} para el título, {n} para notificaciones. Ejemplo: \"{title} ⋅ Purpura {n}\""
+  },
+  "settings_tabs_website": {
+    "message": "Sitio web"
+  },
+  "settings_theme_addCustomTheme": {
+    "message": "Añadir tema personalizado"
+  },
+  "settings_theme_customThemes": {
+    "message": "Temas personalizados"
+  },
+  "settings_theme_defaultRoblox": {
+    "message": "Roblox predeterminado"
+  },
+  "settings_theme_noChanges": {
+    "message": "Sin cambios de tema"
+  },
+  "settings_theme_pasteHint": {
+    "message": "Pega el CSS de tu tema a continuación. Incluye un comentario de manifiesto arriba:"
+  },
+  "settings_theme_pastePlaceholder": {
+    "message": "Pega el CSS del tema aquí..."
+  },
+  "settings_theme_saveTheme": {
+    "message": "Guardar tema"
+  },
+  "settings_uncorporatify_desc": {
+    "message": "Restaura el aspecto clásico de Roblox renombrando términos corporativos a nombres más amigables."
+  },
+  "settings_uncorporatify_label": {
+    "message": "Descorporativizar"
+  },
+  "settings_unpendingRobux_desc1": {
+    "message": "Muestra una estimación de cuántos Robux pendientes dejarán de estarlo en menos de 24 horas."
+  },
+  "settings_unpendingRobux_desc2": {
+    "message": "Puede ser inexacto y tardar más en cuentas con un historial de transacciones muy grande."
+  },
+  "settings_unpendingRobux_label": {
+    "message": "Robux pendientes"
+  },
+  "settings_totalSpent_label": {
+    "message": "Transacciones de por vida"
+  },
+  "settings_totalSpent_desc": {
+    "message": "Añade una sección de \"transacciones de por vida\" a la página de transacciones que muestra cuánto Robux has gastado y ganado en el historial de transacciones de tu cuenta. También calcula el neto ganado o perdido."
+  },
+  "tse_totalSpent": {
+    "message": "Total gastado"
+  },
+  "tse_totalEarned": {
+    "message": "Total ganado"
+  },
+  "tse_net": {
+    "message": "Neto"
+  },
+  "tse_calculating": {
+    "message": "Calculando..."
+  },
+  "tse_scanning": {
+    "message": "Escaneando el historial de transacciones..."
+  },
+  "tse_error": {
+    "message": "Error"
+  },
+  "tse_lifetime": {
+    "message": "Transacciones de por vida"
+  },
+  "tse_amount": {
+    "message": "Cantidad"
+  },
+  "tse_progressCount": {
+    "message": "Escaneando el historial de transacciones... ($COUNT$ transacciones)",
+    "placeholders": {
+      "COUNT": {
+        "content": "$1"
+      }
+    }
+  },
+  "tse_rateLimited": {
+    "message": "Limitado por Roblox - reanudando en $SECONDS$s...",
+    "placeholders": {
+      "SECONDS": {
+        "content": "$1"
+      }
+    }
+  },
+  "tse_rateLimitedError": {
+    "message": "Roblox está limitando este escaneo. Inténtalo de nuevo en unos minutos."
+  },
+  "store_alreadyDonated": {
+    "message": "Ya donaste esta cantidad"
+  },
+  "store_donateAmount": {
+    "message": "Donar $AMOUNT$ Robux",
+    "placeholders": {
+      "AMOUNT": {
+        "content": "$1"
+      }
+    }
+  },
+  "store_supportDesc": {
+    "message": "Tu apoyo financia el desarrollo y mantiene las funciones gratuitas para todos. Elige una cantidad a continuación."
+  },
+  "store_supportTitle": {
+    "message": "Apoyar a Purpura"
+  },
+  "unpending_calculating": {
+    "message": "Calculando..."
+  },
+  "unpending_error": {
+    "message": "No se pudieron calcular los Robux pendientes"
+  },
+  "unpending_gathering": {
+    "message": "Cargando (Recopilando datos)..."
+  },
+  "unpending_insufficient": {
+    "message": "Datos insuficientes"
+  },
+  "unpending_insufficientTooltip": {
+    "message": "No hay suficiente historial de transacciones para realizar una estimación precisa. Por favor, espera a que se completen más transacciones."
+  },
+  "unpending_label": {
+    "message": "Robux pendientes mañana"
+  },
+  "unpending_rateLimit": {
+    "message": "Cargando (Límite excedido)..."
+  },
+  "unpending_title": {
+    "message": "Robux pendientes"
+  },
+  "unpending_tooltip": {
+    "message": "Esta es una estimación de cuántos Robux de tu saldo pendiente estarán disponibles mañana, según los datos de transacciones. El monto real puede variar y ser inexacto."
+  },
+  "unpending_within24h": {
+    "message": "~$AMOUNT$ Robux liberados en menos de 24 horas",
+    "placeholders": {
+      "AMOUNT": {
+        "content": "$1"
+      }
+    }
+  },
+  "settings_r6WarningRemover_label": {
+    "message": "Eliminar Aviso de R6"
+  },
+  "settings_r6WarningRemover_desc": {
+    "message": "Elimina el aviso de R6 al cambiar de R15 a R6."
+  },
+  "settings_priceFloor_label": {
+    "message": "Precio Minimo del Mercado"
+  },
+  "settings_priceFloor_desc": {
+    "message": "Muestra el precio minimo de los objetos y si estan en el precio minimo."
+  },
+  "priceFloor_label": {
+    "message": "Precio minimo"
+  },
+  "priceFloor_status": {
+    "message": "{{difference}} {{status}}"
+  },
+  "priceFloor_statusTypes_above": {
+    "message": "por encima del minimo"
+  },
+  "priceFloor_statusTypes_below": {
+    "message": "por debajo del minimo"
+  },
+  "priceFloor_statusTypes_at": {
+    "message": "En el precio minimo"
+  },
+  "priceFloor_difference": {
+    "message": "{{diff}}"
+  },
+  "priceFloor_description": {
+    "message": "El precio minimo al que se puede listar este objeto. Roblox lo ajusta segun el tipo de objeto y su configuracion."
+  },
+  "settings_offsaleLegacyPrices_label": {
+    "message": "Precios heredados de artículos fuera de venta"
+  },
+  "settings_offsaleLegacyPrices_desc": {
+    "message": "Muestra el último precio de venta de un artículo fuera de venta."
+  },
+  "oilp_previousPrice": {
+    "message": "Precio anterior:"
+  },
+  "oilp_lastOnSale": {
+    "message": "Última venta"
+  },
+  "oilp_for": {
+    "message": "por"
+  },
+  "oilp_offSale": {
+    "message": "Fuera de venta"
+  },
+  "settings_enhancedSearch_label": {
+    "message": "Búsqueda mejorada"
+  },
+  "settings_enhancedSearch_desc": {
+    "message": "Pulsa '/' para enfocar la barra de búsqueda y ver resultados de autocompletado para usuarios, amigos y experiencias directamente en el menú desplegable."
+  },
+  "settings_enhancedSearch_userSearch": {
+    "message": "Autocompletar usuarios"
+  },
+  "settings_enhancedSearch_userSearchDesc": {
+    "message": "Muestra un usuario que coincide exactamente en el menú desplegable de búsqueda."
+  },
+  "settings_enhancedSearch_gameSearch": {
+    "message": "Autocompletar juegos"
+  },
+  "settings_enhancedSearch_gameSearchDesc": {
+    "message": "Muestra la experiencia que mejor coincide en el menú desplegable de búsqueda."
+  },
+  "settings_enhancedSearch_friendSearch": {
+    "message": "Autocompletar amigos"
+  },
+  "settings_enhancedSearch_friendSearchDesc": {
+    "message": "Muestra amigos coincidentes en el menú desplegable de búsqueda."
+  },
+  "settings_enhancedSearch_focusKey": {
+    "message": "Tecla de enfoque"
+  },
+  "settings_enhancedSearch_focusKeyDesc": {
+    "message": "Pulsa '/' para enfocar la barra de búsqueda."
+  }
+}

@@ -1,122 +1,113 @@
 # Contributing to Purpura
 
-Thanks for considering a contribution. This repository hosts the unpacked extension as distributed on the Chrome Web Store, so you can read, test, and propose changes directly against the files you install.
+This is a guide on how to contribute to Purpura.
 
-## Getting started
+## Getting Started
 
-1. Fork the repository and clone it locally.
-2. Create a branch for your change.
-3. Edit the relevant files and verify in the browser.
-4. Open a pull request with a clear description and test notes.
+1. **Fork the repository** and clone it locally.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes in `src/` or `assets/`.
+4. Run `npm install` once, then `npm run build` after each change and test in the browser.
+5. Submit a Pull Request with a clear description and test notes.
 
-## Prerequisites
+## Where Things Live
 
-* Chromium-based browser with Developer Mode
-* No build tools or hosting required. Settings are stored in `chrome.storage` and no backend is needed.
+* `manifest.json` - permissions, icons, bundle map
+* `src/background/background.js` - service worker
+* `src/content/*/ - Content  Scripts
+* `src/popup/` - popup pages and scripts (`home.html`, `new.html`)
+* `src/css/` - Stylesheets
+* `src/data/` - Data files
+* `assets/images/` - images
+* `assets/_locales/` - Translations
 
-## Testing your changes
+## Adding a New Setting
 
-This repository is already runnable as an unpacked extension. No build step is needed.
+A new toggle touches three places:
 
-1. Open `chrome://extensions` and enable Developer Mode.
-2. Click Load unpacked and select the repository root (the folder containing `manifest.json`).
-3. After editing files, click Reload on the extension card. For background changes (`background.js`), reload the extension fully and then reload any open Roblox pages.
+1. **Defaults:** `src/data/default_settings.json`
+2. **Storage map:** `STORAGE_MAP` in `src/content/core/settings.js` (`sync` for small prefs, `local` for larger/page-local state)
+3. **Settings UI:** config in `src/content/ui/psp.js`
 
-## Where things live
+**File:** `src/content/ui/psp.js`
 
-* `manifest.json` -- permission and content script map
-* `background.js` and `content/core/` -- settings storage, migration, and page bridges
-* `content/feat/` -- feature implementations, grouped by area:
-  * `cat/` catalog and marketplace
-  * `cust/` avatar and appearance
-  * `game/` games and home
-  * `soc/` friends, profiles, social
-  * `serv/` servers
-  * `priv/` and `misc/` status, privacy, misc
-* `content/ui/` -- settings pages (`psp.js`) and on-page UI (`pg.js`, `gr.js`, etc.)
-* `content/api/api.js` -- shared Roblox API helpers
-* `_locales/` and `data/default_settings.json` -- user-facing strings and feature defaults
-* `css/`, `images/`, `data/`, `rules/` -- static assets
+Settings are grouped by category (`Friends`, `Catalog`, `Profiles`, `Avatar`, `Games`, `Appearance`, `Privacy`, `Experimental`, `Miscellanious`, etc.).
 
-## Adding or changing a setting
-
-Settings are user toggled features. A typical new toggle touches three places:
-
-1. **Defaults:** add an entry in `data/default_settings.json`.
-2. **Storage map:** add the key to `STORAGE_MAP` in `content/core/settings.js` (`sync` for small preference state, `local` for larger or page local state).
-3. **Settings UI:** register the toggle in the settings config inside `content/ui/psp.js`:
-   * Pick the correct category (`Friends`, `Catalog`, `Profiles`, `Avatar`, `Games`, `Appearance`, `Privacy`, `Experimental`, `Miscellanious`, etc.).
-   * Provide `label` and `description` via `chrome.i18n.getMessage` keys. Add those keys to `_locales/en/messages.json` (and `es/` if you can) as `settings_yourFeature_label` and `settings_yourFeature_desc`.
-   * Set `storageKey`, `storageType` (`sync` or `local`), and optionally `storagePath` for nested objects, plus `default`.
-   * Use `experimental: true` or `beta: true` for unstable features. Those should default to off.
-
-Reading the setting at runtime:
+### Setting Template
 
 ```js
-// before use
-await window.__PurpuraSettings.ready;
-var enabled = window.__PurpuraSettings.get("yourKey");
-// or for the full object
-var raw = window.__PurpuraSettings.getRaw("yourKey");
+yourFeature: {
+    label: e("settings_yourFeature_label"),
+    description: [ e("settings_yourFeature_desc") ],
+    type: "checkbox", // "checkbox", "input", "select", etc.
+    storageKey: "yourKey",
+    storageType: "sync", // or "local"
+    // storagePath: "nestedKey", // for nested objects
+    default: true, // only features useful to everyone should default on
+    // experimental: true, // beta: true, deprecated: true — should default off
+    // subSettings: { ... }
+}
 ```
 
-Writing:
+Add locale keys to `assets/_locales/en/messages.json` (and `es/` if you can) as `settings_yourFeature_label` / `settings_yourFeature_desc`.
+
+### Using Your Setting
 
 ```js
+await window.__PurpuraSettings.ready;
+const enabled = window.__PurpuraSettings.get("yourKey");
 await window.__PurpuraSettings.set("yourKey", nextValue);
 ```
 
-## Adding a new feature script
+## Adding a New Feature Script
 
-* Create a new file under the matching `content/feat/*/` subfolder. Prefer a new file per feature.
-* Keep the required GPL header at the top of the file (see License and assets). Never add or change headers in `content/feat/cust/aeditor/three/*` (vendored Three.js, MIT).
-* Register the script in `manifest.json` under `content_scripts` with a precise `matches` pattern and the appropriate `run_at`.
-* If the feature needs API calls, reuse `content/api/api.js`.
-* For localized UI text, add keys under `_locales/en/messages.json` and read them with `chrome.i18n.getMessage`.
-* Do not intentionally obfuscate, conceal, or encode URLs, functionality, or executable code. Code should remain reasonably inspectable and understandable.
-* Do not add new extension permissions or host permissions unless they are strictly necessary. Explain any required permission change in the pull request description.
-* Match existing style: beautified JS, consistent indentation, minimal observers used only where needed. Reuse an existing observer if one can cover the case.
+* Create a new file under `src/content/feat/*/` — one file per feature.
+* Add it to the bundle order in `vite.config.js`: `ISO_START_ORDER` (`document_start`), `ISO_IDLE_ORDER` (`document_idle`), or `MAIN_ORDER` (page world). Place it after dependencies.
+* Reuse `src/content/api/api.js` for API calls and `chrome.i18n.getMessage` for strings.
+* Put assets in `assets/images/` or `src/css/` and reference them via `chrome.runtime.getURL`.
+* Do not add new permissions unless strictly necessary — explain any permission change in the PR.
 
-## Icons and styling
+## Contributor Badge
 
-* Icons live as inline SVGs near the feature that uses them. Reuse an existing icon where possible rather than duplicating similar shapes.
-* Style injected UI to blend with Roblox. Use site CSS variables where available and avoid making the page look foreign. Keep selectors language agnostic (prefer IDs and structural hooks over visible text).
+Contributors with merged PRs may claim a **Purpura Contributor badge** shown next to your name on profiles.
 
-## Localization
+**File:** `src/data/contributors.json`
 
-* All user facing strings that appear on roblox.com should be behind `chrome.i18n.getMessage` so translations can cover them.
-* Add keys to `_locales/en/messages.json` in the `settings_*` or feature namespace. Keep descriptions concise.
+Add your Roblox user ID as a string to the array:
 
-## Testing checklist
+```json
+["123", "1234", "YOUR_USER_ID_HERE"]
+```
 
-* Load the repository root unpacked and exercise the feature on the actual Roblox pages it targets (catalog, avatar editor, game page, profile, home, my/account for Purpura Settings).
-* Toggle the setting off and on in Purpura Settings and reload the page. Verify no console errors on pages the feature does not target.
-* If you touched storage or migration (`settings.js`, `sk-migrate.js`), test upgrading from existing stored values as well as from a fresh profile.
+Note your GitHub username in the PR description so maintainers can map the entry. The badge is optional and requires approval — trivial or drive-by edits are not eligible.
 
-## Contributor badge
+The tester badge (`assets/images/pBadges/purpura_tester_badge.svg`) is not opt-in — it is assigned to official testers only.
 
-Contributors whose pull requests are merged may be eligible for a **Purpura Contributor badge** -- a small hexagon badge with a sparkle shine shown next to your display name on profile pages, visible to everyone running the extension. It uses `images/purpura_contributor_badge.svg` from this repository, so no external API is required.
+## Code Guidelines
 
-If you would like the badge, add your Roblox user ID as a string to the array in `data/contributors.json` as part of your pull request and note your GitHub username in the PR description so maintainers can map the entry (JSON does not allow comments inside the file). The contribution itself needs approval -- your pull request must be reviewed and merged, and trivial or drive-by edits are not eligible for the badge. The file ships with the extension, so after the release that contains your ID, the badge will appear on your profile. The badge is optional -- you can contribute without requesting it.
+* Keep PRs small and single-feature focused.
+* Match existing style: beautified JS, consistent indentation, minimal observers (reuse one if possible).
+* Make injected UI blend with Roblox. Use site CSS variables and prefer IDs/structural hooks over visible text.
+* Reuse inline SVG icons where possible instead of duplicating shapes.
+* All user-facing strings should use `chrome.i18n.getMessage` with locale support.
+* Do not intentionally obfuscate, conceal, or encode URLs or executable code.
+* Never change host/extension permissions or update `License.md` / branding (`assets/images/icons/PURPURA_TEXT.svg`, etc.) unless the PR is about them.
+* Test on the actual Roblox pages your feature targets, with the setting both on and off. Check the console on unrelated pages for errors.
 
-## Pull requests
+## AI Disclosure — Required on Every PR
 
-* Keep PRs small and single feature focused. Large overhauls are hard to review.
-* Include a short summary, what you changed, and how you tested it (pages visited, on and off states).
-* Do not change versioning, `License.md`, or branding assets (`images/PURPURA_TEXT.svg`, `images/icons/*`) unless the PR is specifically about them.
+See `.agents/ai-disclosure.md` for the full rule. In short:
 
-## Reporting bugs and requesting features
+* State whether AI was used. If not: `AI disclosure: No AI was used.`
+* If AI was used, list the tool(s), files/sections produced, and one line of human verification (how you tested in-browser).
+* PRs without a disclosure will be asked to add one before review.
 
-* Use the GitHub issue templates for bug reports and feature requests. Include the Purpura version (`chrome://extensions`), browser, affected URL, expected versus actual behavior, and console output if relevant.
+## License and Assets
 
-## License and assets
+* Source contributions are under **GPL-3.0**.
+* `assets/images/` branding remains under TeutonicTerror's copyright and is not covered by GPL-3.0 unless stated. Other assets keep their respective licenses.
+* `src/content/feat/cust/aeditor/three/` is Three.js r128 under MIT — leave it as is.
 
-* Source code contributions should be submitted under GPL-3.0 and, where applicable, will be distributed under GPL-3.0.
-* `images/` contains Purpura branding and other visual assets. Purpura branding remains under the copyrights of TeutonicTerror and is not covered by GPL-3.0 unless explicitly stated. Other assets in this directory remain subject to their respective copyrights and licenses.
-* `content/feat/cust/aeditor/three/` is Three.js r128 under MIT. Leave it as is and do not copy it elsewhere under GPL-3.0.
+## Need Help?
 
-## Community
-
-* Be respectful. Keep contributions focused on user value and stability.
-* The contributor badge is a thank-you, not a reward for drive-by edits. Maintainers may decline badge requests for trivial changes.
-* If you are unsure about direction, open a draft PR or a discussion issue first.
+Open a draft PR or a GitHub issue. Include the Purpura version, browser, URL, expected vs actual behavior, and console output if relevant.
