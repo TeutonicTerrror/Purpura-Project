@@ -19,7 +19,7 @@
 var PURPURA_CHANGELOG = [
     {
         version: "1.0.5",
-        date: "2026-10-02",
+        date: "2026-10-03",
         categories: [
             { key: "new-features", label: "New Features", icon: ":Purpura_Sparkles:" },
             { key: "optimizations", label: "Optimizations", icon: ":Purpura_Puzzle:" },
