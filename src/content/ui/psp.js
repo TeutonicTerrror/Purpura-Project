@@ -15,10 +15,10 @@ let n = t.get("purpura").toLowerCase();
 if (n === "experiences") {
 n = "games";
 }
-if (n === "miscellaneous") {
+if (n === "miscellanious") {
 n = "miscellaneous";
 }
-const r = [ "info", "credits", "friends", "catalog", "profiles", "avatar", "games", "appearance", "security", "privacy", "experimental", "miscellanious" ];
+const r = [ "info", "credits", "friends", "catalog", "profiles", "avatar", "games", "appearance", "security", "privacy", "experimental", "miscellaneous" ];
 if (!r.includes(n)) {
 return;
 }
@@ -163,7 +163,7 @@ type: "checkbox",
 storageKey: "fm",
 storageType: "sync",
 default: false,
-beta: true
+deprecated: true
 },
 chatEligibility: {
 label: e("settings_chatEligibility_label"),
@@ -215,6 +215,72 @@ description: [ e("settings_robuxConversations_desc") ],
 type: "checkbox",
 storageKey: "rconv",
 storageType: "sync",
+storagePath: "enabled",
+default: true,
+subSettings: {
+rateType: {
+label: e("settings_robuxConversations_rateType"),
+description: e("settings_robuxConversations_rateTypeDesc"),
+type: "select",
+options: [
+{ value: "Regular", label: e("settings_robuxConversations_rate_regular") },
+{ value: "DevEx", label: e("settings_robuxConversations_rate_devex") },
+{ value: "Premium", label: e("settings_robuxConversations_rate_premium") },
+{ value: "Custom", label: e("settings_robuxConversations_rate_custom") }
+],
+storageKey: "rconv",
+storagePath: "rateType",
+default: "Regular"
+},
+currency: {
+label: e("settings_robuxConversations_currency"),
+description: e("settings_robuxConversations_currencyDesc"),
+type: "select",
+options: window.__PurpuraFx ? window.__PurpuraFx.options : [ { value: "USD", label: "US Dollar (USD)" } ],
+storageKey: "rconv",
+storagePath: "currency",
+default: "USD"
+},
+customRate: {
+label: e("settings_robuxConversations_customRate"),
+description: e("settings_robuxConversations_customRateDesc"),
+type: "input",
+placeholder: "0.0125",
+storageKey: "rconv",
+storagePath: "customRate",
+default: ""
+},
+color: {
+label: e("settings_robuxConversations_color"),
+description: e("settings_robuxConversations_colorDesc"),
+type: "color",
+storageKey: "rconv",
+storagePath: "color",
+default: "#ffffff"
+}
+}
+},
+robuxBalancePrecision: {
+label: e("settings_robuxBalancePrecision_label"),
+description: [ e("settings_robuxBalancePrecision_desc") ],
+type: "select",
+options: [
+{ value: "default", label: e("settings_robuxBalancePrecision_default") },
+{ value: "1", label: e("settings_robuxBalancePrecision_one") },
+{ value: "2", label: e("settings_robuxBalancePrecision_two") },
+{ value: "3", label: e("settings_robuxBalancePrecision_three") },
+{ value: "full", label: e("settings_robuxBalancePrecision_full") }
+],
+storageKey: "rbp",
+storageType: "sync",
+default: "2"
+},
+robuxBonusItem: {
+label: e("settings_robuxBonusItem_label"),
+description: [ e("settings_robuxBonusItem_desc") ],
+type: "checkbox",
+storageKey: "rbon",
+storageType: "sync",
 default: true
 },
 bundleItemViewer: {
@@ -231,8 +297,19 @@ description: [ e("settings_unpendingRobux_desc1"), e("settings_unpendingRobux_de
 type: "checkbox",
 storageKey: "up",
 storageType: "sync",
+storagePath: "enabled",
 default: false,
-experimental: true
+experimental: true,
+subSettings: {
+showPending: {
+label: e("settings_unpendingRobux_showPending"),
+description: e("settings_unpendingRobux_showPendingDesc"),
+type: "checkbox",
+storageKey: "up",
+storagePath: "showPending",
+default: true
+}
+}
 },
 totalSpent: {
 label: e("settings_totalSpent_label"),
@@ -306,6 +383,14 @@ storageKey: "lo",
 storageType: "sync",
 default: true,
 beta: true
+},
+rolimonsProfile: {
+label: e("settings_rolimonsProfile_label"),
+description: [ e("settings_rolimonsProfile_desc") ],
+type: "checkbox",
+storageKey: "rvp",
+storageType: "sync",
+default: true
 }
 }
 },
@@ -362,12 +447,38 @@ type: "checkbox",
 storageKey: "ac",
 storageType: "sync",
 default: true
+},
+adjustAccessories: {
+label: e("settings_adjustAccessories_label"),
+description: [ e("settings_adjustAccessories_desc") ],
+type: "checkbox",
+storageKey: "aa",
+storageType: "sync",
+default: true
+},
+extraOutfits: {
+label: e("settings_extraOutfits_label"),
+description: [ e("settings_extraOutfits_desc") ],
+type: "checkbox",
+storageKey: "eo",
+storageType: "sync",
+default: true
 }
 }
 },
 Games: {
 title: e("settings_cat_games"),
 settings: {
+preferredGameRegions: {
+label: "Preferred Game Regions",
+description: [ "Adds a secondary play-button that joins your preferred server region when joining a game if available." ],
+type: "checkbox",
+regionPicker: true,
+storageKey: "pgr",
+storageType: "sync",
+storagePath: "enabled",
+default: true
+},
 botDetector: {
 label: e("settings_botDetector_label"),
 description: [ e("settings_botDetector_desc") ],
@@ -425,7 +536,7 @@ description: [ e("settings_pinnedGames_desc") ],
 type: "checkbox",
 storageKey: "pg",
 storageType: "sync",
-default: false
+default: true
 },
 gameOutfits: {
 label: e("settings_gameOutfits_label"),
@@ -479,11 +590,35 @@ storageKey: "ssl",
 storageType: "sync",
 default: true
 },
+playerFinder: {
+label: e("settings_playerFinder_label"),
+description: [ e("settings_playerFinder_desc") ],
+type: "checkbox",
+storageKey: "pf",
+storageType: "sync",
+default: true
+},
+recentServers: {
+label: e("settings_recentServers_label"),
+description: [ e("settings_recentServers_desc") ],
+type: "checkbox",
+storageKey: "rs",
+storageType: "sync",
+default: true
+},
 gameReviews: {
 label: e("settings_gameReviews_label"),
 description: [ e("settings_gameReviews_desc") ],
 type: "checkbox",
 storageKey: "grev",
+storageType: "sync",
+default: true
+},
+shopOffers: {
+label: e("settings_shopOffers_label"),
+description: [ e("settings_shopOffers_desc") ],
+type: "checkbox",
+storageKey: "sho",
 storageType: "sync",
 default: true
 },
@@ -494,6 +629,38 @@ type: "checkbox",
 storageKey: "qp",
 storageType: "sync",
 default: true
+},
+privateServerControls: {
+label: e("settings_privateServerControls_label"),
+description: [ e("settings_privateServerControls_desc") ],
+type: "checkbox",
+storageKey: "psc",
+storageType: "sync",
+storagePath: "enabled",
+default: true,
+subSettings: {
+quickLink: {
+label: e("settings_privateServerControls_quickLink"),
+description: e("settings_privateServerControls_quickLinkDesc"),
+storageKey: "psc",
+storagePath: "quickLink",
+default: true
+},
+friendsToggle: {
+label: e("settings_privateServerControls_friendsToggle"),
+description: e("settings_privateServerControls_friendsToggleDesc"),
+storageKey: "psc",
+storagePath: "friendsToggle",
+default: true
+},
+autoAllowOnCreate: {
+label: e("settings_privateServerControls_autoAllow"),
+description: e("settings_privateServerControls_autoAllowDesc"),
+storageKey: "psc",
+storagePath: "autoAllowOnCreate",
+default: true
+}
+}
 },
 purpurasSelection: {
 label: e("settings_purpurasSelection_label"),
@@ -520,41 +687,41 @@ storageType: "local",
 default: true
 }
 }
-}
+},
 }
 },
 Appearance: {
 title: e("settings_cat_appearance"),
 settings: {
-reworkedSidebar: {
-label: e("settings_reworkedSidebar_label"),
-description: [ e("settings_reworkedSidebar_desc") ],
+sidebarTweaks: {
+label: e("settings_sidebarTweaks_label"),
+description: [ e("settings_sidebarTweaks_desc") ],
 type: "checkbox",
-storageKey: "sdbr",
+storageKey: "sbt",
 storageType: "local",
 storagePath: "enabled",
-default: false,
+default: true,
 subSettings: {
-tradeButton: {
-label: e("sdbr_tradeButton_label"),
-description: e("sdbr_tradeButton_desc"),
+purpuraSidebar: {
+label: e("settings_purpuraSidebar_label"),
+description: e("settings_purpuraSidebar_desc"),
 storageKey: "sdbr",
-storagePath: "tradeButton",
+storagePath: "enabled",
 default: false
 },
-messagesButton: {
-label: e("sdbr_messages_label"),
-description: e("sdbr_messages_desc"),
-storageKey: "sdbr",
-storagePath: "messagesButton",
-default: false
+hoverExpand: {
+label: e("settings_sidebarTweaks_hoverExpand_label"),
+description: e("settings_sidebarTweaks_hoverExpand_desc"),
+storageKey: "sbt",
+storagePath: "hoverExpand",
+default: true
 },
-purpuraSettingsButton: {
-label: e("sdbr_purpuraSettings_label"),
-description: e("sdbr_purpuraSettings_desc"),
-storageKey: "sdbr",
-storagePath: "purpuraSettingsButton",
-default: false
+layout: {
+label: e("settings_sidebarTweaks_layout_label"),
+description: e("settings_sidebarTweaks_layout_desc"),
+storageKey: "sbt",
+storagePath: "layout",
+default: true
 }
 }
 },
@@ -573,6 +740,14 @@ type: "checkbox",
 storageKey: "hdb",
 storageType: "local",
 default: true
+},
+thumbnailBackgroundDisabler: {
+label: e("settings_thumbnailBackgroundDisabler_label"),
+description: [ e("settings_thumbnailBackgroundDisabler_desc") ],
+type: "checkbox",
+storageKey: "tbd",
+storageType: "local",
+default: false
 },
 homePageTweaks: {
 label: e("settings_homePageTweaks_label"),
@@ -647,8 +822,111 @@ type: "checkbox",
 storageKey: "bwr",
 storageType: "local",
 storagePath: "enabled",
-default: false
+default: false,
+subSettings: {
+sponsored: {
+label: e("settings_bloatwareRemover_sponsored"),
+description: e("settings_bloatwareRemover_sponsoredDesc"),
+type: "checkbox",
+storageKey: "bwr",
+storagePath: "sponsored",
+default: true
+},
+navigation: {
+label: e("settings_bloatwareRemover_navigation"),
+description: e("settings_bloatwareRemover_navigationDesc"),
+type: "checkbox",
+storageKey: "bwr",
+storagePath: "navigation",
+default: true
+},
+footer: {
+label: e("settings_bloatwareRemover_footer"),
+description: e("settings_bloatwareRemover_footerDesc"),
+type: "checkbox",
+storageKey: "bwr",
+storagePath: "footer",
+default: true
+},
+premium: {
+label: e("settings_bloatwareRemover_premium"),
+description: e("settings_bloatwareRemover_premiumDesc"),
+type: "checkbox",
+storageKey: "bwr",
+storagePath: "premium",
+default: true
+},
+faq: {
+label: e("settings_bloatwareRemover_faq"),
+description: e("settings_bloatwareRemover_faqDesc"),
+type: "checkbox",
+storageKey: "bwr",
+storagePath: "faq",
+default: true
+},
+badges: {
+label: e("settings_bloatwareRemover_badges"),
+description: e("settings_bloatwareRemover_badgesDesc"),
+type: "checkbox",
+storageKey: "bwr",
+storagePath: "badges",
+default: true
+},
+plusAds: {
+label: e("settings_bloatwareRemover_plusAds"),
+description: e("settings_bloatwareRemover_plusAdsDesc"),
+type: "checkbox",
+storageKey: "bwr",
+storagePath: "plusAds",
+default: true
+},
+plusAssets: {
+label: e("settings_bloatwareRemover_plusAssets"),
+description: e("settings_bloatwareRemover_plusAssetsDesc"),
+type: "checkbox",
+storageKey: "bwr",
+storagePath: "plusAssets",
+default: true
+},
+phoneUpsell: {
+label: e("settings_bloatwareRemover_phoneUpsell"),
+description: e("settings_bloatwareRemover_phoneUpsellDesc"),
+type: "checkbox",
+storageKey: "bwr",
+storagePath: "phoneUpsell",
+default: true
 }
+}
+},
+siteFont: {
+label: e("settings_siteFont_label"),
+description: [ e("settings_siteFont_desc") ],
+type: "checkbox",
+storageKey: "sft",
+storageType: "local",
+storagePath: "enabled",
+default: false,
+subSettings: {
+fontUrl: {
+label: e("settings_siteFont_fontUrl"),
+description: e("settings_siteFont_fontUrlDesc"),
+type: "input",
+storageKey: "sft",
+storagePath: "fontUrl",
+placeholder: e("settings_siteFont_fontUrlPlaceholder"),
+default: ""
+}
+}
+},
+customBackdrop: {
+label: e("settings_customBackdrop_label"),
+description: [ e("settings_customBackdrop_desc") ],
+type: "backdrop-picker",
+storageKey: "cbg",
+storageType: "local",
+storagePath: "enabled",
+default: false
+},
 }
 },
 Security: {
@@ -709,11 +987,13 @@ description: [ e("settings_streamerMode_desc") ],
 type: "checkbox",
 storageKey: "stm",
 storageType: "local",
+storagePath: "enabled",
 default: false,
 helpIcon: {
 title: e("settings_streamerMode_helpTitle"),
-content: [ "**Blurred on Page:**", "• Username & Display Name", "• Robux Balance & Icons", "• Email Address", "• Phone Number", "• Your name anywhere on the page", "", "**Hidden in API Responses:**", "• Email Address", "• Phone Number", "• Date of Birth", "• Country & Location", "• Previous Usernames", "• Age Verification", "• IP Addresses", "• Session Information", "• Device/OS Details" ]
+content: [ "**How it works:**", "Streamer Mode blurs the things you pick in the Configure dialog, and spoofs the account details and presence Roblox is told about.", "", "**Presets:**", "Everything, Names & Avatars, Account Details and Activity fill in the switches for a common situation, and you can change any switch afterwards.", "", "**Keybind:**", "Click the keybind field in the dialog and press a combination to toggle Streamer Mode from any Roblox page. Press Backspace to clear it." ]
 },
+streamerConfigAction: true
 },
 quickStatusSwitcher: {
 label: e("settings_quickStatusSwitcher_label"),
@@ -837,8 +1117,8 @@ default: ""
 }
 }
 },
-Miscellanious: {
-title: e("settings_cat_miscellanious"),
+Miscellaneous: {
+title: e("settings_cat_miscellaneous"),
 settings: {
 pageBinds: {
 label: e("settings_pageBinds_label"),
@@ -856,6 +1136,14 @@ type: "checkbox",
 storageKey: "lts",
 storageType: "local",
 default: false
+},
+trustedCreatorStatus: {
+label: e("settings_trustedCreatorStatus_label"),
+description: [ e("settings_trustedCreatorStatus_desc") ],
+type: "checkbox",
+storageKey: "tcs",
+storageType: "local",
+default: true
 },
 enhancedSearch: {
 label: e("settings_enhancedSearch_label"),
@@ -907,6 +1195,30 @@ type: "checkbox",
 storageKey: "dva",
 storageType: "sync",
 default: false
+},
+siteFixes: {
+label: e("settings_siteFixes_label"),
+description: [ e("settings_siteFixes_desc") ],
+type: "checkbox",
+storageKey: "sfix",
+storageType: "local",
+default: true
+},
+usernameColorPreview: {
+label: e("settings_usernameColorPreview_label"),
+description: [ e("settings_usernameColorPreview_desc") ],
+type: "checkbox",
+storageKey: "ucp",
+storageType: "local",
+default: false
+},
+avatarImageDownloader: {
+label: e("settings_avatarImageDownloader_label"),
+description: [ e("settings_avatarImageDownloader_desc") ],
+type: "checkbox",
+storageKey: "dav",
+storageType: "local",
+default: false
 }
 }
 }
@@ -924,19 +1236,25 @@ Appearance: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" view
 Security: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>`,
 Privacy: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
 Experimental: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v11l-5 5h16l-5-5V3"/></svg>`,
-Miscellanious: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>`
+Miscellaneous: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>`
 };
 const B = {
 outboundTradeProtection: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 3 7v5c0 5 9 9 9 9s9-4 9-9V7ZM8 12l3 3 5-6"/></svg>`,
 projectedWarnings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 10 18H2ZM12 9v5m0 3v1"/></svg>`,
 liveCounters: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M7 14l4-5 4 3 5-8"/></svg>`,
+serverInfo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="7" rx="2"/><rect x="3" y="14" width="18" height="7" rx="2"/><path d="M7 6.5h.01M7 17.5h.01"/></svg>`,
 shareServerLinks: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-2 2M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l2-2"/></svg>`,
+playerFinder: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/><path d="M8 11h6"/><path d="M11 8v6"/></svg>`,
+recentServers: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>`,
 gameReviews: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 2.8 5.7 6.3.9-4.5 4.4 1.1 6.2L12 17.3l-5.7 2.9 1.1-6.2L2.9 9.6l6.3-.9Z"/></svg>`,
+shopOffers: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.24H5a2 2 0 0 0-2 2v4.59a2 2 0 0 0 .59 1.41l9.58 9.59a2 2 0 0 0 2.83 0l4.59-4.59a2 2 0 0 0 0-2.83Z"/><circle cx="7.5" cy="7.5" r="1.2"/><path d="m15 9-6 6"/><path d="M9.5 9.5h.01"/><path d="M14.5 14.5h.01"/></svg>`,
 friendsManager: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>`,
 chatEligibility: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="14" y2="13"/></svg>`,
 friendOrigin: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>`,
 noRent: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>`,
 robuxConversations: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
+robuxBalancePrecision: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20V7"/></svg>`,
+robuxBonusItem: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M3 12h18M12 8v13"/><path d="M12 8S9.5 3 7 4.5 8 8 12 8zm0 0s2.5-5 5-3.5S16 8 12 8z"/></svg>`,
 bundleItemViewer: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6h-3V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>`,
 itemExplorer: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
 saveLotsRobux: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8 9h5a2 2 0 0 1 0 4h-2a2 2 0 0 0 0 4h5"/></svg>`,
@@ -947,19 +1265,24 @@ ghostProfiles: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill
 mostPlayedTogether: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`,
 bulkUnfriend: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>`,
 lastOnline: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+rolimonsProfile: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>`,
 avatarSearch: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
 infiniteAvatar: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.739-8-4.585 0-4.585 8 0 8 5.606 0 7.644-8 12.74-8z"/></svg>`,
 redesignedAvatarEditor: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
 stickyAvatarPreview: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M9 3v18"/></svg>`,
 r6WarningRemover: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7v3a2 2 0 0 0 1 2l1 1v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1l1-1a2 2 0 0 0 1-2V9a7 7 0 0 0-7-7z"/><path d="M9 16h6"/><line x1="12" y1="12" x2="12" y2="8"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
 avatarCycler: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.9-4M4 5v4h4"/><path d="M4 13a8 8 0 0 0 14.9 4M20 19v-4h-4"/></svg>`,
+extraOutfits: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h4"/><path d="M18 14v8"/><path d="M14 18h8"/></svg>`,
+adjustAccessories: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor" stroke="none"><path d="M427-120v-225h60v83h353v60H487v82h-60Zm-307-82v-60h247v60H120Zm187-166v-82H120v-60h187v-84h60v226h-60Zm120-82v-60h413v60H427Zm166-165v-225h60v82h187v60H653v83h-60Zm-473-83v-60h413v60H120Z"/></svg>`,
+preferredGameRegions: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>`,
 botDetector: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>`,
 gameLauncherWidget: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`,
 pinnedGames: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 7 3 3H7l3-3-1-7Z"/></svg>`,
 quickPlay: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>`,
 pageBinds: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3a3 3 0 0 1 0 6H6a3 3 0 0 1 0-6z"/><path d="M6 21a3 3 0 0 1 0-6h12a3 3 0 0 1 0 6z"/><path d="M15 6v12"/><path d="M9 6v12"/></svg>`,
 homePageTweaks: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
-reworkedSidebar: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>`,
+purpuraSidebar: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>`,
+sidebarTweaks: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="6" r="2.1"/><circle cx="15" cy="12" r="2.1"/><circle cx="8" cy="18" r="2.1"/></svg>`,
 betterContinue: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>`,
 uncorporatify: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>`,
 streamerMode: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`,
@@ -971,6 +1294,7 @@ quickStatusSwitcher: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24
 bloatwareRemover: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`,
 greetings: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
 legacyThemeSwitcher: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>`,
+trustedCreatorStatus: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 2.4 1.7 2.9-.2.9 2.8 2.4 1.7-1.1 2.7 1.1 2.7-2.4 1.7-.9 2.8-2.9-.2L12 22l-2.4-1.7-2.9.2-.9-2.8-2.4-1.7 1.1-2.7-1.1-2.7 2.4-1.7.9-2.8 2.9.2z"/><path d="m9 12 2 2 4-4"/></svg>`,
 unpendingRobux: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8 9h5a2 2 0 0 1 0 4h-2a2 2 0 0 0 0 4h5"/></svg>`,
 totalSpent: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg>`,
 purpuraCursors: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-7 1-4 7-3-17z"/></svg>`,
@@ -983,7 +1307,14 @@ playtime: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="non
 purpurasSelection: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
 robloxAgeTheme: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>`,
 hideDownloadButton: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
-loginBanner: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>`
+loginBanner: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>`,
+privateServerControls: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11M19 8h2"/><circle cx="17" cy="8" r="2.5"/><path d="M3 16h3M11 16h10"/><circle cx="9" cy="16" r="2.5"/></svg>`,
+siteFixes: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0 5 5L21 12l-9 9-3 0 0-3 9-9-1.3-1.3z"/><path d="M5 5l4 4"/><path d="M3 21l6-6"/></svg>`,
+siteFont: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>`,
+customBackdrop: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>`,
+thumbnailBackgroundDisabler: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15V5a2 2 0 0 0-2-2H5"/><path d="M3 5v14a2 2 0 0 0 2 2h14"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5"/><line x1="2" y1="2" x2="22" y2="22"/></svg>`,
+usernameColorPreview: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7 6.8 9.2a7 7 0 1 0 10.4 0z"/></svg>`,
+avatarImageDownloader: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="12" height="12" rx="2"/><circle cx="7.5" cy="7.5" r="1"/><path d="m15 12-3-3-6 6"/><path d="M18 14v7"/><path d="m15 18 3 3 3-3"/></svg>`,
 };
 function I(e) {
 const t = B[e];
@@ -1013,7 +1344,157 @@ n.textContent = `\n        @import url('https://fonts.googleapis.com/css2?family
             font-weight: 400;
         }
 
-        #purpura-settings-container { display: block; width: 100%; }\n\n        #purpura-ui-container {\n            display: flex;\n            flex-direction: row;\n            gap: 20px;\n            align-items: flex-start;\n            width: 100%;\n        }\n\n        \n        .purpura-sidebar {\n            width: 196px;\n            flex-shrink: 0;\n            list-style: none;\n            padding: 10px;\n            margin: 0;\n            background: var(--p-surface);\n            border-radius: var(--p-radius-lg);\n            border: 1px solid var(--p-border);\n            position: sticky;\n            top: 20px;\n        }\n\n        .purpura-sidebar .purpura-menu-item {\n            list-style: none;\n            margin-bottom: 1px;\n            position: relative;\n        }\n\n        .purpura-sidebar .purpura-menu-link {\n            display: flex;\n            align-items: center;\n            gap: 9px;\n            padding: 9px 12px;\n            color: var(--p-text-2);\n            text-decoration: none;\n            font-size: 13px;\n            font-weight: 500;\n            border-radius: var(--p-radius);\n            cursor: pointer;\n            transition: background 0.15s var(--p-ease), color 0.15s var(--p-ease), padding-left 0.2s var(--p-ease);\n            position: relative;\n        }\n\n        .purpura-sidebar .purpura-menu-link .p-nav-icon {\n            width: 16px;\n            height: 16px;\n            flex-shrink: 0;\n            opacity: 0.55;\n            transition: opacity 0.15s;\n        }\n\n        .purpura-sidebar .purpura-menu-link:hover {\n            background: rgba(155,109,255,0.08);\n            color: var(--p-text);\n        }\n\n        .purpura-sidebar .purpura-menu-link:hover .p-nav-icon { opacity: 0.8; }\n\n        .purpura-sidebar .purpura-menu-link.active {\n            background: rgba(155,109,255,0.10);\n            color: var(--p-text);\n            font-weight: 600;\n            padding-left: 14px;\n        }\n\n        .purpura-sidebar .purpura-menu-link.active .p-nav-icon { opacity: 1; }\n\n        .purpura-sidebar .purpura-menu-link.active::before {\n            content: '';\n            position: absolute;\n            left: 0;\n            top: 20%;\n            bottom: 20%;\n            width: 3px;\n            background: var(--p-accent);\n            border-radius: 0 3px 3px 0;\n            animation: p-bar-in 0.25s var(--p-ease-back) forwards;\n        }\n\n        @keyframes p-bar-in {\n            from { transform: scaleY(0); opacity: 0; }\n            to   { transform: scaleY(1); opacity: 1; }\n        }\n\n        .purpura-menu-separator {\n            height: 1px;\n            background: var(--p-border);\n            margin: 8px 4px;\n            list-style: none;\n        }\n\n        \n        .purpura-search-container {\n            margin-bottom: 8px;\n            padding: 0 2px;\n        }\n\n        #purpura-search-input {\n            width: 100%;\n            padding: 7px 8px 7px 28px;\n            border-radius: var(--p-radius);\n            font-size: 12px;\n            border: 1px solid var(--p-border);\n            background: var(--p-bg);\n            color: var(--p-text);\n            transition: border-color 0.2s, box-shadow 0.2s;\n            font-family: var(--p-font);\n            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236d6487' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");\n            background-repeat: no-repeat;\n            background-position: 8px center;\n            box-sizing: border-box;\n        }\n\n        #purpura-search-input:focus {\n            outline: none;\n            border-color: var(--p-accent);\n            box-shadow: 0 0 0 3px var(--p-accent-glow);\n        }\n\n        #purpura-search-input::placeholder { color: var(--p-text-3); }\n\n        \n        #purpura-content-area {\n            flex: 1;\n            min-width: 0;\n            min-height: 340px;\n            overflow: visible;\n            padding-right: 4px;\n            touch-action: pan-y;\n        }\n        #purpura-content-area::-webkit-scrollbar { width: 0px; }\n        #purpura-content-area::-webkit-scrollbar-track { background: transparent; }\n        #purpura-content-area::-webkit-scrollbar-thumb { background: transparent; }\n        #purpura-section-content { width: 100%; }\n\n        \n        @keyframes p-section-in {\n            from { opacity: 0; transform: translateY(8px); }\n            to   { opacity: 1; transform: translateY(0); }\n        }\n\n        #purpura-section-content > * {\n            animation: p-section-in 0.22s var(--p-ease) forwards;\n        }\n\n        \n        @keyframes p-card-in {\n            from { opacity: 0; transform: translateY(6px); }\n            to   { opacity: 1; transform: translateY(0); }\n        }\n\n        .purpura-setting-card {\n            opacity: 0;\n            animation: p-card-in 0.28s var(--p-ease) forwards;\n        }\n\n        .purpura-setting-card:nth-child(1)  { animation-delay: 0.00s; }\n        .purpura-setting-card:nth-child(2)  { animation-delay: 0.04s; }\n        .purpura-setting-card:nth-child(3)  { animation-delay: 0.08s; }\n        .purpura-setting-card:nth-child(4)  { animation-delay: 0.12s; }\n        .purpura-setting-card:nth-child(5)  { animation-delay: 0.16s; }\n        .purpura-setting-card:nth-child(6)  { animation-delay: 0.20s; }\n        .purpura-setting-card:nth-child(7)  { animation-delay: 0.24s; }\n        .purpura-setting-card:nth-child(8)  { animation-delay: 0.28s; }\n\n        \n        .purpura-setting-card {\n            display: flex;\n            flex-direction: column;\n            font-size: 14px;\n            margin: 0 0 10px 0;\n            background: var(--p-card);\n            color: var(--p-text);\n            border-radius: var(--p-radius-lg);\n            padding: 16px 18px;\n            border: 1px solid var(--p-border);\n            \n            box-shadow: ${e ? "0 1px 3px rgba(0, 0, 0, 0.06)" : "inset 0 1px 0 rgba(255,255,255,0.04)"};\n            transition: border-color 0.2s var(--p-ease), background 0.2s var(--p-ease), box-shadow 0.2s var(--p-ease);\n        }\n\n        .purpura-setting-card:hover {\n            border-color: ${e ? "rgba(124, 58, 237, 0.20)" : "rgba(155,109,255,0.18)"};\n            background: var(--p-card-hover);\n            box-shadow: ${e ? "0 2px 8px rgba(0, 0, 0, 0.08)" : "inset 0 1px 0 rgba(255,255,255,0.04), 0 0 0 1px rgba(155,109,255,0.06)"};\n        }\n\n        .purpura-setting-card.child-setting {\n            margin-left: 28px;\n            margin-top: 8px;\n            background: var(--p-surface);\n            border-left: 2px solid var(--p-accent);\n            opacity: 0.9;\n        }\n\n        .purpura-setting-card.child-setting.parent-disabled {\n            opacity: 0.38;\n            pointer-events: none;\n            filter: saturate(0.3);\n        }\n\n        .purpura-setting-header {\n            display: flex;\n            align-items: center;\n            gap: 8px;\n            margin-bottom: 10px;\n            color: var(--p-text);\n        }\n\n        \n        .p-setting-icon {\n            width: 30px;\n            height: 30px;\n            border-radius: var(--p-radius-sm);\n            background: rgba(155,109,255,0.12);\n            display: flex;\n            align-items: center;\n            justify-content: center;\n            flex-shrink: 0;\n            margin-right: 4px;\n            transition: background 0.2s;\n        }\n\n        .p-setting-icon svg {\n            width: 15px;\n            height: 15px;\n            color: var(--p-accent);\n            stroke: currentColor;\n        }\n\n        .p-setting-icon img {\n            width: 20px;\n            height: 20px;\n            object-fit: contain;\n        }\n\n        .purpura-setting-card:hover .p-setting-icon {\n            background: rgba(155,109,255,0.2);\n        }\n\n        .purpura-setting-header > label:not(.purpura-toggle) {\n            color: var(--p-text);\n            font-weight: 600;\n            font-size: 14px;\n            flex: 1;\n        }\n\n        .purpura-setting-header > .purpura-toggle {\n            flex: 0 0 auto;\n        }\n\n        .purpura-setting-divider {\n            height: 1px;\n            background: var(--p-border);\n            margin-bottom: 10px;\n        }\n\n        .purpura-setting-desc {\n            color: var(--p-text-2);\n            font-size: 13px;\n            line-height: 1.65;\n            margin-bottom: 5px;\n        }\n\n        .purpura-setting-desc:last-child { margin-bottom: 0; }\n\n        .purpura-setting-desc strong {\n            font-weight: 600;\n            color: var(--p-text);\n        }\n\n        \n        .purpura-toggle {\n            position: relative;\n            display: inline-block;\n            width: 38px;\n            height: 22px;\n            flex-shrink: 0;\n            margin-left: auto;\n        }\n\n        .purpura-toggle input { opacity: 0; width: 0; height: 0; }\n\n        .purpura-toggle-slider {\n            position: absolute;\n            cursor: pointer;\n            inset: 0;\n            background: ${e ? "#c8c8d0" : "#2a2b36"};\n            transition: background 0.25s var(--p-ease);\n            border-radius: 99px;\n            border: 1px solid rgba(255,255,255,0.07);\n        }\n\n        .purpura-toggle-slider::before {\n            position: absolute;\n            content: '';\n            height: 16px;\n            width: 16px;\n            left: 3px;\n            bottom: 2px;\n            background: #fff;\n            transition: transform 0.3s var(--p-ease-back), box-shadow 0.2s;\n            border-radius: 50%;\n            box-shadow: ${e ? "0 1px 4px rgba(0, 0, 0, 0.25)" : "0 1px 3px rgba(0,0,0,0.4)"};\n        }\n\n        .purpura-toggle input:checked + .purpura-toggle-slider {\n            background: var(--p-accent);\n            border-color: transparent;\n        }\n\n        .purpura-toggle input:checked + .purpura-toggle-slider::before {\n            transform: translateX(16px);\n            box-shadow: 0 0 6px rgba(155,109,255,0.5);\n        }\n\n        .purpura-toggle input:disabled + .purpura-toggle-slider {\n            opacity: 0.4;\n            cursor: not-allowed;\n        }\n\n        \n        .purpura-toggle-slider::after {\n            content: '';\n            position: absolute;\n            inset: -4px;\n            border-radius: 99px;\n            background: var(--p-accent-glow);\n            opacity: 0;\n            transition: opacity 0.3s;\n        }\n\n        .purpura-toggle input:focus-visible + .purpura-toggle-slider::after { opacity: 1; }\n\n        \n        .purpura-pill {\n            display: inline-flex;\n            align-items: center;\n            gap: 5px;\n            padding: 4px 10px;\n            min-height: 22px;\n            border-radius: 99px;\n            font-size: 11px;\n            font-weight: 700;\n            line-height: 1;\n            cursor: default;\n            text-transform: uppercase;\n            letter-spacing: 0.5px;\n            position: relative;\n            overflow: hidden;\n        }\n\n        .purpura-pill::after {\n            content: '';\n            position: absolute;\n            inset: 0;\n            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);\n            transform: translateX(-100%);\n        }\n\n        .purpura-pill:hover::after {\n            animation: p-pill-shimmer 0.6s ease forwards;\n        }\n\n        @keyframes p-pill-shimmer {\n            to { transform: translateX(100%); }\n        }\n\n        .purpura-pill.premium {\n            background: rgba(240,180,41,0.15);\n            border: 1px solid rgba(240,180,41,0.35);\n            color: var(--p-premium);\n        }\n\n        .purpura-pill.coming-soon {\n            background: rgba(230,114,44,0.15);\n            border: 1px solid rgba(230,114,44,0.3);\n            color: #f09a5a;\n        }\n\n        .purpura-pill.beta {\n            background: rgba(77,161,245,0.15);\n            border: 1px solid rgba(77,161,245,0.3);\n            color: var(--p-beta);\n        }\n\n        .purpura-pill.experimental {\n            background: rgba(234,179,8,0.15);\n            border: 1px solid rgba(234,179,8,0.3);\n            color: #eab308;\n        }\n\n        .purpura-pill.deprecated {\n            background: rgba(220,38,38,0.15);\n            border: 1px solid rgba(220,38,38,0.32);\n            color: #dc2626;\n        }\n\n        .purpura-setting-card.is-deprecated {\n            opacity: 0.52;\n            pointer-events: none;\n            filter: saturate(0.35) grayscale(0.15);\n        }\n        .purpura-setting-card.is-deprecated .purpura-toggle input:checked + .purpura-toggle-slider {\n            background: #6b7280;\n            border-color: transparent;\n        }\n        .purpura-setting-card.is-deprecated .purpura-setting-desc {\n            opacity: 0.75;\n        }\n\n        \n        .purpura-help-icon {\n            display: inline-flex;\n            align-items: center;\n            justify-content: center;\n            width: 18px;\n            height: 18px;\n            border-radius: 50%;\n            background: var(--p-surface);\n            border: 1px solid var(--p-border-2);\n            color: var(--p-text-2);\n            font-size: 10px;\n            font-weight: 700;\n            cursor: pointer;\n            transition: all 0.2s;\n            position: relative;\n        }\n\n        .purpura-help-icon:hover {\n            background: var(--p-accent);\n            border-color: var(--p-accent);\n            color: #fff;\n            transform: scale(1.1);\n        }\n\n        .purpura-help-tooltip {\n            display: none !important;\n        }\n\n        #purpura-floating-tooltip {\n            position: fixed;\n            background: ${e ? "#ffffff" : "#1e1f2e"};\n            border: 1px solid var(--p-border-2);\n            border-radius: var(--p-radius);\n            padding: 12px 14px;\n            min-width: 190px;\n            max-width: 300px;\n            max-height: 420px;\n            overflow-y: auto;\n            box-shadow: ${e ? "0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(124, 58, 237, 0.08)" : "0 8px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(155,109,255,0.1)"};\n            color: var(--p-text);\n            z-index: 999999;\n            opacity: 0;\n            visibility: hidden;\n            scrollbar-width: none;\n        }\n\n        #purpura-floating-tooltip::-webkit-scrollbar { width: 0; height: 0; }\n\n        #purpura-floating-tooltip.visible {\n            pointer-events: none;\n            transition: opacity 0.15s, visibility 0.15s;\n        }\n\n        #purpura-floating-tooltip.visible {\n            opacity: 1;\n            visibility: visible;\n        }\n\n        #purpura-floating-tooltip::after {\n            content: '';\n            position: absolute;\n            left: var(--p-arrow-left, 50%);\n            transform: translateX(-50%);\n            border: 6px solid transparent;\n        }\n\n        #purpura-floating-tooltip.arrow-below::after {\n            top: 100%;\n            border-top-color: var(--p-border-2);\n        }\n\n        #purpura-floating-tooltip.arrow-above::after {\n            bottom: 100%;\n            border-bottom-color: var(--p-border-2);\n        }\n\n        #purpura-floating-tooltip.pill-beta-tip {\n            background: rgba(77,161,245,0.25);\n            backdrop-filter: blur(16px);\n            -webkit-backdrop-filter: blur(16px);\n            border-color: rgba(77,161,245,0.5);\n        }\n        #purpura-floating-tooltip.pill-beta-tip.arrow-below::after {\n            border-top-color: rgba(77,161,245,0.4);\n        }\n        #purpura-floating-tooltip.pill-beta-tip.arrow-above::after {\n            border-bottom-color: rgba(77,161,245,0.4);\n        }\n\n        #purpura-floating-tooltip.pill-experimental-tip {\n            background: rgba(234,179,8,0.25);\n            backdrop-filter: blur(16px);\n            -webkit-backdrop-filter: blur(16px);\n            border-color: rgba(234,179,8,0.5);\n        }\n        #purpura-floating-tooltip.pill-experimental-tip.arrow-below::after {\n            border-top-color: rgba(234,179,8,0.4);\n        }\n        #purpura-floating-tooltip.pill-experimental-tip.arrow-above::after {\n            border-bottom-color: rgba(234,179,8,0.4);\n        }\n\n        #purpura-floating-tooltip.pill-deprecated-tip {\n            background: rgba(220,38,38,0.22);\n            backdrop-filter: blur(16px);\n            -webkit-backdrop-filter: blur(16px);\n            border-color: rgba(220,38,38,0.45);\n        }\n        #purpura-floating-tooltip.pill-deprecated-tip.arrow-below::after {\n            border-top-color: rgba(220,38,38,0.40);\n        }\n        #purpura-floating-tooltip.pill-deprecated-tip.arrow-above::after {\n            border-bottom-color: rgba(220,38,38,0.40);\n        }\n\n        .purpura-help-tooltip-title {\n            font-size: 12px;\n            font-weight: 600;\n            color: var(--p-text);\n            margin-bottom: 8px;\n            border-bottom: 1px solid var(--p-border);\n            padding-bottom: 6px;\n        }\n\n        .purpura-help-tooltip-item {\n            font-size: 11px;\n            color: var(--p-text-2);\n            padding: 2px 0;\n        }\n\n        .purpura-help-tooltip-item strong { color: var(--p-text); }\n\n        \n        .purpura-sub-setting {\n            margin-top: 10px;\n            padding: 11px 13px;\n            background: ${e ? "#f5f5f7" : "var(--p-bg)"};\n            border-radius: var(--p-radius);\n            border-left: 2px solid ${e ? "rgba(124, 58, 237, 0.40)" : "rgba(107, 68, 199, 0.5)"};\n            animation: p-subsetting-in 0.2s var(--p-ease) forwards;\n        }\n\n        @keyframes p-subsetting-in {\n            from { opacity: 0; transform: translateX(-4px); }\n            to   { opacity: 1; transform: translateX(0); }\n        }\n\n        .purpura-sub-setting-row {\n            display: flex;\n            align-items: center;\n            justify-content: space-between;\n        }\n\n        .purpura-sub-setting-row label:first-child {\n            font-size: 13px;\n            color: var(--p-text);\n            font-weight: 500;\n        }\n\n        .purpura-sub-setting-row input[type="text"] {\n            margin-left: 10px;\n            width: min(260px, 52%);\n            min-width: 172px;\n            padding: 8px 11px;\n            border-radius: var(--p-radius);\n            border: 1px solid var(--p-border-2);\n            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)) var(--p-surface);\n            color: var(--p-text);\n            font-family: var(--p-font);\n            font-size: 13px;\n            transition: border-color 0.15s, box-shadow 0.15s;\n        }\n\n        .purpura-sub-setting-row input[type="text"]::placeholder {\n            color: var(--p-text-3);\n        }\n\n        .purpura-sub-setting-row input[type="text"]:focus {\n            outline: none;\n            border-color: var(--p-accent);\n            box-shadow: 0 0 0 3px var(--p-accent-glow);\n        }\n\n        .purpura-sub-setting-desc {\n            font-size: 12px;\n            color: var(--p-text-3);\n            margin-top: 5px;\n        }\n\n        .purpura-sub-setting.disabled {\n            opacity: 0.38;\n            pointer-events: none;\n            filter: saturate(0.3);\n        }\n\n        \n        .purpura-native-select {\n            position: absolute !important;\n            width: 1px !important;\n            height: 1px !important;\n            padding: 0 !important;\n            margin: -1px !important;\n            overflow: hidden !important;\n            clip: rect(0 0 0 0) !important;\n            clip-path: inset(50%) !important;\n            border: 0 !important;\n            white-space: nowrap !important;\n            opacity: 0 !important;\n            pointer-events: none !important;\n        }\n\n        .purpura-custom-select {\n            position: relative;\n            margin-left: 10px;\n            min-width: 174px;\n            flex: 0 0 auto;\n            z-index: 2;\n        }\n\n        .purpura-setting-card:has(.purpura-custom-select.open),\n        .purpura-sub-setting:has(.purpura-custom-select.open) {\n            overflow: visible;\n        }\n\n        .purpura-sub-setting-row .purpura-custom-select {\n            min-width: 156px;\n        }\n\n        .purpura-custom-select-trigger {\n            width: 100%;\n            padding: 8px 34px 8px 11px;\n            font-size: 13px;\n            border-radius: var(--p-radius);\n            border: 1px solid var(--p-border-2);\n            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)) var(--p-surface);\n            color: var(--p-text);\n            font-family: var(--p-font);\n            text-align: left;\n            cursor: pointer;\n            position: relative;\n            transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;\n        }\n\n        .purpura-custom-select-trigger::after {\n            content: '';\n            position: absolute;\n            right: 12px;\n            top: 50%;\n            width: 10px;\n            height: 6px;\n            transform: translateY(-50%);\n            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236d6487' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");\n            background-repeat: no-repeat;\n            background-size: 10px 6px;\n            opacity: 0.9;\n            transition: transform 0.18s var(--p-ease), opacity 0.18s var(--p-ease);\n        }\n\n        .purpura-custom-select-trigger:hover {\n            border-color: var(--p-border);\n        }\n\n        .purpura-custom-select.open .purpura-custom-select-trigger,\n        .purpura-custom-select-trigger:focus-visible {\n            outline: none;\n            border-color: var(--p-accent);\n            box-shadow: 0 0 0 3px var(--p-accent-glow);\n        }\n\n        .purpura-custom-select.open .purpura-custom-select-trigger::after {\n            transform: translateY(-50%) rotate(180deg);\n        }\n\n        .purpura-custom-select.disabled .purpura-custom-select-trigger {\n            opacity: 0.42;\n            cursor: not-allowed;\n        }\n\n        .purpura-custom-select-menu {\n            position: absolute;\n            left: 0;\n            right: 0;\n            top: calc(100% + 6px);\n            padding: 6px;\n            border-radius: 10px;\n            border: 1px solid var(--p-border-2);\n            background: ${e ? "rgba(252, 252, 254, 0.98)" : "rgba(14, 15, 21, 0.98)"};\n            box-shadow: ${e ? "0 14px 28px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(0, 0, 0, 0.03)" : "0 14px 28px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03)"};\n            max-height: 230px;\n            overflow-y: auto;\n            opacity: 0;\n            transform: translateY(-6px) scale(0.98);\n            pointer-events: none;\n            transition: opacity 0.16s var(--p-ease), transform 0.16s var(--p-ease);\n            z-index: 999;\n        }\n\n        .purpura-custom-select.open .purpura-custom-select-menu,\n        .purpura-custom-select-menu.is-floating {\n            opacity: 1;\n            transform: translateY(0) scale(1);\n            pointer-events: auto;\n        }\n\n        .purpura-custom-select-menu.is-floating {\n            position: fixed;\n            z-index: 999999;\n        }\n\n        .purpura-custom-select-option {\n            width: 100%;\n            border: 0;\n            border-radius: 8px;\n            padding: 8px 10px;\n            background: transparent;\n            color: var(--p-text-2);\n            font-size: 12.5px;\n            font-family: var(--p-font);\n            text-align: left;\n            cursor: pointer;\n            transition: background 0.12s, color 0.12s;\n        }\n\n        .purpura-custom-select-option:hover,\n        .purpura-custom-select-option:focus-visible {\n            outline: none;\n            color: var(--p-text);\n            background: ${e ? "rgba(124, 58, 237, 0.10)" : "rgba(128, 95, 214, 0.22)"};\n        }\n\n        .purpura-custom-select-option.selected {\n            color: var(--p-text);\n            background: ${e ? "rgba(124, 58, 237, 0.14)" : "rgba(128, 95, 214, 0.32)"};\n            font-weight: 600;\n        }\n\n        .purpura-custom-select-option.disabled {\n            opacity: 0.35;\n            cursor: not-allowed;\n        }\n\n        .purpura-custom-select-menu::-webkit-scrollbar {\n            width: 6px;\n        }\n\n        .purpura-custom-select-menu::-webkit-scrollbar-thumb {\n            background: ${e ? "rgba(0, 0, 0, 0.15)" : "rgba(255,255,255,0.2)"};\n            border-radius: 6px;\n        }\n\n        @media (max-width: 768px) {\n            .purpura-custom-select {\n                min-width: 140px;\n                max-width: 58%;\n            }\n        }\n\n        \n        .purpura-info-wrapper {\n            position: relative;\n            overflow: hidden;\n            background: ${e ? `\n                radial-gradient(120% 100% at 0% 0%, rgba(124, 58, 237, 0.06) 0%, rgba(124, 58, 237, 0) 52%),\n                #ffffff;\n            ` : `\n                radial-gradient(120% 100% at 0% 0%, rgba(155,109,255,0.12) 0%, rgba(155,109,255,0) 52%),\n                linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)),\n                var(--p-card);\n            `};\n            padding: 26px;\n            border-radius: var(--p-radius-lg);\n            border: 1px solid var(--p-border-2);\n            box-shadow: ${e ? "0 1px 4px rgba(0, 0, 0, 0.06)" : "inset 0 1px 0 rgba(255,255,255,0.05), 0 14px 28px rgba(0,0,0,0.22)"};\n            animation: p-section-in 0.22s var(--p-ease) forwards;\n        }\n\n        .purpura-info-wrapper h2 {\n            margin: 0 0 12px 0;\n            color: var(--p-text);\n            font-size: 21px;\n            font-weight: 700;\n            letter-spacing: 0.01em;\n        }\n\n        .purpura-info-wrapper p {\n            color: var(--p-text-2);\n            margin: 0 0 11px 0;\n            line-height: 1.74;\n            font-size: 13.5px;\n            max-width: 70ch;\n        }\n\n        .purpura-info-wrapper a {\n            color: var(--p-accent);\n            text-decoration: none;\n        }\n\n        .purpura-info-wrapper a:hover { text-decoration: underline; }\n\n        .purpura-info-wrapper ul {\n            margin: 12px 0 0;\n            padding-left: 20px;\n            color: var(--p-text-2);\n            line-height: 2;\n        }\n\n        .purpura-info-wrapper li strong { color: var(--p-text); }\n\n        .purpura-credits-grid {\n            margin-top: 12px;\n            display: grid;\n            grid-template-columns: repeat(3, minmax(0, 1fr));\n            gap: 10px;\n            align-items: stretch;\n        }\n\n        .purpura-credit-card {\n            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));\n            border: 1px solid var(--p-border-2);\n            border-radius: calc(var(--p-radius) + 2px);\n            padding: 10px;\n            display: grid;\n            grid-template-columns: 72px minmax(0, 1fr);\n            grid-template-areas:\n                'avatar head'\n                'reason reason'\n                'discord discord';\n            grid-template-rows: auto 1fr auto;\n            column-gap: 10px;\n            row-gap: 7px;\n            align-items: start;\n            min-height: 0;\n            height: 100%;\n            transition: border-color 0.18s var(--p-ease), background 0.18s var(--p-ease), transform 0.18s var(--p-ease);\n        }\n\n        .purpura-credit-card:hover {\n            border-color: rgba(155,109,255,0.26);\n            background: linear-gradient(180deg, rgba(155,109,255,0.10), rgba(155,109,255,0.04));\n            transform: translateY(-1px);\n        }\n\n        .purpura-credit-avatar-wrap {\n            grid-area: avatar;\n            width: 72px;\n            height: 72px;\n            border-radius: calc(var(--p-radius) + 2px);\n            overflow: hidden;\n            border: 1px solid var(--p-border);\n            background: #0d0e13;\n        }\n\n        .purpura-credit-avatar {\n            width: 100%;\n            height: 100%;\n            object-fit: cover;\n            display: block;\n        }\n\n        .purpura-credit-head {\n            grid-area: head;\n            min-width: 0;\n        }\n\n        .purpura-credit-name {\n            margin: 0;\n            color: var(--p-text);\n            font-size: 14px;\n            font-weight: 700;\n            line-height: 1.3;\n        }\n\n        .purpura-credit-reason {\n            grid-area: reason;\n            margin: 0;\n            color: var(--p-text-2);\n            font-size: 11.5px;\n            line-height: 1.48;\n        }\n\n        .purpura-credit-discord {\n            grid-area: discord;\n            display: flex;\n            align-items: center;\n            gap: 7px;\n            border: 1px solid ${e ? "rgba(124, 58, 237, 0.20)" : "rgba(155,109,255,0.30)"};\n            background: ${e ? "rgba(124, 58, 237, 0.12)" : "linear-gradient(180deg, rgba(124,77,255,0.22), rgba(124,77,255,0.14))"};\n            border-radius: 9px;\n            min-height: 30px;\n            padding: 0 9px;\n            width: 100%;\n            overflow: hidden;\n        }\n\n        .purpura-credit-discord svg {\n            width: 12px;\n            height: 12px;\n            color: ${e ? "var(--p-accent)" : "#cbb4ff"};\n            flex: 0 0 auto;\n        }\n\n        .purpura-credit-discord-label {\n            color: ${e ? "var(--p-accent-dim)" : "#d7c5ff"};\n            font-size: 11.2px;\n            font-weight: 700;\n            line-height: 1;\n            white-space: nowrap;\n            overflow: hidden;\n            text-overflow: ellipsis;\n            min-width: 0;\n        }\n\n        .purpura-credits-wrapper .purpura-info-divider {\n            margin-top: 12px;\n            padding-top: 12px;\n        }\n\n        .purpura-credits-wrapper .purpura-info-divider p {\n            margin-bottom: 8px;\n        }\n\n        .purpura-premium-status {\n            margin-top: 12px;\n            display: flex;\n            align-items: center;\n            gap: 9px;\n            border-radius: calc(var(--p-radius) + 1px);\n            padding: 10px 12px;\n            border: 1px solid var(--p-border-2);\n            background: rgba(255,255,255,0.02);\n            font-size: 13px;\n            font-weight: 600;\n        }\n\n        .purpura-premium-status-dot {\n            width: 9px;\n            height: 9px;\n            border-radius: 50%;\n            flex: 0 0 auto;\n        }\n\n        .purpura-premium-status.active {\n            color: #f7e3a7;\n            border-color: rgba(240,180,41,0.34);\n            background: linear-gradient(180deg, rgba(240,180,41,0.14), rgba(240,180,41,0.07));\n        }\n\n        .purpura-premium-status.active .purpura-premium-status-dot {\n            background: #f0b429;\n            box-shadow: 0 0 8px rgba(240,180,41,0.45);\n        }\n\n        .purpura-premium-status.inactive {\n            color: var(--p-text-2);\n        }\n\n        .purpura-premium-status.inactive .purpura-premium-status-dot {\n            background: var(--p-text-3);\n        }\n\n        .purpura-premium-feature-grid {\n            margin-top: 12px;\n            display: grid;\n            grid-template-columns: repeat(2, minmax(0, 1fr));\n            gap: 9px;\n        }\n\n        .purpura-premium-feature-item {\n            border: 1px solid var(--p-border-2);\n            background: rgba(255,255,255,0.02);\n            border-radius: calc(var(--p-radius) + 1px);\n            padding: 9px 10px;\n            min-width: 0;\n        }\n\n        .purpura-premium-feature-item-title {\n            color: var(--p-text);\n            font-size: 13px;\n            font-weight: 700;\n            line-height: 1.35;\n            margin: 0;\n        }\n\n        .purpura-premium-feature-item-category {\n            color: var(--p-text-3);\n            font-size: 11px;\n            line-height: 1.2;\n            margin-top: 4px;\n            text-transform: uppercase;\n            letter-spacing: 0.06em;\n            font-weight: 700;\n        }\n\n        .purpura-premium-actions {\n            display: flex;\n            gap: 10px;\n            margin-top: 16px;\n            padding-top: 14px;\n            border-top: 1px solid var(--p-border);\n            flex-wrap: wrap;\n        }\n\n        @media (max-width: 760px) {\n            .purpura-premium-feature-grid {\n                grid-template-columns: 1fr;\n            }\n        }\n\n        @media (max-width: 1060px) {\n            .purpura-credits-grid {\n                grid-template-columns: repeat(2, minmax(0, 1fr));\n            }\n        }\n\n        @media (max-width: 720px) {\n            .purpura-credits-grid {\n                grid-template-columns: 1fr;\n            }\n\n            .purpura-credit-card {\n                grid-template-columns: 64px minmax(0, 1fr);\n                column-gap: 9px;\n            }\n\n            .purpura-credit-avatar-wrap {\n                width: 64px;\n                height: 64px;\n            }\n        }\n\n        .purpura-info-divider {\n            margin-top: 18px;\n            padding-top: 16px;\n            border-top: 1px solid var(--p-border);\n        }\n\n        .purpura-info-meta {\n            margin-top: 18px;\n            padding-top: 16px;\n            border-top: 1px solid var(--p-border);\n            display: grid;\n            grid-template-columns: repeat(2, minmax(0, 1fr));\n            gap: 10px;\n        }\n\n        .purpura-info-meta-card {\n            background: rgba(255,255,255,0.02);\n            border: 1px solid var(--p-border-2);\n            border-radius: calc(var(--p-radius) + 1px);\n            padding: 10px 12px;\n            min-height: 64px;\n            display: flex;\n            flex-direction: column;\n            justify-content: center;\n            gap: 4px;\n        }\n\n        .purpura-info-meta-label {\n            color: var(--p-text-3);\n            font-size: 11px;\n            text-transform: uppercase;\n            letter-spacing: 0.08em;\n            font-weight: 700;\n        }\n\n        .purpura-info-meta-value {\n            color: var(--p-text);\n            font-size: 14px;\n            font-weight: 700;\n            line-height: 1.35;\n        }\n\n        @media (max-width: 640px) {\n            .purpura-info-meta {\n                grid-template-columns: 1fr;\n            }\n        }\n\n        \n        .purpura-import-export {\n            display: flex;\n            justify-content: center;\n            gap: 10px;\n            margin-top: 18px;\n            padding-top: 16px;\n            border-top: 1px solid var(--p-border);\n            flex-wrap: wrap;\n        }\n\n        .purpura-import-export-btn {\n            padding: 8px 18px;\n            background: var(--p-surface);\n            border: 1px solid var(--p-border-2);\n            border-radius: 10px;\n            color: var(--p-text);\n            font-size: 13px;\n            font-weight: 500;\n            cursor: pointer;\n            font-family: var(--p-font);\n            transition: background 0.15s, border-color 0.15s;\n        }\n\n        .purpura-import-export-btn:hover {\n            background: rgba(155,109,255,0.1);\n            border-color: rgba(155,109,255,0.4);\n        }\n\n        .purpura-import-export-btn.primary {\n            background: rgba(155, 109, 255, 0.18);\n            border: 1px solid rgba(155, 109, 255, 0.35);\n            color: var(--p-accent);\n        }\n\n        .purpura-import-export-btn.primary:hover {\n            background: rgba(155, 109, 255, 0.26);\n            border-color: rgba(155, 109, 255, 0.5);\n        }\n\n        \n        .purpura-ban-banner {\n            background: ${e ? "rgba(220, 38, 38, 0.06)" : "rgba(248,113,113,0.08)"};\n            border: 1px solid ${e ? "rgba(220, 38, 38, 0.25)" : "rgba(248,113,113,0.3)"};\n            border-radius: var(--p-radius-lg);\n            padding: 14px 18px;\n            margin-bottom: 18px;\n            display: flex;\n            align-items: center;\n            gap: 14px;\n        }\n\n        .purpura-ban-banner-icon { font-size: 26px; flex-shrink: 0; }\n\n        .purpura-ban-banner-title {\n            font-size: 14px;\n            font-weight: 700;\n            color: var(--p-danger);\n            margin-bottom: 3px;\n        }\n\n        .purpura-ban-banner-text {\n            font-size: 12.5px;\n            color: rgba(248,113,113,0.8);\n            line-height: 1.5;\n        }\n\n        \n        .purpura-features-disabled .purpura-setting-card {\n            opacity: 0.45;\n            pointer-events: none;\n            filter: saturate(0.2);\n        }\n\n        \n        .purpura-setting-card.premium-locked { position: relative; }\n\n        .purpura-setting-card.premium-locked .purpura-toggle input { pointer-events: none; }\n        .purpura-setting-card.premium-locked .purpura-toggle-slider {\n            opacity: 0.45;\n            cursor: not-allowed;\n        }\n\n        .purpura-setting-card.premium-locked .purpura-theme-picker,\n        .purpura-setting-card.premium-locked .purpura-cursor-picker {\n            opacity: 0.45;\n            pointer-events: none;\n        }\n\n        .purpura-premium-lock-notice {\n            display: flex;\n            align-items: center;\n            gap: 8px;\n            padding: 8px 12px;\n            background: rgba(240,180,41,0.08);\n            border: 1px solid rgba(240,180,41,0.25);\n            border-radius: var(--p-radius);\n            margin-top: 10px;\n            font-size: 12px;\n            color: var(--p-premium);\n        }\n\n        .purpura-premium-lock-notice a {\n            color: var(--p-premium);\n            text-decoration: underline;\n            cursor: pointer;\n        }\n\n        \n        .purpura-wip {\n            display: flex;\n            align-items: center;\n            gap: 10px;\n            padding: 10px 14px;\n            border-radius: var(--p-radius);\n            background: rgba(240,180,41,0.08);\n            border: 1px solid rgba(240,180,41,0.25);\n            color: var(--p-premium);\n            font-weight: 600;\n            font-size: 13px;\n        }\n\n        \n        #purpura-mobile-menu {\n            display: none;\n            margin-bottom: 18px;\n        }\n\n        #purpura-mobile-menu select {\n            width: 100%;\n            padding: 11px;\n            font-size: 14px;\n            border-radius: var(--p-radius);\n            border: 1px solid var(--p-border-2);\n            background: var(--p-surface);\n            color: var(--p-text);\n            font-family: var(--p-font);\n        }\n\n        @media (max-width: 768px) {\n            #purpura-ui-container { flex-direction: column; }\n            .purpura-sidebar { display: none; }\n            #purpura-mobile-menu { display: block; }\n            .purpura-settings-root { padding: 14px; }\n        }\n\n        \n        .purpura-reset-btn {\n            border: 1px solid var(--p-border-2);\n            background: transparent;\n            color: var(--p-text);\n            padding: 7px 13px;\n            border-radius: var(--p-radius);\n            cursor: pointer;\n            font-weight: 600;\n            font-family: var(--p-font);\n            font-size: 13px;\n            transition: background 0.15s, transform 0.15s;\n        }\n\n        .purpura-reset-btn:hover { background: rgba(155,109,255,0.1); }\n        .purpura-reset-btn:active { transform: scale(0.97); }\n\n        \n        .purpura-cursor-picker {\n            display: flex;\n            flex-direction: column;\n            gap: 10px;\n            margin-top: 12px;\n            padding-top: 12px;\n            border-top: 1px solid var(--p-border);\n        }\n\n        .purpura-cursor-grid {\n            display: grid;\n            grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));\n            gap: 8px;\n        }\n\n        .purpura-cursor-option {\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            padding: 11px 8px;\n            background: var(--p-bg);\n            border: 1px solid var(--p-border);\n            border-radius: var(--p-radius);\n            cursor: pointer;\n            transition: border-color 0.18s, background 0.18s, transform 0.18s var(--p-ease-back);\n        }\n\n        .purpura-cursor-option:hover {\n            border-color: var(--p-accent);\n            background: rgba(155,109,255,0.06);\n            transform: translateY(-2px);\n        }\n\n        .purpura-cursor-option:active { transform: scale(0.96); }\n\n        .purpura-cursor-option.active {\n            border-color: var(--p-accent);\n            background: rgba(155,109,255,0.10);\n            box-shadow: 0 0 0 2px var(--p-accent-glow);\n        }\n\n        .purpura-cursor-preview {\n            width: 28px; height: 28px;\n            margin-bottom: 6px;\n            display: flex; align-items: center; justify-content: center;\n        }\n\n        .purpura-cursor-preview svg { width: 24px; height: 24px; }\n\n        .purpura-cursor-name {\n            font-size: 11px;\n            color: var(--p-text-2);\n            text-align: center;\n        }\n\n        .purpura-cursor-option.active .purpura-cursor-name {\n            color: var(--p-text);\n            font-weight: 600;\n        }\n\n        .purpura-cursor-upload {\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            padding: 10px 8px;\n            background: var(--p-bg);\n            border: 1.5px dashed var(--p-border-2);\n            border-radius: var(--p-radius);\n            cursor: pointer;\n            transition: border-color 0.18s, background 0.18s;\n        }\n\n        .purpura-cursor-upload:hover { border-color: var(--p-accent); }\n        .purpura-cursor-upload.active { border-color: var(--p-accent); border-style: solid; }\n\n        .purpura-cursor-upload-icon {\n            width: 28px; height: 28px;\n            display: flex; align-items: center; justify-content: center;\n            font-size: 18px;\n            color: var(--p-text-2);\n            margin-bottom: 4px;\n            overflow: hidden;\n        }\n\n        .purpura-cursor-upload-icon img {\n            width: 28px; height: 28px; object-fit: contain;\n        }\n\n        .purpura-cursor-picker.disabled { opacity: 0.38; pointer-events: none; }\n\n        \n        .purpura-theme-picker {\n            display: flex;\n            flex-direction: column;\n            gap: 8px;\n            margin-top: 12px;\n            padding-top: 12px;\n            border-top: 1px solid var(--p-border);\n        }\n\n        .purpura-theme-option {\n            display: flex;\n            align-items: center;\n            gap: 14px;\n            padding: 11px 13px;\n            background: var(--p-bg);\n            border: 1px solid var(--p-border);\n            border-radius: var(--p-radius);\n            cursor: pointer;\n            transition: border-color 0.18s, background 0.18s, transform 0.18s var(--p-ease-back);\n            position: relative;\n        }\n\n        .purpura-theme-option:hover {\n            border-color: rgba(155,109,255,0.35);\n            background: rgba(155,109,255,0.05);\n            transform: translateX(2px);\n        }\n\n        .purpura-theme-option:active { transform: scale(0.99); }\n\n        .purpura-theme-option.active {\n            border-color: var(--p-accent);\n            background: rgba(155,109,255,0.1);\n        }\n\n        .purpura-theme-option.active::after {\n            content: '';\n            position: absolute;\n            right: 13px;\n            top: 50%;\n            transform: translateY(-50%);\n            width: 6px; height: 6px;\n            border-radius: 50%;\n            background: var(--p-accent);\n            box-shadow: 0 0 8px var(--p-accent-glow-strong);\n        }\n\n        .purpura-theme-preview {\n            width: 46px; height: 46px;\n            border-radius: var(--p-radius);\n            display: flex; align-items: center; justify-content: center;\n            flex-shrink: 0;\n        }\n\n        .purpura-theme-default    { background: linear-gradient(135deg, #2e2f3a, #1c1d26); }\n        .purpura-theme-purpura    { background: linear-gradient(135deg, #2e003e, #1a0025); }\n        .purpura-theme-custom     { background: linear-gradient(135deg, #1a1a2e, #16213e); }\n\n        .purpura-theme-info { display: flex; flex-direction: column; gap: 2px; }\n\n        .purpura-theme-name {\n            font-size: 13.5px;\n            font-weight: 600;\n            color: var(--p-text);\n        }\n\n        .purpura-theme-desc { font-size: 12px; color: var(--p-text-2); }\n        .purpura-theme-author { font-size: 11px; color: var(--p-text-3); font-style: italic; }\n\n        .purpura-theme-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }\n\n        .purpura-theme-tag {\n            font-size: 10px;\n            padding: 2px 7px;\n            background: rgba(155,109,255,0.2);\n            color: var(--p-accent);\n            border-radius: 99px;\n            font-weight: 600;\n        }\n\n        .purpura-theme-loading {\n            padding: 20px;\n            text-align: center;\n            color: var(--p-text-2);\n            font-size: 13px;\n        }\n\n        .purpura-theme-section-header {\n            font-size: 11px;\n            font-weight: 700;\n            color: var(--p-text-3);\n            text-transform: uppercase;\n            letter-spacing: 0.8px;\n            margin-top: 12px;\n            margin-bottom: 6px;\n        }\n\n        .purpura-theme-delete {\n            position: absolute;\n            top: 8px; right: 8px;\n            width: 22px; height: 22px;\n            border-radius: 50%;\n            background: rgba(248,113,113,0.12);\n            border: none;\n            color: var(--p-danger);\n            cursor: pointer;\n            display: flex; align-items: center; justify-content: center;\n            font-size: 14px;\n            opacity: 0;\n            transition: opacity 0.15s, background 0.15s;\n        }\n\n        .purpura-theme-option.custom-theme:hover .purpura-theme-delete { opacity: 1; }\n        .purpura-theme-delete:hover { background: rgba(248,113,113,0.25); }\n\n        .purpura-theme-add {\n            display: flex;\n            align-items: center;\n            justify-content: center;\n            gap: 8px;\n            padding: 11px;\n            background: var(--p-bg);\n            border: 1.5px dashed var(--p-border-2);\n            border-radius: var(--p-radius);\n            cursor: pointer;\n            color: var(--p-text-2);\n            transition: border-color 0.15s, color 0.15s, background 0.15s;\n            font-size: 13px;\n        }\n\n        .purpura-theme-add:hover {\n            border-color: var(--p-accent);\n            color: var(--p-accent);\n            background: rgba(155,109,255,0.05);\n        }\n\n        .purpura-theme-picker.disabled { opacity: 0.38; pointer-events: none; }\n\n        \n        .purpura-theme-modal {\n            position: fixed;\n            inset: 0;\n            background: ${e ? "rgba(17, 17, 19, 0.40)" : "rgba(0,0,0,0.65)"};\n            backdrop-filter: blur(6px);\n            -webkit-backdrop-filter: blur(6px);\n            display: flex;\n            align-items: center;\n            justify-content: center;\n            z-index: 10000;\n            opacity: 0;\n            pointer-events: none;\n            transition: opacity 0.25s var(--p-ease);\n        }\n\n        .purpura-theme-modal.visible {\n            opacity: 1;\n            pointer-events: auto;\n        }\n\n        .purpura-theme-modal-content {\n            background: ${e ? "#ffffff" : "#1a1b26"};\n            border: 1px solid var(--p-border-2);\n            border-radius: var(--p-radius-xl);\n            padding: 24px;\n            width: 500px;\n            max-width: 90vw;\n            max-height: 80vh;\n            overflow-y: auto;\n            position: relative;\n            box-shadow: ${e ? "0 24px 64px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(124, 58, 237, 0.10)" : "0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(155,109,255,0.15)"};\n            transform: scale(0.92) translateY(16px);\n            opacity: 0;\n            transition: transform 0.25s var(--p-ease-back), opacity 0.25s var(--p-ease-back);\n        }\n\n        .purpura-theme-modal.visible .purpura-theme-modal-content {\n            transform: scale(1) translateY(0);\n            opacity: 1;\n        }\n\n        .purpura-theme-modal-header {\n            display: flex;\n            align-items: center;\n            justify-content: space-between;\n            margin-bottom: 16px;\n        }\n\n        .purpura-theme-modal-header h3 { margin: 0; color: var(--p-text); font-size: 17px; }\n\n        .purpura-theme-modal-close {\n            background: var(--p-surface);\n            border: 1px solid var(--p-border);\n            color: var(--p-text-2);\n            width: 28px; height: 28px;\n            border-radius: var(--p-radius-sm);\n            display: flex; align-items: center; justify-content: center;\n            font-size: 16px;\n            cursor: pointer;\n            transition: background 0.15s, color 0.15s;\n        }\n\n        .purpura-theme-modal-close:hover { background: rgba(248,113,113,0.12); color: var(--p-danger); }\n\n        .purpura-theme-modal textarea {\n            width: 100%;\n            min-height: 200px;\n            background: ${e ? "#f5f5f7" : "var(--p-bg)"};\n            border: 1px solid var(--p-border-2);\n            border-radius: var(--p-radius);\n            padding: 12px;\n            color: var(--p-text);\n            font-family: 'JetBrains Mono', 'Fira Code', monospace;\n            font-size: 12px;\n            resize: vertical;\n            margin-bottom: 12px;\n            transition: border-color 0.2s var(--p-ease), box-shadow 0.2s var(--p-ease);\n        }\n\n        .purpura-theme-modal textarea:focus {\n            outline: none;\n            border-color: var(--p-accent);\n            box-shadow: 0 0 0 3px var(--p-accent-glow), 0 0 24px var(--p-accent-glow);\n        }\n\n        .purpura-theme-manifest-example {\n            font-size: 11px;\n            color: var(--p-text-2);\n            background: var(--p-bg);\n            border: 1px solid var(--p-border);\n            padding: 10px;\n            border-radius: var(--p-radius);\n            margin-bottom: 14px;\n            font-family: monospace;\n            white-space: pre-wrap;\n        }\n\n        .purpura-theme-modal-actions { display: flex; gap: 8px; justify-content: flex-end; }\n\n        .purpura-theme-modal-btn {\n            padding: 8px 16px;\n            border-radius: var(--p-radius);\n            font-size: 13px;\n            font-family: var(--p-font);\n            font-weight: 500;\n            cursor: pointer;\n            border: none;\n            transition: opacity 0.15s, transform 0.15s;\n        }\n\n        .purpura-theme-modal-btn:active { transform: scale(0.97); }\n\n        .purpura-theme-modal-btn.cancel {\n            background: var(--p-surface);\n            color: var(--p-text-2);\n            border: 1px solid var(--p-border);\n        }\n\n        .purpura-theme-modal-btn.cancel:hover { background: var(--p-card); }\n\n        .purpura-theme-modal-btn.save {\n            background: var(--p-accent);\n            color: #fff;\n            box-shadow: 0 2px 10px rgba(155,109,255,0.35);\n            font-weight: 600;\n        }\n\n        .purpura-theme-modal-btn.save:hover {\n            background: #8a5df0;\n            box-shadow: 0 4px 16px rgba(155,109,255,0.45);\n            transform: translateY(-1px);\n        }\n\n        .purpura-theme-modal-hint { font-size: 13px; color: var(--p-text-2); margin-bottom: 10px; }\n\n        .purpura-settings-dialog-content {\n            width: 470px;\n            max-width: 92vw;\n            border-radius: 14px;\n            border: 1px solid ${e ? "rgba(124, 58, 237, 0.20)" : "rgba(122, 90, 177, 0.38)"};\n            background: ${e ? "#ffffff" : "radial-gradient(140% 110% at 0% 0%, rgba(96, 53, 156, 0.22) 0%, rgba(17, 12, 28, 0.96) 42%, rgba(10, 8, 18, 0.98) 100%)"};\n            box-shadow: ${e ? "0 28px 58px rgba(0, 0, 0, 0.12)" : "0 28px 58px rgba(0, 0, 0, 0.58), 0 0 0 1px rgba(154, 104, 230, 0.1) inset"};\n        }\n\n        .purpura-settings-dialog-chip {\n            display: inline-flex;\n            align-items: center;\n            margin-bottom: 10px;\n            padding: 4px 9px;\n            border-radius: 999px;\n            font-size: 10px;\n            font-weight: 700;\n            letter-spacing: 0.06em;\n            text-transform: uppercase;\n            border: 1px solid rgba(130, 110, 170, 0.62);\n            color: rgba(234, 225, 255, 0.95);\n            background: rgba(53, 35, 76, 0.52);\n        }\n\n        .purpura-settings-dialog-chip.confirm {\n            border-color: rgba(164, 118, 230, 0.72);\n            background: rgba(82, 46, 128, 0.62);\n        }\n\n        .purpura-settings-dialog-chip.alert {\n            border-color: rgba(212, 166, 95, 0.72);\n            color: rgba(255, 242, 218, 0.96);\n            background: rgba(112, 84, 45, 0.58);\n        }\n\n        .purpura-settings-dialog-message {\n            white-space: pre-line;\n            line-height: 1.5;\n            color: rgba(221, 211, 245, 0.92);\n        }\n\n        .purpura-settings-dialog-field {\n            margin-top: 12px;\n        }\n\n        .purpura-settings-dialog-info {\n            margin-top: 8px;\n            color: rgba(186, 173, 214, 0.9);\n            font-size: 12px;\n            line-height: 1.4;\n        }\n\n        .purpura-settings-dialog-select {\n            width: 100%;\n            border-radius: 10px;\n            border: 1px solid var(--p-border-2);\n            background: ${e ? "#f5f5f7" : "linear-gradient(180deg, rgba(24, 18, 37, 0.95) 0%, rgba(17, 13, 29, 0.95) 100%)"};\n            color: var(--p-text);\n            padding: 10px 12px;\n            font-size: 14px;\n            outline: none;\n            transition: border-color 0.16s ease, box-shadow 0.16s ease;\n        }\n\n        .purpura-settings-dialog-select:focus {\n            border-color: rgba(175, 120, 255, 0.88);\n            box-shadow: 0 0 0 3px rgba(148, 99, 232, 0.26);\n        }\n\n        .purpura-settings-dialog-input {\n            margin: 8px 0 14px;\n            border-radius: 10px;\n            border: 1px solid var(--p-border-2);\n            background: ${e ? "#f5f5f7" : "linear-gradient(180deg, rgba(24, 18, 37, 0.95) 0%, rgba(17, 13, 29, 0.95) 100%)"};\n            color: var(--p-text);\n            transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;\n        }\n\n        .purpura-settings-dialog-input:focus {\n            border-color: rgba(175, 120, 255, 0.88);\n            background: linear-gradient(180deg, rgba(27, 20, 40, 0.98) 0%, rgba(19, 15, 32, 0.98) 100%);\n            box-shadow: 0 0 0 3px rgba(148, 99, 232, 0.26);\n        }\n\n        .purpura-settings-dialog-error {\n            margin-top: 8px;\n            color: #ff8c87;\n            font-size: 12px;\n            line-height: 1.35;\n            display: none;\n        }\n\n        .purpura-settings-dialog-content .purpura-theme-modal-header h3 {\n            font-size: 18px;\n            letter-spacing: 0;\n        }\n\n        .purpura-settings-dialog-content .purpura-theme-modal-actions {\n            gap: 9px;\n            margin-top: 18px;\n        }\n\n        .purpura-settings-dialog-content .purpura-theme-modal-btn {\n            border-radius: 10px;\n            min-width: 108px;\n            padding: 9px 14px;\n        }\n\n        .purpura-settings-dialog-content .purpura-theme-modal-btn.cancel {\n            border-color: rgba(127, 93, 182, 0.46);\n            background: rgba(35, 26, 55, 0.72);\n            color: rgba(220, 206, 245, 0.92);\n        }\n\n        .purpura-settings-dialog-content .purpura-theme-modal-btn.cancel:hover {\n            background: rgba(50, 35, 76, 0.76);\n        }\n\n        .purpura-settings-dialog-content .purpura-theme-modal-btn.save {\n            border: 1px solid rgba(179, 126, 255, 0.58);\n            background: linear-gradient(135deg, #7a44c0 0%, #5f318f 100%);\n            color: #f9f2ff;\n            box-shadow: 0 10px 24px rgba(58, 27, 95, 0.42);\n        }\n\n        .purpura-settings-dialog-content .purpura-theme-modal-btn.save:hover {\n            background: linear-gradient(135deg, #8750d0 0%, #6c3a9f 100%);\n        }\n\n        .purpura-settings-dialog-content.mode-alert .purpura-theme-modal-btn.save {\n            border-color: rgba(212, 166, 95, 0.78);\n            background: linear-gradient(135deg, #a16f2f 0%, #8b5f28 100%);\n            box-shadow: 0 8px 20px rgba(88, 61, 29, 0.32);\n        }\n\n        .purpura-settings-dialog-content.mode-alert .purpura-theme-modal-btn.save:hover {\n            background: linear-gradient(135deg, #ae7a35 0%, #96672c 100%);\n        }\n\n        \n        .purpura-tabs-picker {\n            display: flex;\n            flex-direction: column;\n            gap: 14px;\n            margin-top: 12px;\n            padding-top: 12px;\n            border-top: 1px solid var(--p-border);\n        }\n\n        .purpura-tabs-picker.disabled { opacity: 0.38; pointer-events: none; }\n\n        .purpura-tabs-section { display: flex; flex-direction: column; gap: 7px; }\n\n        .purpura-tabs-section-title {\n            font-size: 11px;\n            font-weight: 700;\n            color: var(--p-text-3);\n            text-transform: uppercase;\n            letter-spacing: 0.7px;\n        }\n\n        .purpura-tabs-seasonal-toggle {\n            display: flex;\n            align-items: center;\n            gap: 6px;\n            padding: 10px 12px;\n            margin-top: 10px;\n            background: var(--p-bg);\n            border-radius: var(--p-radius);\n            border: 1px solid var(--p-border);\n            cursor: pointer;\n            font-size: 12.5px;\n            font-weight: 600;\n            color: var(--p-text-2);\n            transition: border-color 0.18s, background 0.18s;\n            user-select: none;\n        }\n\n        .purpura-tabs-seasonal-toggle:hover {\n            border-color: var(--p-accent);\n            background: rgba(155,109,255,0.06);\n            color: var(--p-text);\n        }\n\n        .purpura-tabs-seasonal-arrow {\n            font-size: 10px;\n            transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);\n        }\n\n        .purpura-tabs-seasonal-arrow.open {\n            transform: rotate(90deg);\n        }\n\n        .purpura-tabs-seasonal-grid {\n            display: none;\n            flex-wrap: wrap;\n            gap: 6px;\n            margin-top: 8px;\n            padding: 4px;\n        }\n\n        .purpura-tabs-seasonal-grid.open {\n            display: flex;\n        }\n\n        .purpura-tabs-title-input {\n            width: 100%;\n            padding: 9px 11px;\n            background: var(--p-bg);\n            border: 1px solid var(--p-border-2);\n            border-radius: var(--p-radius);\n            color: var(--p-text);\n            font-size: 13px;\n            font-family: var(--p-font);\n            transition: border-color 0.15s;\n        }\n\n        .purpura-tabs-title-input:focus {\n            outline: none;\n            border-color: var(--p-accent);\n            box-shadow: 0 0 0 3px var(--p-accent-glow);\n        }\n\n        .purpura-tabs-title-hint { font-size: 11px; color: var(--p-text-3); }\n\n        .purpura-tabs-icons { display: flex; flex-wrap: wrap; gap: 8px; }\n\n        .purpura-tabs-icon-option {\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            gap: 6px;\n            padding: 11px;\n            background: var(--p-bg);\n            border: 1px solid var(--p-border);\n            border-radius: var(--p-radius);\n            cursor: pointer;\n            min-width: 76px;\n            transition: border-color 0.18s, background 0.18s, transform 0.18s var(--p-ease-back);\n        }\n\n        .purpura-tabs-icon-option:hover {\n            border-color: var(--p-accent);\n            background: rgba(155,109,255,0.06);\n            transform: translateY(-2px);\n        }\n\n        .purpura-tabs-icon-option.active {\n            border-color: var(--p-accent);\n            background: rgba(155,109,255,0.14);\n            box-shadow: 0 0 0 2px var(--p-accent-glow-strong);\n        }\n\n        .purpura-tabs-icon-preview img { width: 30px; height: 30px; object-fit: contain; }\n\n        .purpura-tabs-icon-name { font-size: 11px; color: var(--p-text-2); text-align: center; }\n\n        .purpura-tabs-upload {\n            display: flex; flex-direction: column;\n            align-items: center; justify-content: center;\n            gap: 6px;\n            padding: 11px;\n            background: var(--p-bg);\n            border: 1.5px dashed var(--p-border-2);\n            border-radius: var(--p-radius);\n            cursor: pointer;\n            min-width: 76px;\n            transition: border-color 0.15s, background 0.15s;\n        }\n\n        .purpura-tabs-upload:hover { border-color: var(--p-accent); background: rgba(155,109,255,0.05); }\n        .purpura-tabs-upload.active { border-color: var(--p-accent); border-style: solid; background: rgba(155,109,255,0.1); }\n        .purpura-tabs-upload-icon { font-size: 18px; color: var(--p-text-3); }\n\n        .purpura-tabs-preview {\n            display: flex;\n            align-items: center;\n            gap: 8px;\n            padding: 9px 13px;\n            background: var(--p-bg);\n            border-radius: var(--p-radius);\n            border: 1px solid var(--p-border);\n        }\n\n        .purpura-tabs-preview-favicon { width: 16px; height: 16px; }\n        .purpura-tabs-preview-title { font-size: 13px; color: var(--p-text); }\n\n        \n        .purpura-uncorporatify-picker {\n            display: flex; flex-direction: column; gap: 6px;\n            margin-top: 12px;\n            padding-top: 12px;\n            border-top: 1px solid var(--p-border);\n        }\n\n        .purpura-uncorporatify-picker.disabled { opacity: 0.38; pointer-events: none; }\n\n        .purpura-uncorporatify-item {\n            display: flex; align-items: center; justify-content: space-between;\n            padding: 10px 13px;\n            background: var(--p-bg);\n            border-radius: var(--p-radius);\n            border: 1px solid var(--p-border);\n            transition: border-color 0.15s;\n        }\n\n        .purpura-uncorporatify-item:hover { border-color: var(--p-border-2); }\n\n        .purpura-uncorporatify-label { display: flex; align-items: center; gap: 8px; font-size: 13px; }\n        .purpura-uncorporatify-from { color: var(--p-text-3); text-decoration: line-through; }\n        .purpura-uncorporatify-arrow { color: var(--p-accent); }\n        .purpura-uncorporatify-to { color: var(--p-text); font-weight: 500; }\n\n        .purpura-uncorporatify-toggle {\n            position: relative; display: inline-block;\n            width: 36px; height: 20px; flex-shrink: 0;\n        }\n\n        .purpura-uncorporatify-toggle input { opacity: 0; width: 0; height: 0; }\n\n        .purpura-uncorporatify-toggle .slider {\n            position: absolute; cursor: pointer; inset: 0;\n            background: ${e ? "#c8c8d0" : "#2a2b36"};\n            transition: background 0.25s var(--p-ease);\n            border-radius: 99px;\n        }\n\n        .purpura-uncorporatify-toggle .slider::before {\n            position: absolute; content: '';\n            height: 14px; width: 14px;\n            left: 3px; bottom: 3px;\n            background: #fff;\n            transition: transform 0.3s var(--p-ease-back);\n            border-radius: 50%;\n            box-shadow: ${e ? "0 1px 4px rgba(0, 0, 0, 0.25)" : "none"};\n        }\n\n        .purpura-uncorporatify-toggle input:checked + .slider { background: var(--p-accent); }\n        .purpura-uncorporatify-toggle input:checked + .slider::before { transform: translateX(16px); }\n\n        \n        .purpura-serverinfo-picker {\n            display: flex; flex-direction: column; gap: 6px;\n            margin-top: 12px; padding-top: 12px;\n            border-top: 1px solid var(--p-border);\n        }\n\n        .purpura-serverinfo-picker.disabled { opacity: 0.38; pointer-events: none; }\n\n        .purpura-serverinfo-item {\n            display: flex; align-items: center; justify-content: space-between;\n            padding: 10px 13px;\n            background: var(--p-bg);\n            border-radius: var(--p-radius);\n            border: 1px solid var(--p-border);\n            transition: border-color 0.15s;\n        }\n\n        .purpura-serverinfo-item:hover { border-color: var(--p-border-2); }\n\n        .purpura-serverinfo-label { display: flex; align-items: center; gap: 10px; font-size: 13px; }\n\n        .purpura-serverinfo-icon {\n            width: 28px; height: 28px;\n            display: flex; align-items: center; justify-content: center;\n            border-radius: var(--p-radius-sm); flex-shrink: 0;\n        }\n\n        .purpura-serverinfo-icon.ping    { background: rgba(59,130,246,0.12); color: #60a5fa; }\n        .purpura-serverinfo-icon.fps     { background: rgba(74,222,128,0.12); color: var(--p-success); }\n        .purpura-serverinfo-icon.region  { background: rgba(155,109,255,0.12); color: var(--p-accent); }\n        .purpura-serverinfo-icon.serverVersion,\n        .purpura-serverinfo-icon.serverId { background: rgba(148,163,184,0.08); color: var(--p-text-2); }\n\n        .purpura-serverinfo-label.dev-option { opacity: 0.65; }\n        .purpura-serverinfo-label.dev-option .purpura-serverinfo-name { font-size: 12px; }\n        .purpura-serverinfo-name { color: var(--p-text); font-weight: 500; }\n\n        .purpura-serverinfo-toggle {\n            position: relative; display: inline-block;\n            width: 36px; height: 20px; flex-shrink: 0;\n        }\n\n        .purpura-serverinfo-toggle input { opacity: 0; width: 0; height: 0; }\n\n        .purpura-serverinfo-toggle .slider {\n            position: absolute; cursor: pointer; inset: 0;\n            background: ${e ? "#c8c8d0" : "#2a2b36"};\n            transition: background 0.25s var(--p-ease);\n            border-radius: 99px;\n        }\n\n        .purpura-serverinfo-toggle .slider::before {\n            position: absolute; content: '';\n            height: 14px; width: 14px;\n            left: 3px; bottom: 3px;\n            background: #fff;\n            transition: transform 0.3s var(--p-ease-back);\n            border-radius: 50%;\n            box-shadow: ${e ? "0 1px 4px rgba(0, 0, 0, 0.25)" : "none"};\n        }\n\n        .purpura-serverinfo-toggle input:checked + .slider { background: var(--p-accent); }\n        .purpura-serverinfo-toggle input:checked + .slider::before { transform: translateX(16px); }\n\n        \n        .purpura-pagebinds-picker {\n            display: flex; flex-direction: column; gap: 8px;\n            margin-top: 12px; padding-top: 12px;\n            border-top: 1px solid var(--p-border);\n        }\n\n        .purpura-pagebinds-picker.disabled { opacity: 0.38; pointer-events: none; }\n\n        .purpura-pagebinds-list { display: flex; flex-direction: column; gap: 6px; }\n\n        .purpura-pagebinds-item {\n            display: flex; align-items: center; gap: 10px;\n            padding: 9px 12px;\n            background: var(--p-bg);\n            border-radius: var(--p-radius);\n            border: 1px solid var(--p-border);\n            transition: border-color 0.15s;\n        }\n\n        .purpura-pagebinds-item:hover { border-color: var(--p-border-2); }\n\n        .purpura-pagebinds-key {\n            display: flex; align-items: center; justify-content: center;\n            min-width: 34px; height: 34px;\n            background: rgba(155,109,255,0.15);\n            border: 1px solid rgba(155,109,255,0.3);\n            color: var(--p-accent);\n            font-weight: 700; font-size: 13px;\n            border-radius: var(--p-radius-sm); flex-shrink: 0;\n        }\n\n        .purpura-pagebinds-info { flex: 1; min-width: 0; }\n\n        .purpura-pagebinds-name { font-size: 13px; font-weight: 500; color: var(--p-text); }\n\n        .purpura-pagebinds-url { font-size: 11px; color: var(--p-text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n\n        .purpura-pagebinds-toggle {\n            position: relative; display: inline-block;\n            width: 36px; height: 20px; flex-shrink: 0;\n        }\n\n        .purpura-pagebinds-toggle input { opacity: 0; width: 0; height: 0; }\n\n        .purpura-pagebinds-toggle .slider {\n            position: absolute; cursor: pointer; inset: 0;\n            background: ${e ? "#c8c8d0" : "#2a2b36"}; transition: background 0.25s var(--p-ease); border-radius: 99px;\n        }\n\n        .purpura-pagebinds-toggle .slider::before {\n            position: absolute; content: '';\n            height: 14px; width: 14px; left: 3px; bottom: 3px;\n            background: #fff; transition: transform 0.3s var(--p-ease-back); border-radius: 50%;\n            box-shadow: ${e ? "0 1px 4px rgba(0, 0, 0, 0.25)" : "none"};\n        }\n\n        .purpura-pagebinds-toggle input:checked + .slider { background: var(--p-accent); }\n        .purpura-pagebinds-toggle input:checked + .slider::before { transform: translateX(16px); }\n\n        .purpura-pagebinds-hint {\n            font-size: 11px; color: var(--p-text-3);\n            padding: 7px 11px; background: var(--p-bg);\n            border-radius: var(--p-radius);\n            border: 1px solid var(--p-border);\n        }\n\n        .purpura-pagebinds-key-btn {\n            display: flex; align-items: center; justify-content: center;\n            min-width: 34px; height: 34px;\n            background: rgba(155,109,255,0.15);\n            border: 1px solid rgba(155,109,255,0.3);\n            color: var(--p-accent);\n            font-weight: 700; font-size: 13px;\n            border-radius: var(--p-radius-sm); flex-shrink: 0;\n            cursor: pointer;\n            transition: opacity 0.15s, background 0.15s;\n            padding: 0 8px; white-space: nowrap; font-family: var(--p-font);\n        }\n\n        .purpura-pagebinds-key-btn:hover { background: rgba(155,109,255,0.25); }\n\n        .purpura-pagebinds-key-btn.capturing {\n            background: rgba(230,114,44,0.15);\n            border-color: rgba(230,114,44,0.4);\n            color: #f09a5a;\n            font-size: 10px; min-width: 64px;\n            animation: p-key-pulse 0.85s ease-in-out infinite;\n        }\n\n        @keyframes p-key-pulse {\n            0%, 100% { opacity: 1; }\n            50% { opacity: 0.5; }\n        }\n\n        .purpura-pagebinds-actions { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }\n\n        .purpura-pagebinds-action-btn {\n            display: flex; align-items: center; justify-content: center;\n            width: 27px; height: 27px;\n            border-radius: var(--p-radius-sm); border: none;\n            cursor: pointer; font-size: 12px;\n            background: rgba(255,255,255,0.04);\n            color: var(--p-text-2);\n            transition: background 0.15s, color 0.15s;\n        }\n\n        .purpura-pagebinds-action-btn:hover { background: rgba(255,255,255,0.1); color: var(--p-text); }\n        .purpura-pagebinds-action-btn.delete:hover { background: rgba(248,113,113,0.12); color: var(--p-danger); }\n\n        .purpura-pagebinds-edit-form {\n            background: var(--p-bg);\n            border-radius: var(--p-radius);\n            padding: 11px;\n            display: flex; flex-direction: column; gap: 8px;\n            border: 1px solid var(--p-border-2);\n            animation: p-subsetting-in 0.18s var(--p-ease) forwards;\n        }\n\n        .purpura-pagebinds-form-row { display: flex; align-items: center; gap: 7px; }\n\n        .purpura-pagebinds-form-input {\n            flex: 1;\n            background: rgba(255,255,255,0.04);\n            border: 1px solid var(--p-border);\n            border-radius: var(--p-radius-sm);\n            padding: 6px 9px;\n            font-size: 12px; font-family: var(--p-font);\n            color: var(--p-text); outline: none;\n            transition: border-color 0.15s;\n            min-width: 0;\n        }\n\n        .purpura-pagebinds-form-input:focus { border-color: var(--p-accent); }\n        .purpura-pagebinds-form-url { flex: 2; }\n\n        .purpura-pagebinds-form-actions { display: flex; align-items: center; gap: 7px; justify-content: flex-end; }\n\n        .purpura-pagebinds-form-error { flex: 1; font-size: 11px; color: var(--p-danger); min-height: 14px; }\n\n        .purpura-pagebinds-btn-cancel,\n        .purpura-pagebinds-btn-save {\n            padding: 6px 13px; border-radius: var(--p-radius-sm);\n            font-size: 12px; font-weight: 500; font-family: var(--p-font);\n            border: none; cursor: pointer; transition: opacity 0.15s, transform 0.15s;\n        }\n\n        .purpura-pagebinds-btn-cancel:active,\n        .purpura-pagebinds-btn-save:active { transform: scale(0.97); }\n\n        .purpura-pagebinds-btn-cancel { background: rgba(255,255,255,0.06); color: var(--p-text-2); }\n        .purpura-pagebinds-btn-cancel:hover { opacity: 0.8; }\n\n        .purpura-pagebinds-btn-save { background: var(--p-accent); color: #fff; }\n        .purpura-pagebinds-btn-save:hover { background: #8a5df0; }\n\n        .purpura-pagebinds-add-btn {\n            display: flex; align-items: center; justify-content: center;\n            gap: 6px; width: 100%; padding: 9px;\n            background: rgba(155,109,255,0.07);\n            border: 1px dashed rgba(155,109,255,0.3);\n            border-radius: var(--p-radius); color: var(--p-accent);\n            font-size: 12px; font-weight: 500; font-family: var(--p-font);\n            cursor: pointer;\n            transition: background 0.15s, border-color 0.15s;\n        }\n\n        .purpura-pagebinds-add-btn:hover {\n            background: rgba(155,109,255,0.14);\n            border-color: rgba(155,109,255,0.5);\n        }; transition: background 0.25s var(--p-ease); border-radius: 99px;\n        }\n\n        \n        @keyframes p-search-result-in {\n            from { opacity: 0; transform: translateX(-6px); }\n            to   { opacity: 1; transform: translateX(0); }\n        }\n\n        .purpura-search-result-group {\n            animation: p-section-in 0.2s var(--p-ease) forwards;\n        }\n\n        .purpura-search-result-group .purpura-setting-card:nth-child(1) { animation-delay: 0.02s; }\n        .purpura-search-result-group .purpura-setting-card:nth-child(2) { animation-delay: 0.06s; }\n        .purpura-search-result-group .purpura-setting-card:nth-child(3) { animation-delay: 0.10s; }\n        .purpura-search-result-group .purpura-setting-card:nth-child(4) { animation-delay: 0.14s; }\n\n        .purpura-search-category-label {\n            display: flex;\n            align-items: center;\n            gap: 8px;\n            margin: 0 0 10px;\n            color: var(--p-text-3);\n            font-size: 11px;\n            font-weight: 700;\n            text-transform: uppercase;\n            letter-spacing: 0.8px;\n        }\n\n        .purpura-search-category-label::after {\n            content: '';\n            flex: 1;\n            height: 1px;\n            background: var(--p-border);\n        }\n\n        \n        .p-search-match {\n            background: rgba(155,109,255,0.2);\n            color: var(--p-accent);\n            border-radius: 3px;\n            padding: 0 2px;\n        }\n    `;
+        #purpura-settings-container { display: block; width: 100%; }\n\n        #purpura-ui-container {\n            display: flex;\n            flex-direction: row;\n            gap: 20px;\n            align-items: flex-start;\n            width: 100%;\n        }\n\n        \n        .purpura-sidebar {\n            width: 196px;\n            flex-shrink: 0;\n            list-style: none;\n            padding: 10px;\n            margin: 0;\n            background: var(--p-surface);\n            border-radius: var(--p-radius-lg);\n            border: 1px solid var(--p-border);\n            position: sticky;\n            top: 20px;\n        }\n\n        .purpura-sidebar .purpura-menu-item {\n            list-style: none;\n            margin-bottom: 1px;\n            position: relative;\n        }\n\n        .purpura-sidebar .purpura-menu-link {\n            display: flex;\n            align-items: center;\n            gap: 9px;\n            padding: 9px 12px;\n            color: var(--p-text-2);\n            text-decoration: none;\n            font-size: 13px;\n            font-weight: 500;\n            border-radius: var(--p-radius);\n            cursor: pointer;\n            transition: background 0.15s var(--p-ease), color 0.15s var(--p-ease), padding-left 0.2s var(--p-ease);\n            position: relative;\n        }\n\n        .purpura-sidebar .purpura-menu-link .p-nav-icon {\n            width: 16px;\n            height: 16px;\n            flex-shrink: 0;\n            opacity: 0.55;\n            transition: opacity 0.15s;\n        }\n\n        .purpura-sidebar .purpura-menu-link:hover {\n            background: rgba(155,109,255,0.08);\n            color: var(--p-text);\n        }\n\n        .purpura-sidebar .purpura-menu-link:hover .p-nav-icon { opacity: 0.8; }\n\n        .purpura-sidebar .purpura-menu-link.active {\n            background: rgba(155,109,255,0.10);\n            color: var(--p-text);\n            font-weight: 600;\n            padding-left: 14px;\n        }\n\n        .purpura-sidebar .purpura-menu-link.active .p-nav-icon { opacity: 1; }\n\n        .purpura-sidebar .purpura-menu-link.active::before {\n            content: '';\n            position: absolute;\n            left: 0;\n            top: 20%;\n            bottom: 20%;\n            width: 3px;\n            background: var(--p-accent);\n            border-radius: 0 3px 3px 0;\n            animation: p-bar-in 0.25s var(--p-ease-back) forwards;\n        }\n\n        @keyframes p-bar-in {\n            from { transform: scaleY(0); opacity: 0; }\n            to   { transform: scaleY(1); opacity: 1; }\n        }\n\n        .purpura-menu-separator {\n            height: 1px;\n            background: var(--p-border);\n            margin: 8px 4px;\n            list-style: none;\n        }\n\n        \n        .purpura-search-container {\n            margin-bottom: 8px;\n            padding: 0 2px;\n        }\n\n        #purpura-search-input {\n            width: 100%;\n            padding: 7px 8px 7px 28px;\n            border-radius: var(--p-radius);\n            font-size: 12px;\n            border: 1px solid var(--p-border);\n            background: var(--p-bg);\n            color: var(--p-text);\n            transition: border-color 0.2s, box-shadow 0.2s;\n            font-family: var(--p-font);\n            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236d6487' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");\n            background-repeat: no-repeat;\n            background-position: 8px center;\n            box-sizing: border-box;\n        }\n\n        #purpura-search-input:focus {\n            outline: none;\n            border-color: var(--p-accent);\n            box-shadow: 0 0 0 3px var(--p-accent-glow);\n        }\n\n        #purpura-search-input::placeholder { color: var(--p-text-3); }\n\n        \n        #purpura-content-area {\n            flex: 1;\n            min-width: 0;\n            min-height: 340px;\n            overflow: visible;\n            padding-right: 4px;\n            touch-action: pan-y;\n        }\n        #purpura-content-area::-webkit-scrollbar { width: 0px; }\n        #purpura-content-area::-webkit-scrollbar-track { background: transparent; }\n        #purpura-content-area::-webkit-scrollbar-thumb { background: transparent; }\n        #purpura-section-content { width: 100%; }\n\n        \n        @keyframes p-section-in {\n            from { opacity: 0; transform: translateY(8px); }\n            to   { opacity: 1; transform: translateY(0); }\n        }\n\n        #purpura-section-content > * {\n            animation: p-section-in 0.22s var(--p-ease) forwards;\n        }\n\n        \n        @keyframes p-card-in {\n            from { opacity: 0; transform: translateY(6px); }\n            to   { opacity: 1; transform: translateY(0); }\n        }\n\n        .purpura-setting-card {\n            opacity: 0;\n            animation: p-card-in 0.28s var(--p-ease) forwards;\n        }\n\n        .purpura-setting-card:nth-child(1)  { animation-delay: 0.00s; }\n        .purpura-setting-card:nth-child(2)  { animation-delay: 0.04s; }\n        .purpura-setting-card:nth-child(3)  { animation-delay: 0.08s; }\n        .purpura-setting-card:nth-child(4)  { animation-delay: 0.12s; }\n        .purpura-setting-card:nth-child(5)  { animation-delay: 0.16s; }\n        .purpura-setting-card:nth-child(6)  { animation-delay: 0.20s; }\n        .purpura-setting-card:nth-child(7)  { animation-delay: 0.24s; }\n        .purpura-setting-card:nth-child(8)  { animation-delay: 0.28s; }\n\n        \n        .purpura-setting-card {\n            display: flex;\n            flex-direction: column;\n            font-size: 14px;\n            margin: 0 0 10px 0;\n            background: var(--p-card);\n            color: var(--p-text);\n            border-radius: var(--p-radius-lg);\n            padding: 16px 18px;\n            border: 1px solid var(--p-border);\n            \n            box-shadow: ${e ? "0 1px 3px rgba(0, 0, 0, 0.06)" : "inset 0 1px 0 rgba(255,255,255,0.04)"};\n            transition: border-color 0.2s var(--p-ease), background 0.2s var(--p-ease), box-shadow 0.2s var(--p-ease);\n        }\n\n        .purpura-setting-card:hover {\n            border-color: ${e ? "rgba(124, 58, 237, 0.20)" : "rgba(155,109,255,0.18)"};\n            background: var(--p-card-hover);\n            box-shadow: ${e ? "0 2px 8px rgba(0, 0, 0, 0.08)" : "inset 0 1px 0 rgba(255,255,255,0.04), 0 0 0 1px rgba(155,109,255,0.06)"};\n        }\n\n        .purpura-setting-card.child-setting {\n            margin-left: 28px;\n            margin-top: 8px;\n            background: var(--p-surface);\n            border-left: 2px solid var(--p-accent);\n            opacity: 0.9;\n        }\n\n        .purpura-setting-card.child-setting.parent-disabled {\n            opacity: 0.38;\n            pointer-events: none;\n            filter: saturate(0.3);\n        }\n\n        .purpura-setting-header {\n            display: flex;\n            align-items: center;\n            gap: 8px;\n            margin-bottom: 10px;\n            color: var(--p-text);\n        }\n\n        \n        .p-setting-icon {\n            width: 30px;\n            height: 30px;\n            border-radius: var(--p-radius-sm);\n            background: rgba(155,109,255,0.12);\n            display: flex;\n            align-items: center;\n            justify-content: center;\n            flex-shrink: 0;\n            margin-right: 4px;\n            transition: background 0.2s;\n        }\n\n        .p-setting-icon svg {\n            width: 15px;\n            height: 15px;\n            color: var(--p-accent);\n            stroke: currentColor;\n        }\n\n        .p-setting-icon img {\n            width: 20px;\n            height: 20px;\n            object-fit: contain;\n        }\n\n        .purpura-setting-card:hover .p-setting-icon {\n            background: rgba(155,109,255,0.2);\n        }\n\n        .purpura-setting-header > label:not(.purpura-toggle) {\n            color: var(--p-text);\n            font-weight: 600;\n            font-size: 14px;\n            flex: 1;\n        }\n\n        .purpura-setting-header > .purpura-toggle {\n            flex: 0 0 auto;\n        }\n\n        .purpura-setting-divider {\n            height: 1px;\n            background: var(--p-border);\n            margin-bottom: 10px;\n        }\n\n        .purpura-setting-desc {\n            color: var(--p-text-2);\n            font-size: 13px;\n            line-height: 1.65;\n            margin-bottom: 5px;\n        }\n\n        .purpura-setting-desc:last-child { margin-bottom: 0; }\n\n        .purpura-setting-desc strong {\n            font-weight: 600;\n            color: var(--p-text);\n        }\n\n        \n        .purpura-toggle {\n            position: relative;\n            display: inline-block;\n            width: 38px;\n            height: 22px;\n            flex-shrink: 0;\n            margin-left: auto;\n        }\n\n        .purpura-toggle input { opacity: 0; width: 0; height: 0; }\n\n        .purpura-toggle-slider {\n            position: absolute;\n            cursor: pointer;\n            inset: 0;\n            background: ${e ? "#c8c8d0" : "#2a2b36"};\n            transition: background 0.25s var(--p-ease);\n            border-radius: 99px;\n            border: 1px solid rgba(255,255,255,0.07);\n        }\n\n        .purpura-toggle-slider::before {\n            position: absolute;\n            content: '';\n            height: 16px;\n            width: 16px;\n            left: 3px;\n            bottom: 2px;\n            background: #fff;\n            transition: transform 0.3s var(--p-ease-back), box-shadow 0.2s;\n            border-radius: 50%;\n            box-shadow: ${e ? "0 1px 4px rgba(0, 0, 0, 0.25)" : "0 1px 3px rgba(0,0,0,0.4)"};\n        }\n\n        .purpura-toggle input:checked + .purpura-toggle-slider {\n            background: var(--p-accent);\n            border-color: transparent;\n        }\n\n        .purpura-toggle input:checked + .purpura-toggle-slider::before {\n            transform: translateX(16px);\n            box-shadow: 0 0 6px rgba(155,109,255,0.5);\n        }\n\n        .purpura-toggle input:disabled + .purpura-toggle-slider {\n            opacity: 0.4;\n            cursor: not-allowed;\n        }\n\n        \n        .purpura-toggle-slider::after {\n            content: '';\n            position: absolute;\n            inset: -4px;\n            border-radius: 99px;\n            background: var(--p-accent-glow);\n            opacity: 0;\n            transition: opacity 0.3s;\n        }\n\n        .purpura-toggle input:focus-visible + .purpura-toggle-slider::after { opacity: 1; }\n\n        \n        .purpura-pill {\n            display: inline-flex;\n            align-items: center;\n            gap: 5px;\n            padding: 4px 10px;\n            min-height: 22px;\n            border-radius: 99px;\n            font-size: 11px;\n            font-weight: 700;\n            line-height: 1;\n            cursor: default;\n            text-transform: uppercase;\n            letter-spacing: 0.5px;\n            position: relative;\n            overflow: hidden;\n        }\n\n        .purpura-pill::after {\n            content: '';\n            position: absolute;\n            inset: 0;\n            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);\n            transform: translateX(-100%);\n        }\n\n        .purpura-pill:hover::after {\n            animation: p-pill-shimmer 0.6s ease forwards;\n        }\n\n        @keyframes p-pill-shimmer {\n            to { transform: translateX(100%); }\n        }\n\n        .purpura-pill.premium {\n            background: rgba(240,180,41,0.15);\n            border: 1px solid rgba(240,180,41,0.35);\n            color: var(--p-premium);\n        }\n\n        .purpura-pill.coming-soon {\n            background: rgba(230,114,44,0.15);\n            border: 1px solid rgba(230,114,44,0.3);\n            color: #f09a5a;\n        }\n\n        .purpura-pill.beta {\n            background: rgba(77,161,245,0.15);\n            border: 1px solid rgba(77,161,245,0.3);\n            color: var(--p-beta);\n        }\n\n        .purpura-pill.experimental {\n            background: rgba(234,179,8,0.15);\n            border: 1px solid rgba(234,179,8,0.3);\n            color: #eab308;\n        }\n\n        .purpura-pill.deprecated {\n            background: rgba(220,38,38,0.15);\n            border: 1px solid rgba(220,38,38,0.32);\n            color: #dc2626;\n        }\n\n        .purpura-setting-card.is-deprecated {\n            opacity: 0.52;\n            pointer-events: none;\n            filter: saturate(0.35) grayscale(0.15);\n        }\n        .purpura-setting-card.is-deprecated .purpura-toggle input:checked + .purpura-toggle-slider {\n            background: #6b7280;\n            border-color: transparent;\n        }\n        .purpura-setting-card.is-deprecated .purpura-setting-desc {\n            opacity: 0.75;\n        }\n\n        \n        .purpura-help-icon {\n            display: inline-flex;\n            align-items: center;\n            justify-content: center;\n            width: 18px;\n            height: 18px;\n            border-radius: 50%;\n            background: var(--p-surface);\n            border: 1px solid var(--p-border-2);\n            color: var(--p-text-2);\n            font-size: 10px;\n            font-weight: 700;\n            cursor: pointer;\n            transition: all 0.2s;\n            position: relative;\n        }\n\n        .purpura-help-icon:hover {\n            background: var(--p-accent);\n            border-color: var(--p-accent);\n            color: #fff;\n            transform: scale(1.1);\n        }\n\n        .purpura-help-tooltip {\n            display: none !important;\n        }\n\n        #purpura-floating-tooltip {\n            position: fixed;\n            background: ${e ? "#ffffff" : "#1e1f2e"};\n            border: 1px solid var(--p-border-2);\n            border-radius: var(--p-radius);\n            padding: 12px 14px;\n            min-width: 190px;\n            max-width: 300px;\n            max-height: 420px;\n            overflow-y: auto;\n            box-shadow: ${e ? "0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(124, 58, 237, 0.08)" : "0 8px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(155,109,255,0.1)"};\n            color: var(--p-text);\n            z-index: 999999;\n            opacity: 0;\n            visibility: hidden;\n            scrollbar-width: none;\n        }\n\n        #purpura-floating-tooltip::-webkit-scrollbar { width: 0; height: 0; }\n\n        #purpura-floating-tooltip.visible {\n            pointer-events: none;\n            transition: opacity 0.15s, visibility 0.15s;\n        }\n\n        #purpura-floating-tooltip.visible {\n            opacity: 1;\n            visibility: visible;\n        }\n\n        #purpura-floating-tooltip::after {\n            content: '';\n            position: absolute;\n            left: var(--p-arrow-left, 50%);\n            transform: translateX(-50%);\n            border: 6px solid transparent;\n        }\n\n        #purpura-floating-tooltip.arrow-below::after {\n            top: 100%;\n            border-top-color: var(--p-border-2);\n        }\n\n        #purpura-floating-tooltip.arrow-above::after {\n            bottom: 100%;\n            border-bottom-color: var(--p-border-2);\n        }\n\n        #purpura-floating-tooltip.pill-beta-tip {\n            background: rgba(77,161,245,0.25);\n            backdrop-filter: blur(16px);\n            -webkit-backdrop-filter: blur(16px);\n            border-color: rgba(77,161,245,0.5);\n        }\n        #purpura-floating-tooltip.pill-beta-tip.arrow-below::after {\n            border-top-color: rgba(77,161,245,0.4);\n        }\n        #purpura-floating-tooltip.pill-beta-tip.arrow-above::after {\n            border-bottom-color: rgba(77,161,245,0.4);\n        }\n\n        #purpura-floating-tooltip.pill-experimental-tip {\n            background: rgba(234,179,8,0.25);\n            backdrop-filter: blur(16px);\n            -webkit-backdrop-filter: blur(16px);\n            border-color: rgba(234,179,8,0.5);\n        }\n        #purpura-floating-tooltip.pill-experimental-tip.arrow-below::after {\n            border-top-color: rgba(234,179,8,0.4);\n        }\n        #purpura-floating-tooltip.pill-experimental-tip.arrow-above::after {\n            border-bottom-color: rgba(234,179,8,0.4);\n        }\n\n        #purpura-floating-tooltip.pill-deprecated-tip {\n            background: rgba(220,38,38,0.22);\n            backdrop-filter: blur(16px);\n            -webkit-backdrop-filter: blur(16px);\n            border-color: rgba(220,38,38,0.45);\n        }\n        #purpura-floating-tooltip.pill-deprecated-tip.arrow-below::after {\n            border-top-color: rgba(220,38,38,0.40);\n        }\n        #purpura-floating-tooltip.pill-deprecated-tip.arrow-above::after {\n            border-bottom-color: rgba(220,38,38,0.40);\n        }\n\n        .purpura-help-tooltip-title {\n            font-size: 12px;\n            font-weight: 600;\n            color: var(--p-text);\n            margin-bottom: 8px;\n            border-bottom: 1px solid var(--p-border);\n            padding-bottom: 6px;\n        }\n\n        .purpura-help-tooltip-item {\n            font-size: 11px;\n            color: var(--p-text-2);\n            padding: 2px 0;\n        }\n\n        .purpura-help-tooltip-item strong { color: var(--p-text); }\n\n        \n        .purpura-sub-setting {\n            margin-top: 10px;\n            padding: 11px 13px;\n            background: ${e ? "#f5f5f7" : "var(--p-bg)"};\n            border-radius: var(--p-radius);\n            border-left: 2px solid ${e ? "rgba(124, 58, 237, 0.40)" : "rgba(107, 68, 199, 0.5)"};\n            animation: p-subsetting-in 0.2s var(--p-ease) forwards;\n        }\n\n        @keyframes p-subsetting-in {\n            from { opacity: 0; transform: translateX(-4px); }\n            to   { opacity: 1; transform: translateX(0); }\n        }\n\n        .purpura-sub-setting-row {\n            display: flex;\n            align-items: center;\n            justify-content: space-between;\n        }\n\n        .purpura-sub-setting-row label:first-child {\n            font-size: 13px;\n            color: var(--p-text);\n            font-weight: 500;\n        }\n\n        .purpura-sub-setting-row input[type="text"] {\n            margin-left: 10px;\n            width: min(260px, 52%);\n            min-width: 172px;\n            padding: 8px 11px;\n            border-radius: var(--p-radius);\n            border: 1px solid var(--p-border-2);\n            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)) var(--p-surface);\n            color: var(--p-text);\n            font-family: var(--p-font);\n            font-size: 13px;\n            transition: border-color 0.15s, box-shadow 0.15s;\n        }\n\n        .purpura-sub-setting-row input[type="text"]::placeholder {\n            color: var(--p-text-3);\n        }\n\n        .purpura-sub-setting-row input[type="text"]:focus {\n            outline: none;\n            border-color: var(--p-accent);\n            box-shadow: 0 0 0 3px var(--p-accent-glow);\n        }\n\n        .purpura-sub-setting-desc {\n            font-size: 12px;\n            color: var(--p-text-3);\n            margin-top: 5px;\n        }\n\n        .purpura-sub-setting.disabled {\n            opacity: 0.38;\n            pointer-events: none;\n            filter: saturate(0.3);\n        }\n\n        \n        .purpura-native-select {\n            position: absolute !important;\n            width: 1px !important;\n            height: 1px !important;\n            padding: 0 !important;\n            margin: -1px !important;\n            overflow: hidden !important;\n            clip: rect(0 0 0 0) !important;\n            clip-path: inset(50%) !important;\n            border: 0 !important;\n            white-space: nowrap !important;\n            opacity: 0 !important;\n            pointer-events: none !important;\n        }\n\n        .purpura-custom-select {\n            position: relative;\n            margin-left: 10px;\n            min-width: 174px;\n            flex: 0 0 auto;\n            z-index: 2;\n        }\n\n        .purpura-setting-card:has(.purpura-custom-select.open),\n        .purpura-sub-setting:has(.purpura-custom-select.open) {\n            overflow: visible;\n        }\n\n        .purpura-sub-setting-row .purpura-custom-select {\n            min-width: 156px;\n        }\n\n        .purpura-custom-select-trigger {\n            width: 100%;\n            padding: 8px 34px 8px 11px;\n            font-size: 13px;\n            border-radius: var(--p-radius);\n            border: 1px solid var(--p-border-2);\n            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)) var(--p-surface);\n            color: var(--p-text);\n            font-family: var(--p-font);\n            text-align: left;\n            cursor: pointer;\n            position: relative;\n            transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;\n        }\n\n        .purpura-custom-select-trigger::after {\n            content: '';\n            position: absolute;\n            right: 12px;\n            top: 50%;\n            width: 10px;\n            height: 6px;\n            transform: translateY(-50%);\n            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236d6487' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");\n            background-repeat: no-repeat;\n            background-size: 10px 6px;\n            opacity: 0.9;\n            transition: transform 0.18s var(--p-ease), opacity 0.18s var(--p-ease);\n        }\n\n        .purpura-custom-select-trigger:hover {\n            border-color: var(--p-border);\n        }\n\n        .purpura-custom-select.open .purpura-custom-select-trigger,\n        .purpura-custom-select-trigger:focus-visible {\n            outline: none;\n            border-color: var(--p-accent);\n            box-shadow: 0 0 0 3px var(--p-accent-glow);\n        }\n\n        .purpura-custom-select.open .purpura-custom-select-trigger::after {\n            transform: translateY(-50%) rotate(180deg);\n        }\n\n        .purpura-custom-select.disabled .purpura-custom-select-trigger {\n            opacity: 0.42;\n            cursor: not-allowed;\n        }\n\n        .purpura-custom-select-menu {\n            position: absolute;\n            left: 0;\n            right: 0;\n            top: calc(100% + 6px);\n            padding: 6px;\n            border-radius: 10px;\n            border: 1px solid var(--p-border-2);\n            background: ${e ? "rgba(252, 252, 254, 0.98)" : "rgba(14, 15, 21, 0.98)"};\n            box-shadow: ${e ? "0 14px 28px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(0, 0, 0, 0.03)" : "0 14px 28px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03)"};\n            max-height: 230px;\n            overflow-y: auto;\n            opacity: 0;\n            transform: translateY(-6px) scale(0.98);\n            pointer-events: none;\n            transition: opacity 0.16s var(--p-ease), transform 0.16s var(--p-ease);\n            z-index: 999;\n        }\n\n        .purpura-custom-select.open .purpura-custom-select-menu,\n        .purpura-custom-select-menu.is-floating {\n            opacity: 1;\n            transform: translateY(0) scale(1);\n            pointer-events: auto;\n        }\n\n        .purpura-custom-select-menu.is-floating {\n            position: fixed;\n            z-index: 999999;\n        }\n\n        .purpura-custom-select-option {\n            width: 100%;\n            border: 0;\n            border-radius: 8px;\n            padding: 8px 10px;\n            background: transparent;\n            color: var(--p-text-2);\n            font-size: 12.5px;\n            font-family: var(--p-font);\n            text-align: left;\n            cursor: pointer;\n            transition: background 0.12s, color 0.12s;\n        }\n\n        .purpura-custom-select-option:hover,\n        .purpura-custom-select-option:focus-visible {\n            outline: none;\n            color: var(--p-text);\n            background: ${e ? "rgba(124, 58, 237, 0.10)" : "rgba(128, 95, 214, 0.22)"};\n        }\n\n        .purpura-custom-select-option.selected {\n            color: var(--p-text);\n            background: ${e ? "rgba(124, 58, 237, 0.14)" : "rgba(128, 95, 214, 0.32)"};\n            font-weight: 600;\n        }\n\n        .purpura-custom-select-option.disabled {\n            opacity: 0.35;\n            cursor: not-allowed;\n        }\n\n        .purpura-custom-select-menu::-webkit-scrollbar {\n            width: 6px;\n        }\n\n        .purpura-custom-select-menu::-webkit-scrollbar-thumb {\n            background: ${e ? "rgba(0, 0, 0, 0.15)" : "rgba(255,255,255,0.2)"};\n            border-radius: 6px;\n        }\n\n        @media (max-width: 768px) {\n            .purpura-custom-select {\n                min-width: 140px;\n                max-width: 58%;\n            }\n        }\n\n        \n        .purpura-info-wrapper {\n            position: relative;\n            overflow: hidden;\n            background: ${e ? `\n                radial-gradient(120% 100% at 0% 0%, rgba(124, 58, 237, 0.06) 0%, rgba(124, 58, 237, 0) 52%),\n                #ffffff;\n            ` : `\n                radial-gradient(120% 100% at 0% 0%, rgba(155,109,255,0.12) 0%, rgba(155,109,255,0) 52%),\n                linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)),\n                var(--p-card);\n            `};\n            padding: 26px;\n            border-radius: var(--p-radius-lg);\n            border: 1px solid var(--p-border-2);\n            box-shadow: ${e ? "0 1px 4px rgba(0, 0, 0, 0.06)" : "inset 0 1px 0 rgba(255,255,255,0.05), 0 14px 28px rgba(0,0,0,0.22)"};\n            animation: p-section-in 0.22s var(--p-ease) forwards;\n        }\n\n        .purpura-info-wrapper h2 {\n            margin: 0 0 12px 0;\n            color: var(--p-text);\n            font-size: 21px;\n            font-weight: 700;\n            letter-spacing: 0.01em;\n        }\n\n        .purpura-info-wrapper p {\n            color: var(--p-text-2);\n            margin: 0 0 11px 0;\n            line-height: 1.74;\n            font-size: 13.5px;\n            max-width: 70ch;\n        }\n\n        .purpura-info-wrapper a {\n            color: var(--p-accent);\n            text-decoration: none;\n        }\n\n        .purpura-info-wrapper a:hover { text-decoration: underline; }\n\n        .purpura-info-wrapper ul {\n            margin: 12px 0 0;\n            padding-left: 20px;\n            color: var(--p-text-2);\n            line-height: 2;\n        }\n\n        .purpura-info-wrapper li strong { color: var(--p-text); }\n\n        .purpura-credits-grid {\n            margin-top: 12px;\n            display: grid;\n            grid-template-columns: repeat(3, minmax(0, 1fr));\n            gap: 10px;\n            align-items: stretch;\n        }\n\n        .purpura-credit-card {\n            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));\n            border: 1px solid var(--p-border-2);\n            border-radius: calc(var(--p-radius) + 2px);\n            padding: 10px;\n            display: grid;\n            grid-template-columns: 72px minmax(0, 1fr);\n            grid-template-areas:\n                'avatar head'\n                'reason reason'\n                'discord discord';\n            grid-template-rows: auto 1fr auto;\n            column-gap: 10px;\n            row-gap: 7px;\n            align-items: start;\n            min-height: 0;\n            height: 100%;\n            transition: border-color 0.18s var(--p-ease), background 0.18s var(--p-ease), transform 0.18s var(--p-ease);\n        }\n\n        .purpura-credit-card:hover {\n            border-color: rgba(155,109,255,0.26);\n            background: linear-gradient(180deg, rgba(155,109,255,0.10), rgba(155,109,255,0.04));\n            transform: translateY(-1px);\n        }\n\n        .purpura-credit-avatar-wrap {\n            grid-area: avatar;\n            width: 72px;\n            height: 72px;\n            border-radius: calc(var(--p-radius) + 2px);\n            overflow: hidden;\n            border: 1px solid var(--p-border);\n            background: #0d0e13;\n        }\n\n        .purpura-credit-avatar {\n            width: 100%;\n            height: 100%;\n            object-fit: cover;\n            display: block;\n        }\n\n        .purpura-credit-head {\n            grid-area: head;\n            min-width: 0;\n        }\n\n        .purpura-credit-name {\n            margin: 0;\n            color: var(--p-text);\n            font-size: 14px;\n            font-weight: 700;\n            line-height: 1.3;\n        }\n\n        .purpura-credit-reason {\n            grid-area: reason;\n            margin: 0;\n            color: var(--p-text-2);\n            font-size: 11.5px;\n            line-height: 1.48;\n        }\n\n        .purpura-credit-discord {\n            grid-area: discord;\n            display: flex;\n            align-items: center;\n            gap: 7px;\n            border: 1px solid ${e ? "rgba(124, 58, 237, 0.20)" : "rgba(155,109,255,0.30)"};\n            background: ${e ? "rgba(124, 58, 237, 0.12)" : "linear-gradient(180deg, rgba(124,77,255,0.22), rgba(124,77,255,0.14))"};\n            border-radius: 9px;\n            min-height: 30px;\n            padding: 0 9px;\n            width: 100%;\n            overflow: hidden;\n        }\n\n        .purpura-credit-discord svg {\n            width: 12px;\n            height: 12px;\n            color: ${e ? "var(--p-accent)" : "#cbb4ff"};\n            flex: 0 0 auto;\n        }\n\n        .purpura-credit-discord-label {\n            color: ${e ? "var(--p-accent-dim)" : "#d7c5ff"};\n            font-size: 11.2px;\n            font-weight: 700;\n            line-height: 1;\n            white-space: nowrap;\n            overflow: hidden;\n            text-overflow: ellipsis;\n            min-width: 0;\n        }\n\n        .purpura-credits-wrapper .purpura-info-divider {\n            margin-top: 12px;\n            padding-top: 12px;\n        }\n\n        .purpura-credits-wrapper .purpura-info-divider p {\n            margin-bottom: 8px;\n        }\n\n        .purpura-premium-status {\n            margin-top: 12px;\n            display: flex;\n            align-items: center;\n            gap: 9px;\n            border-radius: calc(var(--p-radius) + 1px);\n            padding: 10px 12px;\n            border: 1px solid var(--p-border-2);\n            background: rgba(255,255,255,0.02);\n            font-size: 13px;\n            font-weight: 600;\n        }\n\n        .purpura-premium-status-dot {\n            width: 9px;\n            height: 9px;\n            border-radius: 50%;\n            flex: 0 0 auto;\n        }\n\n        .purpura-premium-status.active {\n            color: #f7e3a7;\n            border-color: rgba(240,180,41,0.34);\n            background: linear-gradient(180deg, rgba(240,180,41,0.14), rgba(240,180,41,0.07));\n        }\n\n        .purpura-premium-status.active .purpura-premium-status-dot {\n            background: #f0b429;\n            box-shadow: 0 0 8px rgba(240,180,41,0.45);\n        }\n\n        .purpura-premium-status.inactive {\n            color: var(--p-text-2);\n        }\n\n        .purpura-premium-status.inactive .purpura-premium-status-dot {\n            background: var(--p-text-3);\n        }\n\n        .purpura-premium-feature-grid {\n            margin-top: 12px;\n            display: grid;\n            grid-template-columns: repeat(2, minmax(0, 1fr));\n            gap: 9px;\n        }\n\n        .purpura-premium-feature-item {\n            border: 1px solid var(--p-border-2);\n            background: rgba(255,255,255,0.02);\n            border-radius: calc(var(--p-radius) + 1px);\n            padding: 9px 10px;\n            min-width: 0;\n        }\n\n        .purpura-premium-feature-item-title {\n            color: var(--p-text);\n            font-size: 13px;\n            font-weight: 700;\n            line-height: 1.35;\n            margin: 0;\n        }\n\n        .purpura-premium-feature-item-category {\n            color: var(--p-text-3);\n            font-size: 11px;\n            line-height: 1.2;\n            margin-top: 4px;\n            text-transform: uppercase;\n            letter-spacing: 0.06em;\n            font-weight: 700;\n        }\n\n        .purpura-premium-actions {\n            display: flex;\n            gap: 10px;\n            margin-top: 16px;\n            padding-top: 14px;\n            border-top: 1px solid var(--p-border);\n            flex-wrap: wrap;\n        }\n\n        @media (max-width: 760px) {\n            .purpura-premium-feature-grid {\n                grid-template-columns: 1fr;\n            }\n        }\n\n        @media (max-width: 1060px) {\n            .purpura-credits-grid {\n                grid-template-columns: repeat(2, minmax(0, 1fr));\n            }\n        }\n\n        @media (max-width: 720px) {\n            .purpura-credits-grid {\n                grid-template-columns: 1fr;\n            }\n\n            .purpura-credit-card {\n                grid-template-columns: 64px minmax(0, 1fr);\n                column-gap: 9px;\n            }\n\n            .purpura-credit-avatar-wrap {\n                width: 64px;\n                height: 64px;\n            }\n        }\n\n        .purpura-info-divider {\n            margin-top: 18px;\n            padding-top: 16px;\n            border-top: 1px solid var(--p-border);\n        }\n\n        .purpura-info-meta {\n            margin-top: 18px;\n            padding-top: 16px;\n            border-top: 1px solid var(--p-border);\n            display: grid;\n            grid-template-columns: repeat(2, minmax(0, 1fr));\n            gap: 10px;\n        }\n\n        .purpura-info-meta-card {\n            background: rgba(255,255,255,0.02);\n            border: 1px solid var(--p-border-2);\n            border-radius: calc(var(--p-radius) + 1px);\n            padding: 10px 12px;\n            min-height: 64px;\n            display: flex;\n            flex-direction: column;\n            justify-content: center;\n            gap: 4px;\n        }\n\n        .purpura-info-meta-label {\n            color: var(--p-text-3);\n            font-size: 11px;\n            text-transform: uppercase;\n            letter-spacing: 0.08em;\n            font-weight: 700;\n        }\n\n        .purpura-info-meta-value {\n            color: var(--p-text);\n            font-size: 14px;\n            font-weight: 700;\n            line-height: 1.35;\n        }\n\n        @media (max-width: 640px) {\n            .purpura-info-meta {\n                grid-template-columns: 1fr;\n            }\n        }\n\n        \n        .purpura-import-export {\n            display: flex;\n            justify-content: center;\n            gap: 10px;\n            margin-top: 18px;\n            padding-top: 16px;\n            border-top: 1px solid var(--p-border);\n            flex-wrap: wrap;\n        }\n\n        .purpura-import-export-btn {\n            padding: 8px 18px;\n            background: var(--p-surface);\n            border: 1px solid var(--p-border-2);\n            border-radius: 10px;\n            color: var(--p-text);\n            font-size: 13px;\n            font-weight: 500;\n            cursor: pointer;\n            font-family: var(--p-font);\n            transition: background 0.15s, border-color 0.15s;\n        }\n\n        .purpura-import-export-btn:hover {\n            background: rgba(155,109,255,0.1);\n            border-color: rgba(155,109,255,0.4);\n        }\n\n        .purpura-import-export-btn.primary {\n            background: rgba(155, 109, 255, 0.18);\n            border: 1px solid rgba(155, 109, 255, 0.35);\n            color: var(--p-accent);\n        }\n\n        .purpura-import-export-btn.primary:hover {\n            background: rgba(155, 109, 255, 0.26);\n            border-color: rgba(155, 109, 255, 0.5);\n        }\n\n        \n        .purpura-ban-banner {\n            background: ${e ? "rgba(220, 38, 38, 0.06)" : "rgba(248,113,113,0.08)"};\n            border: 1px solid ${e ? "rgba(220, 38, 38, 0.25)" : "rgba(248,113,113,0.3)"};\n            border-radius: var(--p-radius-lg);\n            padding: 14px 18px;\n            margin-bottom: 18px;\n            display: flex;\n            align-items: center;\n            gap: 14px;\n        }\n\n        .purpura-ban-banner-icon { font-size: 26px; flex-shrink: 0; }\n\n        .purpura-ban-banner-title {\n            font-size: 14px;\n            font-weight: 700;\n            color: var(--p-danger);\n            margin-bottom: 3px;\n        }\n\n        .purpura-ban-banner-text {\n            font-size: 12.5px;\n            color: rgba(248,113,113,0.8);\n            line-height: 1.5;\n        }\n\n        \n        .purpura-features-disabled .purpura-setting-card {\n            opacity: 0.45;\n            pointer-events: none;\n            filter: saturate(0.2);\n        }\n\n        \n        .purpura-setting-card.premium-locked { position: relative; }\n\n        .purpura-setting-card.premium-locked .purpura-toggle input { pointer-events: none; }\n        .purpura-setting-card.premium-locked .purpura-toggle-slider {\n            opacity: 0.45;\n            cursor: not-allowed;\n        }\n\n        .purpura-setting-card.premium-locked .purpura-theme-picker,\n        .purpura-setting-card.premium-locked .purpura-cursor-picker {\n            opacity: 0.45;\n            pointer-events: none;\n        }\n\n        .purpura-premium-lock-notice {\n            display: flex;\n            align-items: center;\n            gap: 8px;\n            padding: 8px 12px;\n            background: rgba(240,180,41,0.08);\n            border: 1px solid rgba(240,180,41,0.25);\n            border-radius: var(--p-radius);\n            margin-top: 10px;\n            font-size: 12px;\n            color: var(--p-premium);\n        }\n\n        .purpura-premium-lock-notice a {\n            color: var(--p-premium);\n            text-decoration: underline;\n            cursor: pointer;\n        }\n\n        \n        .purpura-wip {\n            display: flex;\n            align-items: center;\n            gap: 10px;\n            padding: 10px 14px;\n            border-radius: var(--p-radius);\n            background: rgba(240,180,41,0.08);\n            border: 1px solid rgba(240,180,41,0.25);\n            color: var(--p-premium);\n            font-weight: 600;\n            font-size: 13px;\n        }\n\n        \n        #purpura-mobile-menu {\n            display: none;\n            margin-bottom: 18px;\n        }\n\n        #purpura-mobile-menu select {\n            width: 100%;\n            padding: 11px;\n            font-size: 14px;\n            border-radius: var(--p-radius);\n            border: 1px solid var(--p-border-2);\n            background: var(--p-surface);\n            color: var(--p-text);\n            font-family: var(--p-font);\n        }\n\n        @media (max-width: 768px) {\n            #purpura-ui-container { flex-direction: column; }\n            .purpura-sidebar { display: none; }\n            #purpura-mobile-menu { display: block; }\n            .purpura-settings-root { padding: 14px; }\n        }\n\n        \n        .purpura-reset-btn {\n            border: 1px solid var(--p-border-2);\n            background: transparent;\n            color: var(--p-text);\n            padding: 7px 13px;\n            border-radius: var(--p-radius);\n            cursor: pointer;\n            font-weight: 600;\n            font-family: var(--p-font);\n            font-size: 13px;\n            transition: background 0.15s, transform 0.15s;\n        }\n\n        .purpura-reset-btn:hover { background: rgba(155,109,255,0.1); }\n        .purpura-reset-btn:active { transform: scale(0.97); }\n\n        \n        .purpura-cursor-picker {\n            display: flex;\n            flex-direction: column;\n            gap: 10px;\n            margin-top: 12px;\n            padding-top: 12px;\n            border-top: 1px solid var(--p-border);\n        }\n\n        .purpura-cursor-grid {\n            display: grid;\n            grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));\n            gap: 8px;\n        }\n\n        .purpura-cursor-option {\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            padding: 11px 8px;\n            background: var(--p-bg);\n            border: 1px solid var(--p-border);\n            border-radius: var(--p-radius);\n            cursor: pointer;\n            transition: border-color 0.18s, background 0.18s, transform 0.18s var(--p-ease-back);\n        }\n\n        .purpura-cursor-option:hover {\n            border-color: var(--p-accent);\n            background: rgba(155,109,255,0.06);\n            transform: translateY(-2px);\n        }\n\n        .purpura-cursor-option:active { transform: scale(0.96); }\n\n        .purpura-cursor-option.active {\n            border-color: var(--p-accent);\n            background: rgba(155,109,255,0.10);\n            box-shadow: 0 0 0 2px var(--p-accent-glow);\n        }\n\n        .purpura-cursor-preview {\n            width: 28px; height: 28px;\n            margin-bottom: 6px;\n            display: flex; align-items: center; justify-content: center;\n        }\n\n        .purpura-cursor-preview svg { width: 24px; height: 24px; }\n\n        .purpura-cursor-name {\n            font-size: 11px;\n            color: var(--p-text-2);\n            text-align: center;\n        }\n\n        .purpura-cursor-option.active .purpura-cursor-name {\n            color: var(--p-text);\n            font-weight: 600;\n        }\n\n        .purpura-cursor-upload {\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            padding: 10px 8px;\n            background: var(--p-bg);\n            border: 1.5px dashed var(--p-border-2);\n            border-radius: var(--p-radius);\n            cursor: pointer;\n            transition: border-color 0.18s, background 0.18s;\n        }\n\n        .purpura-cursor-upload:hover { border-color: var(--p-accent); }\n        .purpura-cursor-upload.active { border-color: var(--p-accent); border-style: solid; }\n\n        .purpura-cursor-upload-icon {\n            width: 28px; height: 28px;\n            display: flex; align-items: center; justify-content: center;\n            font-size: 18px;\n            color: var(--p-text-2);\n            margin-bottom: 4px;\n            overflow: hidden;\n        }\n\n        .purpura-cursor-upload-icon img {\n            width: 28px; height: 28px; object-fit: contain;\n        }\n\n        .purpura-cursor-picker.disabled { opacity: 0.38; pointer-events: none; }\n\n        \n        .purpura-theme-picker {\n            display: flex;\n            flex-direction: column;\n            gap: 8px;\n            margin-top: 12px;\n            padding-top: 12px;\n            border-top: 1px solid var(--p-border);\n        }\n\n        .purpura-theme-option {\n            display: flex;\n            align-items: center;\n            gap: 14px;\n            padding: 11px 13px;\n            background: var(--p-bg);\n            border: 1px solid var(--p-border);\n            border-radius: var(--p-radius);\n            cursor: pointer;\n            transition: border-color 0.18s, background 0.18s, transform 0.18s var(--p-ease-back);\n            position: relative;\n        }\n\n        .purpura-theme-option:hover {\n            border-color: rgba(155,109,255,0.35);\n            background: rgba(155,109,255,0.05);\n            transform: translateX(2px);\n        }\n\n        .purpura-theme-option:active { transform: scale(0.99); }\n\n        .purpura-theme-option.active {\n            border-color: var(--p-accent);\n            background: rgba(155,109,255,0.1);\n        }\n\n        .purpura-theme-option.active::after {\n            content: '';\n            position: absolute;\n            right: 13px;\n            top: 50%;\n            transform: translateY(-50%);\n            width: 6px; height: 6px;\n            border-radius: 50%;\n            background: var(--p-accent);\n            box-shadow: 0 0 8px var(--p-accent-glow-strong);\n        }\n\n        .purpura-theme-preview {\n            width: 46px; height: 46px;\n            border-radius: var(--p-radius);\n            display: flex; align-items: center; justify-content: center;\n            flex-shrink: 0;\n        }\n\n        .purpura-theme-default    { background: linear-gradient(135deg, #2e2f3a, #1c1d26); }\n        .purpura-theme-purpura    { background: linear-gradient(135deg, #2e003e, #1a0025); }\n        .purpura-theme-custom     { background: linear-gradient(135deg, #1a1a2e, #16213e); }\n\n        .purpura-theme-info { display: flex; flex-direction: column; gap: 2px; }\n\n        .purpura-theme-name {\n            font-size: 13.5px;\n            font-weight: 600;\n            color: var(--p-text);\n        }\n\n        .purpura-theme-desc { font-size: 12px; color: var(--p-text-2); }\n        .purpura-theme-author { font-size: 11px; color: var(--p-text-3); font-style: italic; }\n\n        .purpura-theme-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }\n\n        .purpura-theme-tag {\n            font-size: 10px;\n            padding: 2px 7px;\n            background: rgba(155,109,255,0.2);\n            color: var(--p-accent);\n            border-radius: 99px;\n            font-weight: 600;\n        }\n\n        .purpura-theme-loading {\n            padding: 20px;\n            text-align: center;\n            color: var(--p-text-2);\n            font-size: 13px;\n        }\n\n        .purpura-theme-section-header {\n            font-size: 11px;\n            font-weight: 700;\n            color: var(--p-text-3);\n            text-transform: uppercase;\n            letter-spacing: 0.8px;\n            margin-top: 12px;\n            margin-bottom: 6px;\n        }\n\n        .purpura-theme-delete {\n            position: absolute;\n            top: 8px; right: 8px;\n            width: 22px; height: 22px;\n            border-radius: 50%;\n            background: rgba(248,113,113,0.12);\n            border: none;\n            color: var(--p-danger);\n            cursor: pointer;\n            display: flex; align-items: center; justify-content: center;\n            font-size: 14px;\n            opacity: 0;\n            transition: opacity 0.15s, background 0.15s;\n        }\n\n        .purpura-theme-option.custom-theme:hover .purpura-theme-delete { opacity: 1; }\n        .purpura-theme-delete:hover { background: rgba(248,113,113,0.25); }\n\n        .purpura-theme-add {\n            display: flex;\n            align-items: center;\n            justify-content: center;\n            gap: 8px;\n            padding: 11px;\n            background: var(--p-bg);\n            border: 1.5px dashed var(--p-border-2);\n            border-radius: var(--p-radius);\n            cursor: pointer;\n            color: var(--p-text-2);\n            transition: border-color 0.15s, color 0.15s, background 0.15s;\n            font-size: 13px;\n        }\n\n        .purpura-theme-add:hover {\n            border-color: var(--p-accent);\n            color: var(--p-accent);\n            background: rgba(155,109,255,0.05);\n        }\n\n        .purpura-theme-picker.disabled { opacity: 0.38; pointer-events: none; }\n\n        \n        .purpura-theme-modal {\n            position: fixed;\n            inset: 0;\n            background: ${e ? "rgba(17, 17, 19, 0.40)" : "rgba(0,0,0,0.65)"};\n            backdrop-filter: blur(6px);\n            -webkit-backdrop-filter: blur(6px);\n            display: flex;\n            align-items: center;\n            justify-content: center;\n            z-index: 10000;\n            opacity: 0;\n            pointer-events: none;\n            transition: opacity 0.25s var(--p-ease);\n        }\n\n        .purpura-theme-modal.visible {\n            opacity: 1;\n            pointer-events: auto;\n        }\n\n        .purpura-theme-modal-content {\n            background: ${e ? "#ffffff" : "#1a1b26"};\n            border: 1px solid var(--p-border-2);\n            border-radius: var(--p-radius-xl);\n            padding: 24px;\n            width: 500px;\n            max-width: 90vw;\n            max-height: 80vh;\n            overflow-y: auto;\n            position: relative;\n            box-shadow: ${e ? "0 24px 64px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(124, 58, 237, 0.10)" : "0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(155,109,255,0.15)"};\n            transform: scale(0.92) translateY(16px);\n            opacity: 0;\n            transition: transform 0.25s var(--p-ease-back), opacity 0.25s var(--p-ease-back);\n        }\n\n        .purpura-theme-modal.visible .purpura-theme-modal-content {\n            transform: scale(1) translateY(0);\n            opacity: 1;\n        }\n\n        .purpura-theme-modal-header {\n            display: flex;\n            align-items: center;\n            justify-content: space-between;\n            margin-bottom: 16px;\n        }\n\n        .purpura-theme-modal-header h3 { margin: 0; color: var(--p-text); font-size: 17px; }\n\n        .purpura-theme-modal-close {\n            background: var(--p-surface);\n            border: 1px solid var(--p-border);\n            color: var(--p-text-2);\n            width: 28px; height: 28px;\n            border-radius: var(--p-radius-sm);\n            display: flex; align-items: center; justify-content: center;\n            font-size: 16px;\n            cursor: pointer;\n            transition: background 0.15s, color 0.15s;\n        }\n\n        .purpura-theme-modal-close:hover { background: rgba(248,113,113,0.12); color: var(--p-danger); }\n\n        .purpura-theme-modal textarea {\n            width: 100%;\n            min-height: 200px;\n            background: ${e ? "#f5f5f7" : "var(--p-bg)"};\n            border: 1px solid var(--p-border-2);\n            border-radius: var(--p-radius);\n            padding: 12px;\n            color: var(--p-text);\n            font-family: 'JetBrains Mono', 'Fira Code', monospace;\n            font-size: 12px;\n            resize: vertical;\n            margin-bottom: 12px;\n            transition: border-color 0.2s var(--p-ease), box-shadow 0.2s var(--p-ease);\n        }\n\n        .purpura-theme-modal textarea:focus {\n            outline: none;\n            border-color: var(--p-accent);\n            box-shadow: 0 0 0 3px var(--p-accent-glow), 0 0 24px var(--p-accent-glow);\n        }\n\n        .purpura-theme-manifest-example {\n            font-size: 11px;\n            color: var(--p-text-2);\n            background: var(--p-bg);\n            border: 1px solid var(--p-border);\n            padding: 10px;\n            border-radius: var(--p-radius);\n            margin-bottom: 14px;\n            font-family: monospace;\n            white-space: pre-wrap;\n        }\n\n        .purpura-theme-modal-actions { display: flex; gap: 8px; justify-content: flex-end; }\n\n        .purpura-theme-modal-btn {\n            padding: 8px 16px;\n            border-radius: var(--p-radius);\n            font-size: 13px;\n            font-family: var(--p-font);\n            font-weight: 500;\n            cursor: pointer;\n            border: none;\n            transition: opacity 0.15s, transform 0.15s;\n        }\n\n        .purpura-theme-modal-btn:active { transform: scale(0.97); }\n\n        .purpura-theme-modal-btn.cancel {\n            background: var(--p-surface);\n            color: var(--p-text-2);\n            border: 1px solid var(--p-border);\n        }\n\n        .purpura-theme-modal-btn.cancel:hover { background: var(--p-card); }\n\n        .purpura-theme-modal-btn.save {\n            background: var(--p-accent);\n            color: #fff;\n            box-shadow: 0 2px 10px rgba(155,109,255,0.35);\n            font-weight: 600;\n        }\n\n        .purpura-theme-modal-btn.save:hover {\n            background: #8a5df0;\n            box-shadow: 0 4px 16px rgba(155,109,255,0.45);\n            transform: translateY(-1px);\n        }\n\n        .purpura-theme-modal-hint { font-size: 13px; color: var(--p-text-2); margin-bottom: 10px; }\n\n        .purpura-settings-dialog-content {\n            width: 470px;\n            max-width: 92vw;\n            border-radius: 14px;\n            border: 1px solid ${e ? "rgba(124, 58, 237, 0.20)" : "rgba(122, 90, 177, 0.38)"};\n            background: ${e ? "#ffffff" : "radial-gradient(140% 110% at 0% 0%, rgba(96, 53, 156, 0.22) 0%, rgba(17, 12, 28, 0.96) 42%, rgba(10, 8, 18, 0.98) 100%)"};\n            box-shadow: ${e ? "0 28px 58px rgba(0, 0, 0, 0.12)" : "0 28px 58px rgba(0, 0, 0, 0.58), 0 0 0 1px rgba(154, 104, 230, 0.1) inset"};\n        }\n\n        .purpura-settings-dialog-chip {\n            display: inline-flex;\n            align-items: center;\n            margin-bottom: 10px;\n            padding: 4px 9px;\n            border-radius: 999px;\n            font-size: 10px;\n            font-weight: 700;\n            letter-spacing: 0.06em;\n            text-transform: uppercase;\n            border: 1px solid rgba(130, 110, 170, 0.62);\n            color: rgba(234, 225, 255, 0.95);\n            background: rgba(53, 35, 76, 0.52);\n        }\n\n        .purpura-settings-dialog-chip.confirm {\n            border-color: rgba(164, 118, 230, 0.72);\n            background: rgba(82, 46, 128, 0.62);\n        }\n\n        .purpura-settings-dialog-chip.alert {\n            border-color: rgba(212, 166, 95, 0.72);\n            color: rgba(255, 242, 218, 0.96);\n            background: rgba(112, 84, 45, 0.58);\n        }\n\n        .purpura-settings-dialog-message {\n            white-space: pre-line;\n            line-height: 1.5;\n            color: rgba(221, 211, 245, 0.92);\n        }\n\n        .purpura-settings-dialog-field {\n            margin-top: 12px;\n        }\n\n        .purpura-settings-dialog-info {\n            margin-top: 8px;\n            color: rgba(186, 173, 214, 0.9);\n            font-size: 12px;\n            line-height: 1.4;\n        }\n\n        .purpura-settings-dialog-select {\n            width: 100%;\n            border-radius: 10px;\n            border: 1px solid var(--p-border-2);\n            background: ${e ? "#f5f5f7" : "linear-gradient(180deg, rgba(24, 18, 37, 0.95) 0%, rgba(17, 13, 29, 0.95) 100%)"};\n            color: var(--p-text);\n            padding: 10px 12px;\n            font-size: 14px;\n            outline: none;\n            transition: border-color 0.16s ease, box-shadow 0.16s ease;\n        }\n\n        .purpura-settings-dialog-select:focus {\n            border-color: rgba(175, 120, 255, 0.88);\n            box-shadow: 0 0 0 3px rgba(148, 99, 232, 0.26);\n        }\n\n        .purpura-settings-dialog-input {\n            margin: 8px 0 14px;\n            border-radius: 10px;\n            border: 1px solid var(--p-border-2);\n            background: ${e ? "#f5f5f7" : "linear-gradient(180deg, rgba(24, 18, 37, 0.95) 0%, rgba(17, 13, 29, 0.95) 100%)"};\n            color: var(--p-text);\n            transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;\n        }\n\n        .purpura-settings-dialog-input:focus {\n            border-color: rgba(175, 120, 255, 0.88);\n            background: linear-gradient(180deg, rgba(27, 20, 40, 0.98) 0%, rgba(19, 15, 32, 0.98) 100%);\n            box-shadow: 0 0 0 3px rgba(148, 99, 232, 0.26);\n        }\n\n        .purpura-settings-dialog-error {\n            margin-top: 8px;\n            color: #ff8c87;\n            font-size: 12px;\n            line-height: 1.35;\n            display: none;\n        }\n\n        .purpura-settings-dialog-content .purpura-theme-modal-header h3 {\n            font-size: 18px;\n            letter-spacing: 0;\n        }\n\n        .purpura-settings-dialog-content .purpura-theme-modal-actions {\n            gap: 9px;\n            margin-top: 18px;\n        }\n\n        .purpura-settings-dialog-content .purpura-theme-modal-btn {\n            border-radius: 10px;\n            min-width: 108px;\n            padding: 9px 14px;\n        }\n\n        .purpura-settings-dialog-content .purpura-theme-modal-btn.cancel {\n            border-color: rgba(127, 93, 182, 0.46);\n            background: rgba(35, 26, 55, 0.72);\n            color: rgba(220, 206, 245, 0.92);\n        }\n\n        .purpura-settings-dialog-content .purpura-theme-modal-btn.cancel:hover {\n            background: rgba(50, 35, 76, 0.76);\n        }\n\n        .purpura-settings-dialog-content .purpura-theme-modal-btn.save {\n            border: 1px solid rgba(179, 126, 255, 0.58);\n            background: linear-gradient(135deg, #7a44c0 0%, #5f318f 100%);\n            color: #f9f2ff;\n            box-shadow: 0 10px 24px rgba(58, 27, 95, 0.42);\n        }\n\n        .purpura-settings-dialog-content .purpura-theme-modal-btn.save:hover {\n            background: linear-gradient(135deg, #8750d0 0%, #6c3a9f 100%);\n        }\n\n        .purpura-settings-dialog-content.mode-alert .purpura-theme-modal-btn.save {\n            border-color: rgba(212, 166, 95, 0.78);\n            background: linear-gradient(135deg, #a16f2f 0%, #8b5f28 100%);\n            box-shadow: 0 8px 20px rgba(88, 61, 29, 0.32);\n        }\n\n        .purpura-settings-dialog-content.mode-alert .purpura-theme-modal-btn.save:hover {\n            background: linear-gradient(135deg, #ae7a35 0%, #96672c 100%);\n        }\n\n        \n        .purpura-tabs-picker {\n            display: flex;\n            flex-direction: column;\n            gap: 14px;\n            margin-top: 12px;\n            padding-top: 12px;\n            border-top: 1px solid var(--p-border);\n        }\n\n        .purpura-tabs-picker.disabled { opacity: 0.38; pointer-events: none; }\n\n        .purpura-tabs-section { display: flex; flex-direction: column; gap: 7px; }\n\n        .purpura-tabs-section-title {\n            font-size: 11px;\n            font-weight: 700;\n            color: var(--p-text-3);\n            text-transform: uppercase;\n            letter-spacing: 0.7px;\n        }\n\n        .purpura-tabs-seasonal-toggle {\n            display: flex;\n            align-items: center;\n            gap: 6px;\n            padding: 10px 12px;\n            margin-top: 10px;\n            background: var(--p-bg);\n            border-radius: var(--p-radius);\n            border: 1px solid var(--p-border);\n            cursor: pointer;\n            font-size: 12.5px;\n            font-weight: 600;\n            color: var(--p-text-2);\n            transition: border-color 0.18s, background 0.18s;\n            user-select: none;\n        }\n\n        .purpura-tabs-seasonal-toggle:hover {\n            border-color: var(--p-accent);\n            background: rgba(155,109,255,0.06);\n            color: var(--p-text);\n        }\n\n        .purpura-tabs-seasonal-arrow {\n            font-size: 10px;\n            transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);\n        }\n\n        .purpura-tabs-seasonal-arrow.open {\n            transform: rotate(90deg);\n        }\n\n        .purpura-tabs-seasonal-grid {\n            display: none;\n            flex-wrap: wrap;\n            gap: 6px;\n            margin-top: 8px;\n            padding: 4px;\n        }\n\n        .purpura-tabs-seasonal-grid.open {\n            display: flex;\n        }\n\n        .purpura-tabs-title-input {\n            width: 100%;\n            padding: 9px 11px;\n            background: var(--p-bg);\n            border: 1px solid var(--p-border-2);\n            border-radius: var(--p-radius);\n            color: var(--p-text);\n            font-size: 13px;\n            font-family: var(--p-font);\n            transition: border-color 0.15s;\n        }\n\n        .purpura-tabs-title-input:focus {\n            outline: none;\n            border-color: var(--p-accent);\n            box-shadow: 0 0 0 3px var(--p-accent-glow);\n        }\n\n        .purpura-tabs-title-hint { font-size: 11px; color: var(--p-text-3); }\n\n        .purpura-tabs-icons { display: flex; flex-wrap: wrap; gap: 8px; }\n\n        .purpura-tabs-icon-option {\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            gap: 6px;\n            padding: 11px;\n            background: var(--p-bg);\n            border: 1px solid var(--p-border);\n            border-radius: var(--p-radius);\n            cursor: pointer;\n            min-width: 76px;\n            transition: border-color 0.18s, background 0.18s, transform 0.18s var(--p-ease-back);\n        }\n\n        .purpura-tabs-icon-option:hover {\n            border-color: var(--p-accent);\n            background: rgba(155,109,255,0.06);\n            transform: translateY(-2px);\n        }\n\n        .purpura-tabs-icon-option.active {\n            border-color: var(--p-accent);\n            background: rgba(155,109,255,0.14);\n            box-shadow: 0 0 0 2px var(--p-accent-glow-strong);\n        }\n\n        .purpura-tabs-icon-preview img { width: 30px; height: 30px; object-fit: contain; }\n\n        .purpura-tabs-icon-name { font-size: 11px; color: var(--p-text-2); text-align: center; }\n\n        .purpura-tabs-upload {\n            display: flex; flex-direction: column;\n            align-items: center; justify-content: center;\n            gap: 6px;\n            padding: 11px;\n            background: var(--p-bg);\n            border: 1.5px dashed var(--p-border-2);\n            border-radius: var(--p-radius);\n            cursor: pointer;\n            min-width: 76px;\n            transition: border-color 0.15s, background 0.15s;\n        }\n\n        .purpura-tabs-upload:hover { border-color: var(--p-accent); background: rgba(155,109,255,0.05); }\n        .purpura-tabs-upload.active { border-color: var(--p-accent); border-style: solid; background: rgba(155,109,255,0.1); }\n        .purpura-tabs-upload-icon { font-size: 18px; color: var(--p-text-3); }\n\n        .purpura-tabs-preview {\n            display: flex;\n            align-items: center;\n            gap: 8px;\n            padding: 9px 13px;\n            background: var(--p-bg);\n            border-radius: var(--p-radius);\n            border: 1px solid var(--p-border);\n        }\n\n        .purpura-tabs-preview-favicon { width: 16px; height: 16px; }\n        .purpura-tabs-preview-title { font-size: 13px; color: var(--p-text); }\n\n        \n        .purpura-backdrop-picker {
+            display: flex; flex-direction: column; gap: 10px;
+            margin-top: 12px; padding-top: 12px;
+            border-top: 1px solid var(--p-border);
+        }
+
+        .purpura-info-page {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .purpura-info-page .purpura-credits-grid {
+            margin: 0 0 10px;
+        }
+
+        .purpura-info-page .purpura-info-meta {
+            margin-top: 14px;
+            padding-top: 0;
+            border-top: 0;
+        }
+
+        .purpura-info-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .purpura-info-actions .purpura-import-export-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            min-height: 29px;
+            padding: 5px 9px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.2;
+            white-space: nowrap;
+            box-sizing: border-box;
+            text-decoration: none;
+        }
+
+        .purpura-info-actions a.purpura-import-export-btn:hover {
+            text-decoration: none;
+        }
+
+        .purpura-info-page .purpura-credit-card {
+            background: var(--p-card);
+            border: 1px solid var(--p-border);
+            border-radius: var(--p-radius-lg);
+            padding: 14px;
+            box-shadow: none;
+        }
+
+        .purpura-info-page .purpura-credit-card:hover {
+            background: var(--p-card-hover);
+            border-color: var(--p-border);
+            transform: none;
+        }
+
+        .purpura-info-page .purpura-credit-avatar-wrap {
+            background: var(--p-surface);
+            border: 1px solid var(--p-border);
+        }
+
+        .purpura-backdrop-picker.disabled { opacity: 0.38; pointer-events: none; }
+
+        .purpura-backdrop-preview {
+            display: flex; align-items: center; justify-content: center;
+            height: 110px;
+            overflow: hidden;
+            background: var(--p-bg);
+            border: 1px solid var(--p-border);
+            border-radius: var(--p-radius);
+        }
+
+        .purpura-backdrop-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .purpura-backdrop-preview-empty { font-size: 12px; color: var(--p-text-3); }
+
+        .purpura-backdrop-row { display: flex; align-items: center; gap: 8px; }
+
+        .purpura-backdrop-label { font-size: 13px; color: var(--p-text-2); min-width: 74px; }
+
+        .purpura-backdrop-url {
+            flex: 1;
+            min-width: 0;
+            padding: 8px 11px;
+            border-radius: var(--p-radius);
+            border: 1px solid var(--p-border-2);
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)) var(--p-surface);
+            color: var(--p-text);
+            font-family: var(--p-font);
+            font-size: 13px;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .purpura-backdrop-url::placeholder { color: var(--p-text-3); }
+
+        .purpura-backdrop-url:focus {
+            outline: none;
+            border-color: var(--p-accent);
+            box-shadow: 0 0 0 3px var(--p-accent-glow);
+        }
+
+        .purpura-backdrop-btn {
+            padding: 8px 14px;
+            border-radius: var(--p-radius);
+            border: 1px solid var(--p-accent);
+            background: var(--p-accent);
+            color: #fff;
+            font-family: var(--p-font);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.15s, transform 0.15s;
+        }
+
+        .purpura-backdrop-btn:hover { opacity: 0.88; }
+        .purpura-backdrop-btn:active { transform: scale(0.97); }
+
+        .purpura-backdrop-btn.subtle {
+            background: rgba(255,255,255,0.06);
+            border-color: var(--p-border-2);
+            color: var(--p-text-2);
+        }
+
+        .purpura-backdrop-error { font-size: 11px; color: var(--p-danger); min-height: 14px; }
+
+        .purpura-backdrop-select {
+            padding: 8px 11px;
+            border-radius: var(--p-radius);
+            border: 1px solid var(--p-border-2);
+            background: var(--p-surface);
+            color: var(--p-text);
+            font-family: var(--p-font);
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .purpura-backdrop-range { flex: 1; min-width: 0; accent-color: var(--p-accent); cursor: pointer; }
+
+        .purpura-backdrop-value {
+            min-width: 44px;
+            text-align: right;
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--p-text-2);
+        }
+
+        .purpura-uncorporatify-picker {\n            display: flex; flex-direction: column; gap: 6px;\n            margin-top: 12px;\n            padding-top: 12px;\n            border-top: 1px solid var(--p-border);\n        }\n\n        .purpura-uncorporatify-picker.disabled { opacity: 0.38; pointer-events: none; }\n\n        .purpura-uncorporatify-item {\n            display: flex; align-items: center; justify-content: space-between;\n            padding: 10px 13px;\n            background: var(--p-bg);\n            border-radius: var(--p-radius);\n            border: 1px solid var(--p-border);\n            transition: border-color 0.15s;\n        }\n\n        .purpura-uncorporatify-item:hover { border-color: var(--p-border-2); }\n\n        .purpura-uncorporatify-label { display: flex; align-items: center; gap: 8px; font-size: 13px; }\n        .purpura-uncorporatify-from { color: var(--p-text-3); text-decoration: line-through; }\n        .purpura-uncorporatify-arrow { color: var(--p-accent); }\n        .purpura-uncorporatify-to { color: var(--p-text); font-weight: 500; }\n\n        .purpura-uncorporatify-toggle {\n            position: relative; display: inline-block;\n            width: 36px; height: 20px; flex-shrink: 0;\n        }\n\n        .purpura-uncorporatify-toggle input { opacity: 0; width: 0; height: 0; }\n\n        .purpura-uncorporatify-toggle .slider {\n            position: absolute; cursor: pointer; inset: 0;\n            background: ${e ? "#c8c8d0" : "#2a2b36"};\n            transition: background 0.25s var(--p-ease);\n            border-radius: 99px;\n        }\n\n        .purpura-uncorporatify-toggle .slider::before {\n            position: absolute; content: '';\n            height: 14px; width: 14px;\n            left: 3px; bottom: 3px;\n            background: #fff;\n            transition: transform 0.3s var(--p-ease-back);\n            border-radius: 50%;\n            box-shadow: ${e ? "0 1px 4px rgba(0, 0, 0, 0.25)" : "none"};\n        }\n\n        .purpura-uncorporatify-toggle input:checked + .slider { background: var(--p-accent); }\n        .purpura-uncorporatify-toggle input:checked + .slider::before { transform: translateX(16px); }\n\n        \n        .purpura-serverinfo-picker {\n            display: flex; flex-direction: column; gap: 6px;\n            margin-top: 12px; padding-top: 12px;\n            border-top: 1px solid var(--p-border);\n        }\n\n        .purpura-serverinfo-picker.disabled { opacity: 0.38; pointer-events: none; }\n\n        .purpura-serverinfo-item {\n            display: flex; align-items: center; justify-content: space-between;\n            padding: 10px 13px;\n            background: var(--p-bg);\n            border-radius: var(--p-radius);\n            border: 1px solid var(--p-border);\n            transition: border-color 0.15s;\n        }\n\n        .purpura-serverinfo-item:hover { border-color: var(--p-border-2); }\n\n        .purpura-serverinfo-label { display: flex; align-items: center; gap: 10px; font-size: 13px; }\n\n        .purpura-serverinfo-icon {\n            width: 28px; height: 28px;\n            display: flex; align-items: center; justify-content: center;\n            border-radius: var(--p-radius-sm); flex-shrink: 0;\n        }\n\n        .purpura-serverinfo-icon.ping    { background: rgba(59,130,246,0.12); color: #60a5fa; }\n        .purpura-serverinfo-icon.fps     { background: rgba(74,222,128,0.12); color: var(--p-success); }\n        .purpura-serverinfo-icon.region  { background: rgba(155,109,255,0.12); color: var(--p-accent); }\n        .purpura-serverinfo-icon.uptime    { background: rgba(245,158,11,0.12); color: #f59e0b; } .purpura-serverinfo-icon.language  { background: rgba(45,212,191,0.12); color: #2dd4bf; } .purpura-serverinfo-icon.serverVersion,\n        .purpura-serverinfo-icon.serverId { background: rgba(148,163,184,0.08); color: var(--p-text-2); }\n\n        .purpura-serverinfo-label.dev-option { opacity: 0.65; }\n        .purpura-serverinfo-label.dev-option .purpura-serverinfo-name { font-size: 12px; }\n        .purpura-serverinfo-name { color: var(--p-text); font-weight: 500; }\n\n        .purpura-serverinfo-toggle {\n            position: relative; display: inline-block;\n            width: 36px; height: 20px; flex-shrink: 0;\n        }\n\n        .purpura-serverinfo-toggle input { opacity: 0; width: 0; height: 0; }\n\n        .purpura-serverinfo-toggle .slider {\n            position: absolute; cursor: pointer; inset: 0;\n            background: ${e ? "#c8c8d0" : "#2a2b36"};\n            transition: background 0.25s var(--p-ease);\n            border-radius: 99px;\n        }\n\n        .purpura-serverinfo-toggle .slider::before {\n            position: absolute; content: '';\n            height: 14px; width: 14px;\n            left: 3px; bottom: 3px;\n            background: #fff;\n            transition: transform 0.3s var(--p-ease-back);\n            border-radius: 50%;\n            box-shadow: ${e ? "0 1px 4px rgba(0, 0, 0, 0.25)" : "none"};\n        }\n\n        .purpura-serverinfo-toggle input:checked + .slider { background: var(--p-accent); }\n        .purpura-serverinfo-toggle input:checked + .slider::before { transform: translateX(16px); }\n\n        \n        .purpura-pagebinds-picker {\n            display: flex; flex-direction: column; gap: 8px;\n            margin-top: 12px; padding-top: 12px;\n            border-top: 1px solid var(--p-border);\n        }\n\n        .purpura-pagebinds-picker.disabled { opacity: 0.38; pointer-events: none; }\n\n        .purpura-pagebinds-list { display: flex; flex-direction: column; gap: 6px; }\n\n        .purpura-pagebinds-item {\n            display: flex; align-items: center; gap: 10px;\n            padding: 9px 12px;\n            background: var(--p-bg);\n            border-radius: var(--p-radius);\n            border: 1px solid var(--p-border);\n            transition: border-color 0.15s;\n        }\n\n        .purpura-pagebinds-item:hover { border-color: var(--p-border-2); }\n\n        .purpura-pagebinds-key {\n            display: flex; align-items: center; justify-content: center;\n            min-width: 34px; height: 34px;\n            background: rgba(155,109,255,0.15);\n            border: 1px solid rgba(155,109,255,0.3);\n            color: var(--p-accent);\n            font-weight: 700; font-size: 13px;\n            border-radius: var(--p-radius-sm); flex-shrink: 0;\n        }\n\n        .purpura-pagebinds-info { flex: 1; min-width: 0; }\n\n        .purpura-pagebinds-name { font-size: 13px; font-weight: 500; color: var(--p-text); }\n\n        .purpura-pagebinds-url { font-size: 11px; color: var(--p-text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n\n        .purpura-pagebinds-toggle {\n            position: relative; display: inline-block;\n            width: 36px; height: 20px; flex-shrink: 0;\n        }\n\n        .purpura-pagebinds-toggle input { opacity: 0; width: 0; height: 0; }\n\n        .purpura-pagebinds-toggle .slider {\n            position: absolute; cursor: pointer; inset: 0;\n            background: ${e ? "#c8c8d0" : "#2a2b36"}; transition: background 0.25s var(--p-ease); border-radius: 99px;\n        }\n\n        .purpura-pagebinds-toggle .slider::before {\n            position: absolute; content: '';\n            height: 14px; width: 14px; left: 3px; bottom: 3px;\n            background: #fff; transition: transform 0.3s var(--p-ease-back); border-radius: 50%;\n            box-shadow: ${e ? "0 1px 4px rgba(0, 0, 0, 0.25)" : "none"};\n        }\n\n        .purpura-pagebinds-toggle input:checked + .slider { background: var(--p-accent); }\n        .purpura-pagebinds-toggle input:checked + .slider::before { transform: translateX(16px); }\n\n        .purpura-pagebinds-hint {\n            font-size: 11px; color: var(--p-text-3);\n            padding: 7px 11px; background: var(--p-bg);\n            border-radius: var(--p-radius);\n            border: 1px solid var(--p-border);\n        }\n\n        .purpura-pagebinds-key-btn {\n            display: flex; align-items: center; justify-content: center;\n            min-width: 34px; height: 34px;\n            background: rgba(155,109,255,0.15);\n            border: 1px solid rgba(155,109,255,0.3);\n            color: var(--p-accent);\n            font-weight: 700; font-size: 13px;\n            border-radius: var(--p-radius-sm); flex-shrink: 0;\n            cursor: pointer;\n            transition: opacity 0.15s, background 0.15s;\n            padding: 0 8px; white-space: nowrap; font-family: var(--p-font);\n        }\n\n        .purpura-pagebinds-key-btn:hover { background: rgba(155,109,255,0.25); }\n\n        .purpura-pagebinds-key-btn.capturing {\n            background: rgba(230,114,44,0.15);\n            border-color: rgba(230,114,44,0.4);\n            color: #f09a5a;\n            font-size: 10px; min-width: 64px;\n            animation: p-key-pulse 0.85s ease-in-out infinite;\n        }\n\n        @keyframes p-key-pulse {\n            0%, 100% { opacity: 1; }\n            50% { opacity: 0.5; }\n        }\n\n        .purpura-pagebinds-actions { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }\n\n        .purpura-pagebinds-action-btn {\n            display: flex; align-items: center; justify-content: center;\n            width: 27px; height: 27px;\n            border-radius: var(--p-radius-sm); border: none;\n            cursor: pointer; font-size: 12px;\n            background: rgba(255,255,255,0.04);\n            color: var(--p-text-2);\n            transition: background 0.15s, color 0.15s;\n        }\n\n        .purpura-pagebinds-action-btn:hover { background: rgba(255,255,255,0.1); color: var(--p-text); }\n        .purpura-pagebinds-action-btn.delete:hover { background: rgba(248,113,113,0.12); color: var(--p-danger); }\n\n        .purpura-pagebinds-edit-form {\n            background: var(--p-bg);\n            border-radius: var(--p-radius);\n            padding: 11px;\n            display: flex; flex-direction: column; gap: 8px;\n            border: 1px solid var(--p-border-2);\n            animation: p-subsetting-in 0.18s var(--p-ease) forwards;\n        }\n\n        .purpura-pagebinds-form-row { display: flex; align-items: center; gap: 7px; }\n\n        .purpura-pagebinds-form-input {\n            flex: 1;\n            background: rgba(255,255,255,0.04);\n            border: 1px solid var(--p-border);\n            border-radius: var(--p-radius-sm);\n            padding: 6px 9px;\n            font-size: 12px; font-family: var(--p-font);\n            color: var(--p-text); outline: none;\n            transition: border-color 0.15s;\n            min-width: 0;\n        }\n\n        .purpura-pagebinds-form-input:focus { border-color: var(--p-accent); }\n        .purpura-pagebinds-form-url { flex: 2; }\n\n        .purpura-pagebinds-form-actions { display: flex; align-items: center; gap: 7px; justify-content: flex-end; }\n\n        .purpura-pagebinds-form-error { flex: 1; font-size: 11px; color: var(--p-danger); min-height: 14px; }\n\n        .purpura-pagebinds-btn-cancel,\n        .purpura-pagebinds-btn-save {\n            padding: 6px 13px; border-radius: var(--p-radius-sm);\n            font-size: 12px; font-weight: 500; font-family: var(--p-font);\n            border: none; cursor: pointer; transition: opacity 0.15s, transform 0.15s;\n        }\n\n        .purpura-pagebinds-btn-cancel:active,\n        .purpura-pagebinds-btn-save:active { transform: scale(0.97); }\n\n        .purpura-pagebinds-btn-cancel { background: rgba(255,255,255,0.06); color: var(--p-text-2); }\n        .purpura-pagebinds-btn-cancel:hover { opacity: 0.8; }\n\n        .purpura-pagebinds-btn-save { background: var(--p-accent); color: #fff; }\n        .purpura-pagebinds-btn-save:hover { background: #8a5df0; }\n\n        .purpura-pagebinds-add-btn {\n            display: flex; align-items: center; justify-content: center;\n            gap: 6px; width: 100%; padding: 9px;\n            background: rgba(155,109,255,0.07);\n            border: 1px dashed rgba(155,109,255,0.3);\n            border-radius: var(--p-radius); color: var(--p-accent);\n            font-size: 12px; font-weight: 500; font-family: var(--p-font);\n            cursor: pointer;\n            transition: background 0.15s, border-color 0.15s;\n        }\n\n        .purpura-pagebinds-add-btn:hover {\n            background: rgba(155,109,255,0.14);\n            border-color: rgba(155,109,255,0.5);\n        }; transition: background 0.25s var(--p-ease); border-radius: 99px;\n        }\n\n        \n        @keyframes p-search-result-in {\n            from { opacity: 0; transform: translateX(-6px); }\n            to   { opacity: 1; transform: translateX(0); }\n        }\n\n        .purpura-search-result-group {\n            animation: p-section-in 0.2s var(--p-ease) forwards;\n        }\n\n        .purpura-search-result-group .purpura-setting-card:nth-child(1) { animation-delay: 0.02s; }\n        .purpura-search-result-group .purpura-setting-card:nth-child(2) { animation-delay: 0.06s; }\n        .purpura-search-result-group .purpura-setting-card:nth-child(3) { animation-delay: 0.10s; }\n        .purpura-search-result-group .purpura-setting-card:nth-child(4) { animation-delay: 0.14s; }\n\n        .purpura-search-category-label {\n            display: flex;\n            align-items: center;\n            gap: 8px;\n            margin: 0 0 10px;\n            color: var(--p-text-3);\n            font-size: 11px;\n            font-weight: 700;\n            text-transform: uppercase;\n            letter-spacing: 0.8px;\n        }\n\n        .purpura-search-category-label::after {\n            content: '';\n            flex: 1;\n            height: 1px;\n            background: var(--p-border);\n        }\n\n        \n        .p-search-match {\n            background: rgba(155,109,255,0.2);\n            color: var(--p-accent);\n            border-radius: 3px;\n            padding: 0 2px;\n        }\n    `;
 document.head.appendChild(n);
 }
 function z(e) {
@@ -1081,6 +1562,14 @@ key: "fps",
 name: "FPS",
 icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>`
 }, {
+key: "uptime",
+name: "Uptime",
+icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+}, {
+key: "language",
+name: "Language Match",
+icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.9 8.9 0 0 1-4-.9L3 21l1.9-4.7A8.4 8.4 0 0 1 12 3.1a8.4 8.4 0 0 1 9 8.4Z" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+}, {
 key: "serverVersion",
 name: "Server Version",
 icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
@@ -1141,11 +1630,269 @@ l += `<div class="purpura-theme-option custom-theme${t ? " active" : ""}" data-t
 }
 l += `<div class="purpura-theme-add" id="purpura-add-custom-theme">\n            <span class="purpura-theme-add-icon">+</span>\n            <span class="purpura-theme-add-text">${e("settings_theme_addCustomTheme")}</span>\n        </div>`;
 l += `<div class="purpura-theme-modal" id="purpura-theme-modal">\n            <div class="purpura-theme-modal-content">\n                <div class="purpura-theme-modal-header">\n                    <h3>${e("settings_theme_addCustomTheme")}</h3>\n                    <button class="purpura-theme-modal-close" id="purpura-close-theme-modal">×</button>\n                </div>\n                <div class="purpura-theme-modal-body">\n                    <p class="purpura-theme-modal-hint">${e("settings_theme_pasteHint")}</p>\n                    <pre class="purpura-theme-manifest-example">/*\n@name Your Theme Name\n@description A short description\n@author Your Name\n*/</pre>\n                    <textarea id="purpura-theme-css" placeholder="${e("settings_theme_pastePlaceholder")}"></textarea>\n                </div>\n                <div class="purpura-theme-modal-actions">\n                    <button class="purpura-theme-modal-btn cancel" id="purpura-cancel-theme">${e("common_cancel")}</button>\n                    <button class="purpura-theme-modal-btn save" id="purpura-save-theme">${e("settings_theme_saveTheme")}</button>\n                </div>\n            </div>\n        </div>`;
-/* theme list injection disabled */
 const u = document.querySelector(`[data-setting="${n}"]`);
 if (u && !u.checked) {
 t.classList.add("disabled");
 }
+}
+let pgrRegionList = null;
+function pgrLoadRegions() {
+if (pgrRegionList) return pgrRegionList;
+pgrRegionList = fetch(chrome.runtime.getURL("data/ServerList.json")).then(r => r.ok ? r.json() : []).then(list => (Array.isArray(list) ? list : []).map(entry => {
+const loc = entry && entry.location;
+if (!loc || !loc.country) return null;
+const key = [ loc.country, loc.region, loc.city ].filter(Boolean).join("|");
+const parts = [];
+if (loc.city) parts.push(loc.city);
+if (loc.country === "US" && loc.region) parts.push(loc.region);
+parts.push(loc.country_name || loc.country);
+return { key: key, label: parts.join(", ") };
+}).filter(Boolean).sort((a, b) => a.label.localeCompare(b.label))).catch(() => []);
+return pgrRegionList;
+}
+function pgrFillRegionSelect(key) {
+const name = key + "_region";
+Promise.all([ pgrLoadRegions(), new Promise(resolve => {
+try {
+chrome.storage.sync.get([ "pgr" ], value => resolve(value && value.pgr));
+} catch (_) {
+resolve(null);
+}
+}) ]).then(([ list, stored ]) => {
+const select = document.querySelector(`[data-sub-setting-input="${name}"]`);
+if (!select || select.dataset.pgrFilled === "1") return;
+select.dataset.pgrFilled = "1";
+const config = stored && typeof stored === "object" ? stored : {};
+const region = typeof config.region === "string" && config.region ? config.region : "US|Virginia|Ashburn";
+select.innerHTML = `<option value="">Select a region…</option>` + list.map(entry => `<option value="${entry.key}">${entry.label}</option>`).join("");
+select.value = region;
+const toggle = document.querySelector(`[data-setting="${key}"]`);
+if (toggle) toggle.checked = config.enabled === true;
+const wrapper = select.closest(".purpura-sub-setting");
+if (wrapper) wrapper.classList.toggle("disabled", config.enabled !== true);
+select.disabled = config.enabled !== true;
+});
+}
+function pgrMarkup(t) {
+const on = P("pgr", "enabled") !== false;
+setTimeout(() => pgrFillRegionSelect(t), 0);
+return `<div class="purpura-sub-setting${on ? "" : " disabled"}" data-sub-setting="${t}_region" data-parent="${t}">
+    <div class="purpura-sub-setting-row">
+        <label>Preferred region</label>
+        <select data-sub-setting-input="${t}_region" data-storage-key="pgr" data-storage-path="region" data-storage-type="sync" style="margin-left:10px;min-width:190px;max-width:62%;padding:8px 11px;border-radius:10px;border:1px solid var(--p-border-2);background:var(--p-surface);color:var(--p-text);font-family:var(--p-font);font-size:13px;">
+            <option value="">Loading…</option>
+        </select>
+    </div>
+    <div class="purpura-sub-setting-desc">The secondary play button joins a server in this region when one is open.</div>
+</div>`;
+}
+function backdropPickerMarkup(t) {
+const r = [ [ "cover", "Cover" ], [ "contain", "Contain" ], [ "stretch", "Stretch" ], [ "tile", "Tile" ] ].map(q => `<option value="${q[0]}">${q[1]}</option>`).join("");
+return `<div class="purpura-backdrop-picker" data-setting="${t}">
+            <div class="purpura-backdrop-preview" id="purpura-backdrop-preview"></div>
+            <div class="purpura-backdrop-row">
+                <input type="text" class="purpura-backdrop-url" id="purpura-backdrop-url" placeholder="${e("settings_customBackdrop_imagePlaceholder")}">
+                <button type="button" class="purpura-backdrop-btn" id="purpura-backdrop-upload-btn">${e("settings_customBackdrop_upload")}</button>
+                <button type="button" class="purpura-backdrop-btn subtle" id="purpura-backdrop-clear-btn">${e("settings_customBackdrop_clear")}</button>
+                <input type="file" id="purpura-backdrop-file-input" accept="image/*" style="display: none;">
+            </div>
+            <div class="purpura-backdrop-error" id="purpura-backdrop-error"></div>
+            <div class="purpura-backdrop-row">
+                <label class="purpura-backdrop-label" for="purpura-backdrop-fit">${e("settings_customBackdrop_fit")}</label>
+                <select class="purpura-backdrop-select" id="purpura-backdrop-fit">${r}</select>
+            </div>
+            <div class="purpura-backdrop-row">
+                <label class="purpura-backdrop-label" for="purpura-backdrop-opacity">${e("settings_customBackdrop_opacity")}</label>
+                <input type="range" class="purpura-backdrop-range" id="purpura-backdrop-opacity" min="0" max="100" step="5" value="100">
+                <span class="purpura-backdrop-value" id="purpura-backdrop-opacity-value">100%</span>
+            </div>
+            <div class="purpura-backdrop-row">
+                <label class="purpura-backdrop-label" for="purpura-backdrop-blur">${e("settings_customBackdrop_blur")}</label>
+                <input type="range" class="purpura-backdrop-range" id="purpura-backdrop-blur" min="0" max="20" step="1" value="0">
+                <span class="purpura-backdrop-value" id="purpura-backdrop-blur-value">0px</span>
+            </div>
+            <div class="purpura-backdrop-row">
+                <label class="purpura-backdrop-label" for="purpura-backdrop-dim">${e("settings_customBackdrop_dim")}</label>
+                <input type="range" class="purpura-backdrop-range" id="purpura-backdrop-dim" min="0" max="100" step="5" value="0">
+                <span class="purpura-backdrop-value" id="purpura-backdrop-dim-value">0%</span>
+            </div>
+        </div>`;
+}
+function initBackdropPicker() {
+const picker = document.querySelector(".purpura-backdrop-picker");
+if (!picker) return;
+const DEFAULTS = {
+enabled: false,
+image: "",
+fit: "cover",
+opacity: 100,
+blur: 0,
+"dim": 0
+};
+const settingId = picker.dataset.setting;
+const master = document.querySelector(`[data-setting="${settingId}"]`);
+const urlInput = document.getElementById("purpura-backdrop-url");
+const fileInput = document.getElementById("purpura-backdrop-file-input");
+const uploadBtn = document.getElementById("purpura-backdrop-upload-btn");
+const clearBtn = document.getElementById("purpura-backdrop-clear-btn");
+const errorEl = document.getElementById("purpura-backdrop-error");
+const preview = document.getElementById("purpura-backdrop-preview");
+const fitSelect = document.getElementById("purpura-backdrop-fit");
+const sliders = {
+opacity: { input: document.getElementById("purpura-backdrop-opacity"), value: document.getElementById("purpura-backdrop-opacity-value"), suffix: "%" },
+blur: { input: document.getElementById("purpura-backdrop-blur"), value: document.getElementById("purpura-backdrop-blur-value"), suffix: "px" },
+"dim": { input: document.getElementById("purpura-backdrop-dim"), value: document.getElementById("purpura-backdrop-dim-value"), suffix: "%" }
+};
+let config = Object.assign({}, DEFAULTS);
+function usable(value) {
+const image = String(value || "").trim();
+if (!image) return false;
+const isHttps = image.slice(0, 8) === "https://";
+const isData = image.slice(0, 11) === "data:image/";
+if (!isHttps && !isData) return false;
+for (let i = 0; i < image.length; i++) {
+const code = image.charCodeAt(i);
+if (code <= 32 || code === 34 || code === 39 || code === 40 || code === 41 || code === 60 || code === 62) return false;
+}
+return true;
+}
+function setError(message) {
+if (errorEl) errorEl.textContent = message || "";
+}
+function paintPreview() {
+if (!preview) return;
+preview.textContent = "";
+if (!config.image) {
+const empty = document.createElement("span");
+empty.className = "purpura-backdrop-preview-empty";
+empty.textContent = "No image selected";
+preview.appendChild(empty);
+return;
+}
+const img = document.createElement("img");
+img.src = config.image;
+img.alt = "";
+preview.appendChild(img);
+}
+function paint() {
+if (master) master.checked = !!config.enabled;
+picker.classList.toggle("disabled", !config.enabled);
+if (urlInput) urlInput.value = config.image.indexOf("data:image/") === 0 ? "" : config.image;
+if (fitSelect) fitSelect.value = config.fit;
+Object.keys(sliders).forEach(function (key) {
+const slider = sliders[key];
+if (!slider.input) return;
+slider.input.value = String(config[key]);
+if (slider.value) slider.value.textContent = String(config[key]) + slider.suffix;
+});
+paintPreview();
+}
+function persist(patch) {
+config = Object.assign({}, config, patch);
+chrome.storage.local.get([ "cbg" ], function (stored) {
+const current = stored && stored.cbg && typeof stored.cbg === "object" ? stored.cbg : {};
+chrome.storage.local.set({
+cbg: Object.assign({}, current, patch)
+});
+});
+paint();
+}
+paint();
+chrome.storage.local.get([ "cbg" ], function (stored) {
+const current = stored && stored.cbg && typeof stored.cbg === "object" ? stored.cbg : {};
+config = Object.assign({}, DEFAULTS, current);
+paint();
+});
+if (master) {
+master.addEventListener("change", function () {
+persist({
+enabled: this.checked
+});
+});
+}
+if (urlInput) {
+urlInput.addEventListener("change", function () {
+const value = String(urlInput.value || "").trim();
+if (!value) {
+setError("");
+persist({
+image: ""
+});
+return;
+}
+if (!usable(value)) {
+setError(e("settings_customBackdrop_error"));
+return;
+}
+setError("");
+persist({
+image: value
+});
+});
+}
+if (uploadBtn && fileInput) {
+uploadBtn.addEventListener("click", function () {
+if (picker.classList.contains("disabled")) return;
+fileInput.click();
+});
+fileInput.addEventListener("change", function () {
+const file = fileInput.files && fileInput.files[0];
+if (!file) return;
+if (String(file.type || "").indexOf("image/") !== 0) {
+setError(e("settings_customBackdrop_error"));
+return;
+}
+if (file.size > 2 * 1024 * 1024) {
+setError("Image size must be less than 2MB");
+return;
+}
+const reader = new FileReader;
+reader.onload = function (event) {
+fileInput.value = "";
+setError("");
+persist({
+image: String(event.target.result)
+});
+};
+reader.readAsDataURL(file);
+});
+}
+if (clearBtn) {
+clearBtn.addEventListener("click", function () {
+setError("");
+if (urlInput) urlInput.value = "";
+persist({
+image: ""
+});
+});
+}
+if (fitSelect) {
+fitSelect.addEventListener("change", function () {
+persist({
+fit: fitSelect.value
+});
+});
+}
+Object.keys(sliders).forEach(function (key) {
+const slider = sliders[key];
+if (!slider.input) return;
+slider.input.addEventListener("input", function () {
+if (slider.value) slider.value.textContent = String(slider.input.value) + slider.suffix;
+});
+slider.input.addEventListener("change", function () {
+const patch = {};
+patch[key] = Number(slider.input.value);
+persist(patch);
+});
+});
+}
+function optionMarkup(options, selected) {
+return (options || []).map(option => {
+const value = option && typeof option === "object" ? option.value : option;
+const label = option && typeof option === "object" ? option.label : option;
+const state = value === selected ? "selected" : "";
+return `<option value="${value}" ${state}>${label}</option>`;
+}).join("");
 }
 function U(e, t) {
 const n = (t.comingSoon || t.deprecated) ? "disabled" : "";
@@ -1163,15 +1910,13 @@ return `<label class="purpura-toggle"><input type="checkbox" data-setting="${e}"
 return `<label class="purpura-toggle"><input type="checkbox" data-setting="${e}" ${n}><span class="purpura-toggle-slider"></span></label>`;
 } else if (t.type === "serverinfo-picker") {
 return `<label class="purpura-toggle"><input type="checkbox" data-setting="${e}" ${n}><span class="purpura-toggle-slider"></span></label>`;
+} else if (t.type === "backdrop-picker") {
+return `<label class="purpura-toggle"><input type="checkbox" data-setting="${e}" ${n}><span class="purpura-toggle-slider"></span></label>`;
 } else if (t.type === "wip") {
 const e = Array.isArray(t.description) ? t.description.join(" ") : t.description || "This section is under development.";
 return `\n                <div class="purpura-wip">\n                    <span class="purpura-wip-icon" aria-hidden="true">⚠️</span>\n                    <span class="purpura-wip-text">${e}</span>\n                </div>\n            `;
 } else if (t.type === "select") {
-let r = (t.options || []).map(e => {
-const n = e === t.default ? "selected" : "";
-return `<option value="${e}" ${n}>${e}</option>`;
-}).join("");
-return `<select data-setting="${e}" ${n}>${r}</select>`;
+return `<select data-setting="${e}" ${n}>${optionMarkup(t.options, t.default)}</select>`;
 } else if (t.type === "input") {
 return `<input type="text" data-setting="${e}" placeholder="${t.placeholder || ""}" ${n}>`;
 }
@@ -1246,6 +1991,12 @@ r += G(t);
 if (n.type === "serverinfo-picker") {
 r += K(t);
 }
+if (n.type === "backdrop-picker") {
+r += backdropPickerMarkup(t);
+}
+if (n.regionPicker) {
+r += pgrMarkup(t);
+}
 if (n.subSettings && t !== "statusSpoofer") {
 Object.entries(n.subSettings).forEach(([e, a]) => {
 const o = `${t}_${e}`;
@@ -1253,15 +2004,13 @@ r += `<div class="purpura-sub-setting" data-sub-setting="${o}" data-parent="${t}
 r += `<div class="purpura-sub-setting-row">`;
 r += `<label>${a.label}</label>`;
 if (a.type === "select") {
-const e = (a.options || []).map(e => {
-const t = e === a.default ? "selected" : "";
-return `<option value="${e}" ${t}>${e}</option>`;
-}).join("");
-r += `<select data-sub-setting-input="${o}" data-storage-key="${a.storageKey}" data-storage-path="${a.storagePath}" data-storage-type="${n.storageType || "sync"}">${e}</select>`;
+r += `<select data-sub-setting-input="${o}" data-storage-key="${a.storageKey}" data-storage-path="${a.storagePath || ""}" data-storage-type="${n.storageType || "sync"}">${optionMarkup(a.options, a.default)}</select>`;
 } else if (a.type === "input") {
-r += `<input type="text" data-sub-setting-input="${o}" data-storage-key="${a.storageKey}" data-storage-path="${a.storagePath}" data-storage-type="${n.storageType || "sync"}" placeholder="${a.placeholder || ""}">`;
+r += `<input type="text" data-sub-setting-input="${o}" data-storage-key="${a.storageKey}" data-storage-path="${a.storagePath || ""}" data-storage-type="${n.storageType || "sync"}" placeholder="${a.placeholder || ""}">`;
+} else if (a.type === "color") {
+r += `<input type="color" data-sub-setting-input="${o}" data-storage-key="${a.storageKey}" data-storage-path="${a.storagePath || ""}" data-storage-type="${n.storageType || "sync"}" value="${a.default || "#00a2ff"}" style="width:44px;height:28px;padding:0;border:1px solid var(--p-border-2);border-radius:var(--p-radius-sm);background:var(--p-bg);cursor:pointer;">`;
 } else {
-r += `<label class="purpura-toggle"><input type="checkbox" data-sub-setting-input="${o}" data-storage-key="${a.storageKey}" data-storage-path="${a.storagePath}" data-storage-type="${n.storageType || "sync"}"><span class="purpura-toggle-slider"></span></label>`;
+r += `<label class="purpura-toggle"><input type="checkbox" data-sub-setting-input="${o}" data-storage-key="${a.storageKey}" data-storage-path="${a.storagePath || ""}" data-storage-type="${n.storageType || "sync"}"><span class="purpura-toggle-slider"></span></label>`;
 }
 r += `</div>`;
 if (a.description) {
@@ -1269,6 +2018,9 @@ r += `<div class="purpura-sub-setting-desc">${a.description}</div>`;
 }
 r += `</div>`;
 });
+}
+if (n.streamerConfigAction) {
+r += `<button type="button" class="purpura-reset-btn" id="purpura-streamer-config-btn" style="margin-top:10px;background:var(--p-accent-glow);border-color:var(--p-accent-glow-strong);color:var(--p-accent);">${e("settings_streamerMode_configure")}</button>`;
 }
 if (n.editLayoutAction) {
 r += `<button type="button" class="purpura-reset-btn" id="purpura-edit-layout-btn" data-parent-setting="homePageTweaks" style="margin-top:10px;background:var(--p-accent-glow);border-color:var(--p-accent-glow-strong);color:var(--p-accent);">Edit Layout</button>`;
@@ -1345,6 +2097,12 @@ r += G(t);
 if (n.type === "serverinfo-picker") {
 r += K(t);
 }
+if (n.type === "backdrop-picker") {
+r += backdropPickerMarkup(t);
+}
+if (n.regionPicker) {
+r += pgrMarkup(t);
+}
 if (n.subSettings && t !== "statusSpoofer") {
 Object.entries(n.subSettings).forEach(([e, a]) => {
 const o = `${t}_${e}`;
@@ -1352,15 +2110,13 @@ r += `<div class="purpura-sub-setting" data-sub-setting="${o}" data-parent="${t}
 r += `<div class="purpura-sub-setting-row">`;
 r += `<label>${a.label}</label>`;
 if (a.type === "select") {
-const e = (a.options || []).map(e => {
-const t = e === a.default ? "selected" : "";
-return `<option value="${e}" ${t}>${e}</option>`;
-}).join("");
-r += `<select data-sub-setting-input="${o}" data-storage-key="${a.storageKey}" data-storage-path="${a.storagePath}" data-storage-type="${n.storageType || "sync"}">${e}</select>`;
+r += `<select data-sub-setting-input="${o}" data-storage-key="${a.storageKey}" data-storage-path="${a.storagePath || ""}" data-storage-type="${n.storageType || "sync"}">${optionMarkup(a.options, a.default)}</select>`;
 } else if (a.type === "input") {
-r += `<input type="text" data-sub-setting-input="${o}" data-storage-key="${a.storageKey}" data-storage-path="${a.storagePath}" data-storage-type="${n.storageType || "sync"}" placeholder="${a.placeholder || ""}">`;
+r += `<input type="text" data-sub-setting-input="${o}" data-storage-key="${a.storageKey}" data-storage-path="${a.storagePath || ""}" data-storage-type="${n.storageType || "sync"}" placeholder="${a.placeholder || ""}">`;
+} else if (a.type === "color") {
+r += `<input type="color" data-sub-setting-input="${o}" data-storage-key="${a.storageKey}" data-storage-path="${a.storagePath || ""}" data-storage-type="${n.storageType || "sync"}" value="${a.default || "#00a2ff"}" style="width:44px;height:28px;padding:0;border:1px solid var(--p-border-2);border-radius:var(--p-radius-sm);background:var(--p-bg);cursor:pointer;">`;
 } else {
-r += `<label class="purpura-toggle"><input type="checkbox" data-sub-setting-input="${o}" data-storage-key="${a.storageKey}" data-storage-path="${a.storagePath}" data-storage-type="${n.storageType || "sync"}"><span class="purpura-toggle-slider"></span></label>`;
+r += `<label class="purpura-toggle"><input type="checkbox" data-sub-setting-input="${o}" data-storage-key="${a.storageKey}" data-storage-path="${a.storagePath || ""}" data-storage-type="${n.storageType || "sync"}"><span class="purpura-toggle-slider"></span></label>`;
 }
 r += `</div>`;
 if (a.description) {
@@ -1368,6 +2124,9 @@ r += `<div class="purpura-sub-setting-desc">${a.description}</div>`;
 }
 r += `</div>`;
 });
+}
+if (n.streamerConfigAction) {
+r += `<button type="button" class="purpura-reset-btn" id="purpura-streamer-config-btn" style="margin-top:10px;background:var(--p-accent-glow);border-color:var(--p-accent-glow-strong);color:var(--p-accent);">${e("settings_streamerMode_configure")}</button>`;
 }
 if (n.editLayoutAction) {
 r += `<button type="button" class="purpura-reset-btn" id="purpura-edit-layout-btn" data-parent-setting="homePageTweaks" style="margin-top:10px;background:var(--p-accent-glow);border-color:var(--p-accent-glow-strong);color:var(--p-accent);">Edit Layout</button>`;
@@ -1593,14 +2352,22 @@ function we() {
 for (let e in A) {
 const t = A[e];
 for (let [e, n] of Object.entries(t.settings)) {
-if (n.type === "theme-picker" || n.type === "cursor-picker" || n.type === "tabs-picker" || n.type === "uncorporatify-picker" || n.type === "pagebinds-picker" || n.type === "serverinfo-picker") {
+if (n.type === "theme-picker" || n.type === "cursor-picker" || n.type === "tabs-picker" || n.type === "uncorporatify-picker" || n.type === "pagebinds-picker" || n.type === "serverinfo-picker" || n.type === "backdrop-picker") {
 continue;
 }
 if (!n.storageKey || typeof n.storageKey !== "string") {
 continue;
 }
 const t = n.storageType === "sync" ? chrome.storage.sync : chrome.storage.local;
-t.get([ n.storageKey ], t => {
+const keys = [ n.storageKey ];
+if (n.subSettings) {
+for (const sub of Object.values(n.subSettings)) {
+if (sub.storageKey && keys.indexOf(sub.storageKey) === -1) {
+keys.push(sub.storageKey);
+}
+}
+}
+t.get(keys, t => {
 const r = document.querySelector(`[data-setting="${e}"]`);
 if (!r) return;
 let a;
@@ -1654,7 +2421,8 @@ Object.entries(n.subSettings).forEach(([r, a]) => {
 const o = `${e}_${r}`;
 const s = document.querySelector(`[data-sub-setting-input="${o}"]`);
 if (s) {
-const e = t[a.storageKey]?.[a.storagePath];
+const sub = t[a.storageKey];
+const e = a.storagePath ? sub?.[a.storagePath] : sub && typeof sub === "object" ? sub.enabled : sub;
 const r = P(a.storageKey, a.storagePath);
 const i = e !== undefined ? e : r !== undefined ? r : a.default;
 if (s.type === "checkbox") {
@@ -1687,6 +2455,235 @@ he(s, o);
 }
 });
 }
+}
+}
+const STREAMER_ITEM_KEYS = [ "names", "others", "avatars", "robux", "gameNames", "email", "phone", "birthdate", "age", "country", "sessions", "presence" ];
+const STREAMER_PRESETS = [
+{
+key: "everything",
+items: STREAMER_ITEM_KEYS
+},
+{
+key: "identity",
+items: [ "names", "others", "avatars", "gameNames" ]
+},
+{
+key: "account",
+items: [ "email", "phone", "birthdate", "age", "country", "sessions", "robux" ]
+},
+{
+key: "activity",
+items: [ "presence", "gameNames", "others" ]
+}
+];
+function streamerRead(cb) {
+chrome.storage.local.get([ "stm" ], res => {
+cb(X(res.stm, "stm"));
+});
+}
+function streamerWrite(patch, cb) {
+chrome.storage.local.get([ "stm" ], res => {
+const next = X(res.stm, "stm");
+Object.keys(patch).forEach(key => {
+next[key] = patch[key];
+});
+chrome.storage.local.set({
+stm: next
+}, () => {
+if (cb) cb(next);
+});
+});
+}
+function streamerItemOn(state, key) {
+return state[key] !== false;
+}
+function activeStreamerPreset(state) {
+for (const preset of STREAMER_PRESETS) {
+const matches = STREAMER_ITEM_KEYS.every(key => streamerItemOn(state, key) === (preset.items.indexOf(key) !== -1));
+if (matches) return preset.key;
+}
+return "";
+}
+function syncStreamerModal(state) {
+const active = activeStreamerPreset(state);
+document.querySelectorAll("[data-streamer-preset]").forEach(btn => {
+btn.classList.toggle("active", btn.dataset.streamerPreset === active);
+});
+STREAMER_ITEM_KEYS.forEach(key => {
+const input = document.querySelector(`[data-streamer-item="${key}"]`);
+if (input && input.checked !== streamerItemOn(state, key)) {
+input.checked = streamerItemOn(state, key);
+}
+});
+const keybind = document.querySelector("[data-streamer-keybind]");
+if (keybind && document.activeElement !== keybind) {
+keybind.value = typeof state.keybind === "string" ? state.keybind : "";
+}
+}
+function streamerKeyName(event) {
+const key = event.key;
+if (!key) return "";
+if (key === "Control" || key === "Shift" || key === "Alt" || key === "Meta" || key === "CapsLock") return "";
+if (key === " ") return "Space";
+if (key.length === 1) return key.toUpperCase();
+return key.charAt(0).toUpperCase() + key.slice(1);
+}
+let streamerModalEscape = null;
+function closeStreamerModal() {
+const modal = document.getElementById("purpura-streamer-modal");
+if (!modal) return;
+modal.classList.remove("visible");
+if (streamerModalEscape) {
+document.removeEventListener("keydown", streamerModalEscape, true);
+streamerModalEscape = null;
+}
+setTimeout(() => modal.remove(), 220);
+}
+function openStreamerModal() {
+const existing = document.getElementById("purpura-streamer-modal");
+if (existing) {
+if (existing.classList.contains("visible")) return;
+existing.remove();
+}
+const modal = document.createElement("div");
+modal.className = "purpura-theme-modal";
+modal.id = "purpura-streamer-modal";
+const content = document.createElement("div");
+content.className = "purpura-theme-modal-content";
+content.style.width = "560px";
+content.innerHTML = `<div class="purpura-theme-modal-header">
+<h3>${e("settings_streamerMode_label")}</h3>
+<button type="button" class="purpura-theme-modal-close" data-streamer-close>×</button>
+</div>
+<p class="purpura-theme-modal-hint">${e("settings_streamerMode_modalDesc")}</p>
+<div class="purpura-theme-section-header">${e("settings_streamerMode_presetsHeading")}</div>
+<div data-streamer-presets style="display:flex;flex-direction:column;gap:8px;"></div>
+<div class="purpura-theme-section-header">${e("settings_streamerMode_itemsHeading")}</div>
+<div data-streamer-items style="display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:8px;"></div>
+<div class="purpura-theme-section-header">${e("settings_streamerMode_keybind")}</div>
+<input type="text" readonly data-streamer-keybind placeholder="${e("settings_streamerMode_keybindPlaceholder")}" style="width:100%;padding:9px 11px;border-radius:var(--p-radius);border:1px solid var(--p-border-2);background:var(--p-bg);color:var(--p-text);font-family:var(--p-font);font-size:13px;cursor:pointer;">
+<div class="purpura-theme-modal-hint" style="margin:6px 0 0;font-size:12px;">${e("settings_streamerMode_keybindDesc")}</div>
+<div class="purpura-theme-modal-actions" style="margin-top:18px;">
+<button type="button" class="purpura-theme-modal-btn save" data-streamer-done>${e("settings_streamerMode_done")}</button>
+</div>`;
+const presetsWrap = content.querySelector("[data-streamer-presets]");
+STREAMER_PRESETS.forEach(preset => {
+const btn = document.createElement("button");
+btn.type = "button";
+btn.className = "purpura-theme-option";
+btn.dataset.streamerPreset = preset.key;
+btn.style.width = "100%";
+btn.style.textAlign = "left";
+btn.style.fontFamily = "var(--p-font)";
+const info = document.createElement("span");
+info.className = "purpura-theme-info";
+const name = document.createElement("span");
+name.className = "purpura-theme-name";
+name.textContent = e(`settings_streamerMode_preset_${preset.key}`);
+const desc = document.createElement("span");
+desc.className = "purpura-theme-desc";
+desc.textContent = e(`settings_streamerMode_preset_${preset.key}Desc`);
+info.appendChild(name);
+info.appendChild(desc);
+btn.appendChild(info);
+presetsWrap.appendChild(btn);
+});
+const itemsWrap = content.querySelector("[data-streamer-items]");
+STREAMER_ITEM_KEYS.forEach(key => {
+const row = document.createElement("div");
+row.style.cssText = "display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;background:var(--p-bg);border:1px solid var(--p-border);border-radius:var(--p-radius);";
+const text = document.createElement("span");
+text.style.cssText = "display:flex;flex-direction:column;gap:2px;min-width:0;";
+const label = document.createElement("span");
+label.style.cssText = "font-size:12.5px;font-weight:600;color:var(--p-text);";
+label.textContent = e(`settings_streamerMode_item_${key}`);
+const itemDesc = document.createElement("span");
+itemDesc.style.cssText = "font-size:11px;line-height:1.35;color:var(--p-text-3);";
+itemDesc.textContent = e(`settings_streamerMode_item_${key}Desc`);
+text.appendChild(label);
+text.appendChild(itemDesc);
+const toggle = document.createElement("label");
+toggle.className = "purpura-toggle";
+toggle.style.marginLeft = "0";
+const input = document.createElement("input");
+input.type = "checkbox";
+input.dataset.streamerItem = key;
+const slider = document.createElement("span");
+slider.className = "purpura-toggle-slider";
+toggle.appendChild(input);
+toggle.appendChild(slider);
+row.appendChild(text);
+row.appendChild(toggle);
+itemsWrap.appendChild(row);
+});
+itemsWrap.addEventListener("change", event => {
+const input = event.target.closest ? event.target.closest("[data-streamer-item]") : null;
+if (!input) return;
+streamerWrite({
+[input.dataset.streamerItem]: input.checked
+}, state => syncStreamerModal(state));
+});
+presetsWrap.addEventListener("click", event => {
+const btn = event.target.closest ? event.target.closest("[data-streamer-preset]") : null;
+if (!btn) return;
+const preset = STREAMER_PRESETS.find(entry => entry.key === btn.dataset.streamerPreset);
+if (!preset) return;
+const patch = {};
+STREAMER_ITEM_KEYS.forEach(key => {
+patch[key] = preset.items.indexOf(key) !== -1;
+});
+streamerWrite(patch, state => syncStreamerModal(state));
+});
+const keybindInput = content.querySelector("[data-streamer-keybind]");
+keybindInput.addEventListener("keydown", event => {
+event.preventDefault();
+event.stopPropagation();
+if (event.key === "Backspace" || event.key === "Delete" || event.key === "Escape") {
+keybindInput.value = "";
+streamerWrite({ keybind: "" });
+return;
+}
+const key = streamerKeyName(event);
+if (!key) return;
+const parts = [];
+if (event.ctrlKey || event.metaKey) parts.push("Ctrl");
+if (event.altKey) parts.push("Alt");
+if (event.shiftKey) parts.push("Shift");
+parts.push(key);
+keybindInput.value = parts.join("+");
+streamerWrite({ keybind: keybindInput.value });
+});
+content.querySelector("[data-streamer-done]").addEventListener("click", () => closeStreamerModal());
+content.querySelector("[data-streamer-close]").addEventListener("click", () => closeStreamerModal());
+modal.addEventListener("click", event => {
+if (event.target === modal) closeStreamerModal();
+});
+streamerModalEscape = event => {
+if (event.key !== "Escape") return;
+const target = event.target;
+if (target instanceof Element && target.closest("[data-streamer-keybind]")) return;
+closeStreamerModal();
+};
+document.addEventListener("keydown", streamerModalEscape, true);
+modal.appendChild(content);
+document.body.appendChild(modal);
+streamerRead(state => syncStreamerModal(state));
+requestAnimationFrame(() => modal.classList.add("visible"));
+}
+let streamerSummaryBound = false;
+function initStreamerConfig() {
+if (!streamerSummaryBound) {
+streamerSummaryBound = true;
+chrome.storage.onChanged.addListener((changes, area) => {
+if (area !== "local" || !changes.stm) return;
+const state = X(changes.stm.newValue, "stm");
+if (document.getElementById("purpura-streamer-modal")) syncStreamerModal(state);
+});
+}
+const btn = document.getElementById("purpura-streamer-config-btn");
+if (btn && !btn.dataset.streamerBound) {
+btn.dataset.streamerBound = "1";
+btn.addEventListener("click", openStreamerModal);
 }
 }
 function ke() {
@@ -1739,6 +2736,12 @@ ye(s, false);
 return;
 }
 i.get([ t ], e => {
+if (!n) {
+i.set({
+[t]: a
+});
+return;
+}
 let r = X(e[t], t);
 r[n] = a;
 i.set({
@@ -1773,7 +2776,7 @@ e.preventDefault();
 e.stopPropagation();
 return;
 }
-if (n.type === "theme-picker" || n.type === "cursor-picker" || n.type === "tabs-picker" || n.type === "uncorporatify-picker" || n.type === "pagebinds-picker" || n.type === "serverinfo-picker") {
+if (n.type === "theme-picker" || n.type === "cursor-picker" || n.type === "tabs-picker" || n.type === "uncorporatify-picker" || n.type === "pagebinds-picker" || n.type === "serverinfo-picker" || n.type === "backdrop-picker") {
 return;
 }
 if (!n.storageKey || typeof n.storageKey !== "string") {
@@ -2751,6 +3754,8 @@ info: {
 region: true,
 ping: true,
 fps: true,
+uptime: true,
+language: true,
 serverVersion: false,
 serverId: false
 }
@@ -2770,6 +3775,8 @@ s = {
 region: a.info?.region !== undefined ? a.info.region : r.info.region,
 ping: a.info?.ping !== undefined ? a.info.ping : r.info.ping,
 fps: a.info?.fps !== undefined ? a.info.fps : r.info.fps,
+uptime: a.info?.uptime !== undefined ? a.info.uptime : r.info.uptime !== false,
+language: a.info?.language !== undefined ? a.info.language : r.info.language !== false,
 serverVersion: a.info?.serverVersion !== undefined ? a.info.serverVersion : r.info.serverVersion,
 serverId: a.info?.serverId !== undefined ? a.info.serverId : r.info.serverId
 };
@@ -2787,7 +3794,7 @@ e.classList.add("disabled");
 } else {
 e.classList.remove("disabled");
 }
-[ "region", "ping", "fps", "serverVersion", "serverId" ].forEach(t => {
+[ "region", "ping", "fps", "uptime", "language", "serverVersion", "serverId" ].forEach(t => {
 const n = e.querySelector(`[data-info="${t}"]`);
 if (n) {
 n.checked = s[t];
@@ -2810,6 +3817,8 @@ r = n.info || {
 region: true,
 ping: true,
 fps: true,
+uptime: true,
+language: true,
 serverVersion: false,
 serverId: false
 };
@@ -2818,6 +3827,8 @@ r = {
 region: true,
 ping: true,
 fps: true,
+uptime: true,
+language: true,
 serverVersion: false,
 serverId: false
 };
@@ -2844,6 +3855,8 @@ a = {
 region: r.info.region !== false,
 ping: r.info.ping !== false,
 fps: r.info.fps !== false,
+uptime: r.info.uptime !== false,
+language: r.info.language !== false,
 serverVersion: r.info.serverVersion === true,
 serverId: r.info.serverId === true
 };
@@ -2852,6 +3865,8 @@ a = {
 region: true,
 ping: true,
 fps: true,
+uptime: true,
+language: true,
 serverVersion: false,
 serverId: false
 };
@@ -3187,9 +4202,6 @@ e.classList.remove("disabled");
 } else {
 e.classList.add("disabled");
 }
-// Theme Editor and Free Roblox Plus Themes are mutually exclusive;
-// if a theme is active (e.g. enabled from the /purpura-themes page),
-// keep the frpt toggle in sync so the UI never shows both on.
 if (r) {
 chrome.storage.sync.get([ "frpt" ], s => {
 if (s.frpt === true) {
@@ -3465,12 +4477,22 @@ window.history.replaceState({}, "", window.location.pathname + e);
 const c = document.getElementById("purpura-section-content");
 const u = t.toLowerCase();
 if (u === "info") {
-c.innerHTML = `\n                <div class="purpura-info-wrapper">\n                    <h2>Welcome to Purpura Settings</h2>\n                    <p>Purpura is a feature-rich Roblox enhancement suite that aims to be your all-in-one extension.</p>\n                    <p>Use the sidebar to the left to navigate through different settings.</p>\n                    <div class="purpura-info-meta">\n                        <div class="purpura-info-meta-card">\n                            <span class="purpura-info-meta-label">Version</span>\n                            <span class="purpura-info-meta-value">${i}</span>\n                        </div>\n                        <div class="purpura-info-meta-card">\n                            <span class="purpura-info-meta-label">Developer</span>\n                            <span class="purpura-info-meta-value">TeutonicTerror</span>\n                        </div>\n                    </div>\n                    <div class="purpura-import-export">\n                        <button class="purpura-import-export-btn primary" id="purpura-export-settings">\n                            Export Settings\n                        </button>\n                        <button class="purpura-import-export-btn" id="purpura-import-settings">\n                            Import Settings\n                        </button>\n                        <button class="purpura-import-export-btn" id="purpura-reset-settings">\n                            Reset to Defaults\n                        </button>\n                        <input type="file" id="purpura-import-file" accept=".purpura" style="display: none;">\n                    </div>\n                    <div style="margin-top: 24px; padding: 20px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; text-align: center;">\n                        <p style="margin: 0 0 12px 0; font-size: 13px; color: var(--p-text-2);">If you enjoy Purpura, consider supporting development on Ko-Fi!</p>\n                        <a title="Support me on ko-fi.com" class="kofi-button" style="background:var(--p-accent);display:inline-flex;align-items:center;gap:8px;padding:8px 20px;border-radius:14px;color:#fff;font-family:'Quicksand',Helvetica,Century Gothic,sans-serif;font-weight:700;font-size:14px;text-decoration:none;box-shadow:var(--p-card-shadow, 0 1px 3px rgba(0,0,0,0.2));cursor:pointer;" href="https://ko-fi.com/N0Q220I61C" target="_blank">\n                            <img src="https://storage.ko-fi.com/cdn/cup-border.png" alt="Ko-fi" style="height:18px;width:auto;display:inline-block;vertical-align:middle;"/>\n                            <span>Support Purpura</span>\n                        </a>\n                    </div>\n                </div>\n            `;
+c.innerHTML = `\n                <div class="purpura-info-page">\n                    <div class="purpura-setting-card">\n                        <div class="purpura-setting-header">\n                            <div class="p-setting-icon">${j.info}</div>\n                            <label>${e("settings_info_welcome")}</label>\n                        </div>\n                        <div class="purpura-setting-divider"></div>\n                        <div class="purpura-setting-desc">${e("settings_info_about")}</div>\n                        <div class="purpura-setting-desc">${e("settings_info_navigate")}</div>\n                        <div class="purpura-info-meta">\n                            <div class="purpura-info-meta-card">\n                                <span class="purpura-info-meta-label">${e("settings_info_version")}</span>\n                                <span class="purpura-info-meta-value">${i}</span>\n                            </div>\n                            <div class="purpura-info-meta-card">\n                                <span class="purpura-info-meta-label">${e("settings_info_developer")}</span>\n                                <span class="purpura-info-meta-value">TeutonicTerror</span>\n                            </div>\n                        </div>\n                    </div>\n                    <div class="purpura-setting-card">\n                        <div class="purpura-setting-header">\n                            <div class="p-setting-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg></div>\n                            <label>${e("settings_info_quickActions")}</label>\n                        </div>\n                        <div class="purpura-setting-divider"></div>\n                        <div class="purpura-info-actions">\n                            <button type="button" class="purpura-import-export-btn primary" id="purpura-start-tour">${e("tour_take")}</button>\n                            <button type="button" class="purpura-import-export-btn" id="purpura-open-changelog">${e("settings_info_changelog")}</button>\n                            <a class="purpura-import-export-btn" href="https://ko-fi.com/N0Q220I61C" target="_blank" rel="noopener noreferrer">${e("settings_info_support")}</a>\n                            <a class="purpura-import-export-btn" href="https://discord.gg/TT4sgtEkNV" target="_blank" rel="noopener noreferrer">${e("settings_info_discord")}</a>\n                            <a class="purpura-import-export-btn" href="https://purpura.page/faq" target="_blank" rel="noopener noreferrer">${e("settings_info_faq")}</a>\n                            <a class="purpura-import-export-btn" href="https://purpura.page/privacy" target="_blank" rel="noopener noreferrer">${e("settings_info_privacy")}</a>\n                        </div>\n                    </div>\n                    <div class="purpura-setting-card">\n                        <div class="purpura-setting-header">\n                            <div class="p-setting-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="5" rx="1"/><path d="M4 9v10a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9"/><path d="M10 13h4"/></svg></div>\n                            <label>${e("settings_info_backup")}</label>\n                        </div>\n                        <div class="purpura-setting-divider"></div>\n                        <div class="purpura-setting-desc">${e("settings_info_backupDesc")}</div>\n                        <div class="purpura-info-actions">\n                            <button class="purpura-import-export-btn primary" id="purpura-export-settings">${e("settings_info_export")}</button>\n                            <button class="purpura-import-export-btn" id="purpura-import-settings">${e("settings_info_import")}</button>\n                            <button class="purpura-import-export-btn" id="purpura-reset-settings">${e("settings_info_reset")}</button>\n                            <input type="file" id="purpura-import-file" accept=".purpura" style="display: none;">\n                        </div>\n                    </div>\n                </div>\n            `;
 Re();
 Ce();
 Se();
+const changelogBtn = document.getElementById("purpura-open-changelog");
+if (changelogBtn) changelogBtn.addEventListener("click", () => chrome.runtime.sendMessage({ action: "openChangelog" }));
+const tourBtn = document.getElementById("purpura-start-tour");
+if (tourBtn) tourBtn.addEventListener("click", () => {
+chrome.storage.local.set({
+purpuraTourRequest: Date.now()
+}, () => {
+window.location.href = "https://www.roblox.com/home";
+});
+});
 } else if (u === "credits") {
-c.innerHTML = `\n                <div class="purpura-info-wrapper purpura-credits-wrapper">\n                    <h2>${e("settings_credits_title")}</h2>\n                    <p>${e("settings_credits_subtitle")}</p>\n                    <div class="purpura-credits-grid">\n                        <article class="purpura-credit-card">\n                            <div class="purpura-credit-avatar-wrap">\n                                <img class="purpura-credit-avatar" src="${o.cjiggy}" alt="CJiggy">\n                            </div>\n                            <div class="purpura-credit-head">\n                                <h3 class="purpura-credit-name">CJiggy</h3>\n                            </div>\n                            <p class="purpura-credit-reason">${e("settings_credit_cjiggy")}</p>\n                            <div class="purpura-credit-discord">\n                                ${s}\n                                <span class="purpura-credit-discord-label">@black_noir_the_boys</span>\n                            </div>\n                        </article>\n                        <article class="purpura-credit-card">\n                            <div class="purpura-credit-avatar-wrap">\n                                <img class="purpura-credit-avatar" src="${o.deluxis}" alt="Deluxis">\n                            </div>\n                            <div class="purpura-credit-head">\n                                <h3 class="purpura-credit-name">Deluxis</h3>\n                            </div>\n                            <p class="purpura-credit-reason">${e("settings_credit_deluxis")}</p>\n                            <div class="purpura-credit-discord">\n                                ${s}\n                                <span class="purpura-credit-discord-label">@Deluxis</span>\n                            </div>\n                        </article>\n                        <article class="purpura-credit-card">\n                            <div class="purpura-credit-avatar-wrap">\n                                <img class="purpura-credit-avatar" src="${o.valra}" alt="Valra">\n                            </div>\n                            <div class="purpura-credit-head">\n                                <h3 class="purpura-credit-name">Valra</h3>\n                            </div>\n                            <p class="purpura-credit-reason">${e("settings_credit_valra")}</p>\n                            <div class="purpura-credit-discord">\n                                ${s}\n                                <span class="purpura-credit-discord-label">@Valra</span>\n                            </div>\n                        </article>\n                    </div>\n                    <div class="purpura-info-divider">\n                        <p>${e("settings_credits_footer")} <a href="https://discord.gg/TT4sgtEkNV" target="_blank">${e("settings_credits_discord")}</a>.</p>\n                    </div>\n                </div>\n            `;
+c.innerHTML = `\n                <div class="purpura-info-page purpura-credits-page">\n                    <div class="purpura-setting-card">\n                        <div class="purpura-setting-header">\n                            <div class="p-setting-icon">${j.credits}</div>\n                            <label>${e("settings_credits_title")}</label>\n                        </div>\n                        <div class="purpura-setting-divider"></div>\n                        <div class="purpura-setting-desc">${e("settings_credits_subtitle")}</div>\n                    </div>\n                    <div class="purpura-credits-grid">\n                        <article class="purpura-credit-card">\n                            <div class="purpura-credit-avatar-wrap">\n                                <img class="purpura-credit-avatar" src="${o.cjiggy}" alt="CJiggy">\n                            </div>\n                            <div class="purpura-credit-head">\n                                <h3 class="purpura-credit-name">CJiggy</h3>\n                            </div>\n                            <p class="purpura-credit-reason">${e("settings_credit_cjiggy")}</p>\n                            <div class="purpura-credit-discord">\n                                ${s}\n                                <span class="purpura-credit-discord-label">@black_noir_the_boys</span>\n                            </div>\n                        </article>\n                        <article class="purpura-credit-card">\n                            <div class="purpura-credit-avatar-wrap">\n                                <img class="purpura-credit-avatar" src="${o.deluxis}" alt="Deluxis">\n                            </div>\n                            <div class="purpura-credit-head">\n                                <h3 class="purpura-credit-name">Deluxis</h3>\n                            </div>\n                            <p class="purpura-credit-reason">${e("settings_credit_deluxis")}</p>\n                            <div class="purpura-credit-discord">\n                                ${s}\n                                <span class="purpura-credit-discord-label">@Deluxis</span>\n                            </div>\n                        </article>\n                        <article class="purpura-credit-card">\n                            <div class="purpura-credit-avatar-wrap">\n                                <img class="purpura-credit-avatar" src="${o.valra}" alt="Valra">\n                            </div>\n                            <div class="purpura-credit-head">\n                                <h3 class="purpura-credit-name">Valra</h3>\n                            </div>\n                            <p class="purpura-credit-reason">${e("settings_credit_valra")}</p>\n                            <div class="purpura-credit-discord">\n                                ${s}\n                                <span class="purpura-credit-discord-label">@Valra</span>\n                            </div>\n                        </article>\n                    </div>\n                    <div class="purpura-setting-card">\n                        <div class="purpura-setting-header">\n                            <div class="p-setting-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z"/></svg></div>\n                            <label>${e("settings_info_community")}</label>\n                        </div>\n                        <div class="purpura-setting-divider"></div>\n                        <div class="purpura-setting-desc">${e("settings_credits_footer")}</div>\n                        <div class="purpura-info-actions">\n                            <a class="purpura-import-export-btn primary" href="https://discord.gg/TT4sgtEkNV" target="_blank" rel="noopener noreferrer">${e("settings_info_discord")}</a>\n                            <a class="purpura-import-export-btn" href="https://ko-fi.com/N0Q220I61C" target="_blank" rel="noopener noreferrer">${e("settings_info_support")}</a>\n                        </div>\n                    </div>\n                </div>\n            `;
 } else if (u === "premium") {
 if (!l) {
 Ne("info", true);
@@ -3512,6 +4534,8 @@ Ae();
 Ie();
 ze();
 De();
+initBackdropPicker();
+initStreamerConfig();
 rt(c);
 We(c);
 } else {
@@ -3530,6 +4554,8 @@ Ae();
 Ie();
 ze();
 De();
+initBackdropPicker();
+initStreamerConfig();
 rt(c);
 We(c);
 }
@@ -3678,6 +4704,8 @@ Ae();
 Ie();
 ze();
 De();
+initBackdropPicker();
+initStreamerConfig();
 rt(t);
 We(t);
 }
@@ -4204,5 +5232,4 @@ document.addEventListener("DOMContentLoaded", at);
 } else {
 at();
 }
-(function(){var h=document.head||document.documentElement;if(h){var s=document.createElement("style");s.textContent=".purpura-info-meta-card:first-child{cursor:pointer;transition:border-color 0.2s var(--p-ease),background 0.2s var(--p-ease)}.purpura-info-meta-card:first-child:hover{border-color:var(--p-accent);background:rgba(155,109,255,0.08)}";h.appendChild(s)}document.addEventListener("click",function(e){var t=e.target.closest(".purpura-info-meta-card");if(!t)return;var v=t.querySelector(".purpura-info-meta-value");if(!v||!/\d/.test(v.textContent))return;chrome.runtime.sendMessage({action:"openChangelog"})})})();
 })();

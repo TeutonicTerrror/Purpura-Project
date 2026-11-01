@@ -21,6 +21,9 @@ if (!window.pinnedGamesInitialized) { window.pinnedGamesInitialized = true;
     
     const playerCountCache = new Map();
     const CACHE_DURATION = 45000;
+
+    const voteCache = new Map();
+    const VOTE_CACHE_DURATION = 15 * 60 * 1000;
     
     const gameInfoCache = new Map();
     const GAME_INFO_CACHE_DURATION = 5 * 60 * 1000;
@@ -459,16 +462,14 @@ if (!window.pinnedGamesInitialized) { window.pinnedGamesInitialized = true;
     }
 
     function updateFolderCounts() {
-        const nav = document.querySelector('.folder-navigation');
+        const nav = document.querySelector('.pinned-games-carousel .pgf-nav');
         if (!nav) return;
-        
-        const folderButtons = nav.querySelectorAll('.folder-btn');
-        folderButtons.forEach(btn => {
+
+        nav.querySelectorAll('.pgf-chip').forEach(btn => {
             const folderId = btn.dataset.folderId === 'null' ? null : btn.dataset.folderId;
-            const count = getGamesInFolder(folderId).length;
-            const countBadge = btn.querySelector('span:last-child');
+            const countBadge = btn.querySelector('.pgf-chip-count');
             if (countBadge) {
-                countBadge.textContent = count;
+                countBadge.textContent = getGamesInFolder(folderId).length;
             }
         });
     }
@@ -665,181 +666,496 @@ if (!window.pinnedGamesInitialized) { window.pinnedGamesInitialized = true;
                 display: flex;
                 gap: 8px;
                 align-items: center;
-                margin-bottom: 16px;
-                padding: 6px;
-                background: var(--pg-input-bg);
-                border: 1px solid var(--pg-border);
-                border-radius: 10px;
+                margin: 10px 0 0;
+                padding: 2px 0;
+                max-width: 100%;
+                min-width: 0;
                 overflow-x: auto;
-                scrollbar-width: none;
+                overflow-y: hidden;
+                overscroll-behavior-x: contain;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 8px;
             }
-            .pgf-nav::-webkit-scrollbar { display: none; }
+            .pgf-nav::-webkit-scrollbar { height: 6px; }
+            .pgf-nav::-webkit-scrollbar-track { background: transparent; }
+            .pgf-nav::-webkit-scrollbar-thumb {
+                background: var(--color-shift-400, rgba(255,255,255,0.24));
+                border-radius: 999px;
+            }
+            .pgf-nav::-webkit-scrollbar-thumb:hover { background: var(--color-shift-400, rgba(255,255,255,0.4)); }
             .pgf-chip-wrap { position: relative; flex-shrink: 0; }
             .pgf-chip {
-                display: flex;
+                display: inline-flex;
                 align-items: center;
                 gap: 6px;
-                padding: 6px 12px;
-                border-radius: 8px;
-                border: 1px solid var(--pg-border);
-                background: var(--pg-card-bg);
-                color: var(--pg-text);
+                height: 32px;
+                padding: 0 12px;
+                border-radius: 999px;
+                border: 1px solid transparent;
+                background: var(--purpura-surface200, var(--color-surface-200, rgba(255,255,255,0.06)));
+                color: var(--purpura-mainText, var(--color-content-default, #f2f4f5));
                 font-size: 13px;
-                font-weight: 500;
+                font-weight: 600;
+                line-height: 1;
                 cursor: pointer;
                 white-space: nowrap;
-                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                transition: background-color 0.16s ease, border-color 0.16s ease;
             }
             .pgf-chip:hover {
-                background: var(--pg-hover-bg, rgba(138,43,226,0.15));
-                border-color: var(--pg-color, var(--pg-accent));
-                transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                background: var(--purpura-surface300, var(--color-surface-300, rgba(255,255,255,0.12)));
             }
             .pgf-chip.active {
-                background: var(--pg-active-bg, rgba(138,43,226,0.25));
-                border-color: var(--pg-color, var(--pg-accent));
-                color: var(--pg-text);
+                background: var(--purpura-surface300, var(--color-surface-300, rgba(255,255,255,0.16)));
+                border-color: var(--purpura-surface300, var(--color-stroke-default, rgba(255,255,255,0.24)));
                 font-weight: 700;
-                box-shadow: inset 0 0 0 1px var(--pg-color, var(--pg-accent));
             }
-            .pgf-chip-icon { display: flex; align-items: center; flex-shrink: 0; opacity: 0.8; }
             .pgf-chip-count {
-                background: var(--pg-chip-count-bg);
-                border: 1px solid var(--pg-border);
-                border-radius: 12px;
-                padding: 0 8px;
+                background: none;
+                border: none;
+                border-radius: 0;
+                padding: 0;
                 font-size: 11px;
-                font-weight: 800;
-                min-width: 22px;
-                text-align: center;
-                line-height: 20px;
-                height: 20px;
-                opacity: 0.9;
-                color: var(--pg-text);
+                font-weight: 600;
+                min-width: 0;
+                height: auto;
+                line-height: 1;
+                opacity: 0.6;
+                color: inherit;
             }
-            .pgf-actions {
-                position: absolute;
-                top: -8px;
-                right: -6px;
-                display: none;
-                gap: 3px;
-                z-index: 2;
-            }
-            .pgf-chip-wrap:hover .pgf-actions { display: flex; }
-            .pgf-action-btn {
+            .pgf-chip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+            .pgf-chip-more {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
                 width: 18px;
                 height: 18px;
-                border-radius: 50%;
-                border: 1px solid rgba(255,255,255,0.1);
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 10px;
-                padding: 0;
-                transition: all 0.2s ease;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+                margin: 0 -4px 0 2px;
+                border-radius: 4px;
+                font-size: 13px;
+                line-height: 1;
+                opacity: 0;
+                transition: opacity 0.15s ease, background-color 0.15s ease;
             }
-            .pgf-action-btn.edit { background: #8b5cf6; color: white; }
-            .pgf-action-btn.del  { background: #ef4444; color: white; }
-            .pgf-action-btn:hover { transform: scale(1.15); filter: brightness(1.1); }
+            .pgf-chip-wrap:hover .pgf-chip-more,
+            .pgf-chip.active .pgf-chip-more { opacity: 0.6; }
+            .pgf-chip-more:hover { opacity: 1; background: rgba(255,255,255,0.14); }
             .pgf-new-btn {
                 flex-shrink: 0;
-                width: 32px;
-                height: 32px;
-                border-radius: 8px;
-                border: 1px dashed var(--pg-accent-muted);
-                background: var(--pg-input-bg);
-                color: var(--pg-accent);
-                cursor: pointer;
-                display: flex;
+                display: inline-flex;
                 align-items: center;
-                justify-content: center;
-                transition: all 0.2s ease;
+                gap: 6px;
+                height: 32px;
+                padding: 0 12px;
+                border-radius: 999px;
+                border: 1px dashed var(--purpura-surface300, var(--color-stroke-default, rgba(255,255,255,0.24)));
+                background: transparent;
+                color: var(--purpura-secondaryText, var(--color-content-muted, #a3a3a3));
+                font-size: 13px;
+                font-weight: 600;
+                white-space: nowrap;
+                cursor: pointer;
+                transition: background-color 0.16s ease, color 0.16s ease, border-color 0.16s ease;
             }
             .pgf-new-btn:hover { 
-                background: var(--pg-accent-muted); 
-                border-color: var(--pg-accent); 
-                color: white; 
-                transform: rotate(90deg);
+                background: var(--purpura-surface200, var(--color-state-hover, rgba(255,255,255,0.08)));
+                border-color: var(--purpura-surface300, var(--color-stroke-default, rgba(255,255,255,0.32)));
+                color: var(--purpura-mainText, var(--color-content-default, #f2f4f5));
             }
             .pgf-modal-backdrop {
                 position: fixed;
                 inset: 0;
-                background: rgba(0,0,0,0.5);
-                backdrop-filter: blur(8px);
+                background: rgba(0,0,0,0.6);
                 z-index: 100000;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                animation: pgf-fade 0.3s ease;
+                animation: pgf-fade 0.2s ease;
             }
             .pgf-modal {
-                background: var(--pg-bg);
-                backdrop-filter: var(--pg-glass);
-                border: 1px solid var(--pg-border);
-                border-radius: 20px;
-                padding: 24px;
                 width: 340px;
-                color: var(--pg-text);
-                animation: pgf-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-                box-shadow: var(--pg-shadow);
+                max-width: calc(100vw - 32px);
+                padding: 20px;
+                border-radius: 8px;
+                background: var(--purpura-surface100, var(--color-surface-100, #232527));
+                border: 1px solid var(--purpura-surface300, var(--color-stroke-default, rgba(255,255,255,0.16)));
+                color: var(--purpura-mainText, var(--color-content-default, #f2f4f5));
+                box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+                animation: pgf-up 0.2s ease;
             }
             .pgf-modal-title {
+                margin: 0 0 16px;
                 font-size: 16px;
                 font-weight: 700;
-                color: var(--pg-accent);
-                margin: 0 0 20px;
+                color: inherit;
                 display: flex;
                 align-items: center;
-                gap: 10px;
+                gap: 8px;
             }
-            .pgf-modal-label { font-size: 12px; font-weight: 600; color: var(--pg-muted); margin-bottom: 8px; }
+            .pgf-modal-label { font-size: 12px; font-weight: 600; color: var(--purpura-secondaryText, var(--color-content-muted, #a3a3a3)); margin-bottom: 6px; }
+            .pgf-modal-body { font-size: 14px; line-height: 1.45; margin-bottom: 8px; }
+            .pgf-modal-sub { font-size: 12px; color: var(--purpura-secondaryText, var(--color-content-muted, #a3a3a3)); margin-bottom: 18px; }
             .pgf-modal-input {
                 width: 100%;
-                padding: 12px 14px;
-                border-radius: 12px;
-                border: 1px solid var(--pg-border);
-                background: var(--pg-input-bg);
-                color: var(--pg-text);
+                height: 36px;
+                padding: 0 10px;
+                border-radius: 6px;
+                border: 1px solid var(--purpura-surface300, var(--color-stroke-default, rgba(255,255,255,0.16)));
+                background: var(--purpura-surface200, var(--color-surface-200, rgba(255,255,255,0.06)));
+                color: inherit;
+                font: inherit;
                 font-size: 14px;
                 outline: none;
                 box-sizing: border-box;
-                margin-bottom: 20px;
-                transition: all 0.2s ease;
+                margin-bottom: 16px;
+                transition: border-color 0.16s ease;
             }
-            .pgf-modal-input:focus { border-color: var(--pg-accent); box-shadow: 0 0 0 2px var(--pg-accent-muted); }
-            .pgf-color-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 10px; margin-bottom: 24px; }
+            .pgf-modal-input:focus { border-color: var(--purpura-mainText, var(--color-content-emphasis, rgba(255,255,255,0.5))); }
+            .pgf-color-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 8px; margin-bottom: 20px; }
             .pgf-swatch {
                 aspect-ratio: 1;
-                border-radius: 10px;
+                border-radius: 6px;
                 cursor: pointer;
                 border: 2px solid transparent;
-                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                transition: transform 0.12s ease, border-color 0.12s ease;
             }
-            .pgf-swatch:hover { transform: scale(1.15) rotate(5deg); }
-            .pgf-swatch.selected { border-color: var(--pg-text); transform: scale(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-            .pgf-modal-footer { display: flex; gap: 12px; }
+            .pgf-swatch:hover { transform: scale(1.08); }
+            .pgf-swatch.selected { border-color: var(--purpura-mainText, var(--color-content-emphasis, #fff)); }
+            .pgf-modal-footer { display: flex; gap: 8px; }
             .pgf-btn {
                 flex: 1;
-                padding: 12px;
-                border-radius: 12px;
+                height: 32px;
+                padding: 0 14px;
+                border-radius: 6px;
+                font: inherit;
                 font-size: 14px;
-                font-weight: 700;
-                border: none;
+                font-weight: 600;
+                border: 1px solid transparent;
                 cursor: pointer;
-                transition: all 0.2s ease;
+                transition: background-color 0.16s ease, border-color 0.16s ease, opacity 0.16s ease;
             }
-            .pgf-btn-primary:hover { transform: translateY(-2px); background: #9d4edd; filter: brightness(1.1); box-shadow: 0 8px 24px var(--pg-accent-muted); }
-            .pgf-btn-ghost:hover { background: rgba(138, 43, 226, 0.12); border-color: var(--pg-accent); color: var(--pg-text); transform: translateY(-1px); }
-            .pgf-btn-danger:hover { transform: translateY(-2px); background: #ef4444; border-color: #ef4444; color: white; box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4); }
+            .pgf-btn-primary {
+                background: var(--purpura-mainText, var(--color-action-emphasis, #ffffff));
+                color: var(--purpura-surface100, var(--color-surface-100, #1f2025));
+            }
+            .pgf-btn-primary:hover { opacity: 0.88; }
+            .pgf-btn-ghost {
+                background: transparent;
+                border-color: var(--purpura-surface300, var(--color-stroke-default, rgba(255,255,255,0.2)));
+                color: inherit;
+            }
+            .pgf-btn-ghost:hover { background: var(--purpura-surface200, var(--color-state-hover, rgba(255,255,255,0.08))); }
+            .pgf-btn-danger { background: #e5484d; color: #ffffff; }
+            .pgf-btn-danger:hover { background: #d93a3f; }
             @keyframes pgf-fade { from { opacity:0; } to { opacity:1; } }
             @keyframes pgf-up { from { opacity:0; transform:translateY(20px) scale(0.95); } to { opacity:1; transform:none; } }
             @keyframes pgf-fade-in { 0% { opacity: 0; transform: translateY(12px) scale(0.98); } 100% { opacity: 1; transform: translateY(0) scale(1); } }`;
         document.head.appendChild(s);
     }
 
+    function injectCarouselStyles() {
+        if (document.getElementById('pgf-carousel-styles')) return;
+        const s = document.createElement('style');
+        s.id = 'pgf-carousel-styles';
+        s.textContent = `
+            .pinned-games-carousel {
+                display: block;
+                width: 100%;
+                margin: 16px 0 20px;
+                text-align: left;
+                color: var(--purpura-mainText, var(--color-content-default, #f2f4f5));
+                font-family: inherit;
+            }
+            .pinned-games-carousel *, .pinned-games-carousel *::before, .pinned-games-carousel *::after { box-sizing: border-box; }
+            .pinned-games-carousel .pgf-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 16px;
+                margin: 0 0 24px;
+                padding: 0;
+                text-align: left;
+            }
+            .pinned-games-carousel .pgf-title {
+                margin: 0;
+                padding: 0;
+                font-size: 32px;
+                font-weight: 700;
+                line-height: normal;
+                letter-spacing: -0.5px;
+                text-align: left;
+                color: var(--color-content-emphasis, var(--purpura-mainText, #ffffff));
+            }
+            .pinned-games-carousel .pgf-header .pgf-native-header {
+                flex: 1 1 auto;
+                min-width: 0;
+                margin: 0;
+            }
+            .pinned-games-carousel .pgf-header-tools { display: flex; align-items: center; gap: 12px; flex-shrink: 0; margin-left: auto; }
+            .pgf-icon-btn {
+                width: 40px;
+                height: 40px;
+                padding: 0;
+                border: 0;
+                border-radius: 6px;
+                background: transparent;
+                color: var(--purpura-secondaryText, var(--color-content-muted, #a3a3a3));
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: background-color 0.16s ease, color 0.16s ease;
+            }
+            .pgf-icon-btn:hover, .pgf-icon-btn.is-active {
+                background: var(--purpura-surface200, var(--color-state-hover, rgba(255,255,255,0.08)));
+                color: var(--purpura-mainText, var(--color-content-default, #f2f4f5));
+            }
+            .pgf-icon-btn svg { pointer-events: none; }
+            .pgf-search-row { display: none; margin-top: 10px; }
+            .pgf-search-row.open { display: block; }
+            .pgf-search {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                height: 36px;
+                padding: 0 12px;
+                border-radius: 8px;
+                border: 1px solid var(--purpura-surface300, var(--color-stroke-default, rgba(255,255,255,0.16)));
+                background: var(--purpura-surface200, var(--color-surface-200, rgba(255,255,255,0.06)));
+            }
+            .pgf-search:focus-within { border-color: var(--purpura-mainText, var(--color-content-emphasis, rgba(255,255,255,0.5))); }
+            .pgf-search input {
+                flex: 1;
+                min-width: 0;
+                border: 0;
+                outline: 0;
+                padding: 0;
+                margin: 0;
+                background: transparent;
+                color: inherit;
+                font: inherit;
+                font-size: 14px;
+            }
+            .pgf-search input::placeholder { color: var(--purpura-secondaryText, var(--color-content-muted, #a3a3a3)); }
+            .pgf-search-clear { display: none; border: 0; background: transparent; color: inherit; opacity: 0.6; cursor: pointer; padding: 0; line-height: 1; font-size: 14px; }
+            .pgf-search-clear:hover { opacity: 1; }
+            .pgf-carousel { position: relative; margin-top: 12px; }
+            .pinned-games-container {
+                display: flex;
+                align-items: flex-start;
+                margin: 0;
+                padding: 4px 2px 6px;
+                list-style: none;
+                overflow-x: auto;
+                overflow-y: hidden;
+                scroll-snap-type: x proximity;
+                scroll-behavior: smooth;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            .pinned-games-container::-webkit-scrollbar { display: none; }
+            .pinned-games-container.is-adjusting { scroll-snap-type: none; }
+            .pinned-games-carousel .scroller-new {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                padding: 0;
+                border: 0;
+                border-radius: 50%;
+                background: var(--purpura-surface100, var(--color-surface-100, #232527));
+                color: var(--purpura-mainText, var(--color-content-emphasis, #f2f4f5));
+                box-shadow: 0 0 4px var(--color-common-shadow, rgba(0, 0, 0, 0.4));
+                cursor: pointer;
+                z-index: 4;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.16s ease, background-color 0.16s ease;
+            }
+            .pinned-games-carousel .scroller-new.prev { left: 0; }
+            .pinned-games-carousel .scroller-new.next { right: 0; }
+            .pinned-games-carousel .scroller-new.next svg { transform: scaleX(-1); }
+            .pinned-games-carousel .scroller-new[aria-disabled="false"],
+            .pinned-games-carousel .scroller-new:focus-visible { opacity: 0.9; pointer-events: auto; }
+            .pinned-games-carousel .scroller-new[aria-disabled="false"]:hover {
+                opacity: 1;
+                background: var(--purpura-surface200, var(--color-surface-200, #2b2c32));
+            }
+            .pinned-games-carousel .scroller-new[aria-disabled="true"] { opacity: 0 !important; pointer-events: none; }
+
+            :where(.pinned-game-card) {
+                position: relative;
+                width: 150px;
+                min-width: 150px;
+                margin-right: 12px;
+                scroll-snap-align: start;
+            }
+            :where(.pinned-game-card) .game-card-container,
+            :where(.pinned-game-card) .game-card-link {
+                display: block;
+                text-decoration: none;
+                color: inherit;
+            }
+            :where(.pinned-game-card) .game-card-thumb-container {
+                position: relative;
+                width: 100%;
+                aspect-ratio: 16 / 9;
+                border-radius: 8px;
+                overflow: hidden;
+                background: var(--purpura-surface200, var(--color-surface-200, rgba(255,255,255,0.06)));
+            }
+            :where(.pinned-game-card) .game-card-thumb {
+                display: block;
+                width: 100%;
+                height: 100%;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            :where(.pinned-game-card) .game-card-thumb img {
+                display: block;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            .pinned-game-card .game-card-name {
+                display: block;
+                margin: 8px 0 2px;
+                font-family: inherit;
+                font-size: 16px;
+                line-height: 20px;
+                font-weight: 500;
+                letter-spacing: normal;
+                text-decoration: none;
+                color: inherit;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .pinned-game-card .game-card-name.game-name-title { text-decoration: none; }
+            :where(.pinned-game-card) .game-card-info {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                margin-top: 2px;
+                font-size: 12px;
+                line-height: 14px;
+            }
+            :where(.pinned-game-card) .playing-counts-label { transition: color 0.3s ease; }
+
+            .pinned-game-card { cursor: pointer; }
+            .pinned-game-card:focus-visible { outline: 2px solid var(--purpura-mainText, var(--color-content-emphasis, #fff)); outline-offset: 2px; border-radius: 8px; }
+            .pinned-game-card .game-card-container { position: relative; }
+            .pinned-game-card .game-card-thumb-container { position: relative; }
+            .pgf-card-menu-btn {
+                position: absolute;
+                top: 6px;
+                right: 6px;
+                width: 26px;
+                height: 26px;
+                padding: 0;
+                border: 0;
+                border-radius: 4px;
+                background: transparent;
+                color: #ffffff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                opacity: 0;
+                pointer-events: none;
+                z-index: 3;
+                filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.65));
+                transition: opacity 0.15s ease, background-color 0.15s ease;
+            }
+            .pinned-game-card:hover .pgf-card-menu-btn,
+            .pinned-game-card:focus-within .pgf-card-menu-btn { opacity: 1; pointer-events: auto; }
+            .pgf-card-menu-btn:hover { background: rgba(0, 0, 0, 0.38); }
+            .pinned-game-card.dragging { opacity: 0.45; }
+            .pinned-game-card.drag-over .game-card-thumb-container {
+                outline: 2px solid var(--purpura-mainText, var(--color-content-emphasis, #fff));
+                outline-offset: 2px;
+            }
+            .pinned-game-card.drop-success .game-card-thumb-container { animation: pgf-card-pop 0.4s ease; }
+            @keyframes pgf-card-pop { 0% { transform: scale(0.96); } 50% { transform: scale(1.04); } 100% { transform: scale(1); } }
+
+            .pgf-empty {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                width: 100%;
+                min-height: 118px;
+                padding: 24px 16px;
+                margin: 0;
+                text-align: center;
+                color: var(--purpura-secondaryText, var(--color-content-muted, #a3a3a3));
+                font-size: 13px;
+                font-weight: 500;
+                list-style: none;
+            }
+            .pgf-empty img { width: 130px; max-width: 70%; opacity: 0.28; pointer-events: none; user-select: none; }
+            .pgf-body { overflow: hidden; transition: max-height 0.25s ease, opacity 0.2s ease; max-height: 2000px; opacity: 1; }
+            .pgf-body.is-collapsed { max-height: 0; opacity: 0; }
+
+            .pgf-menu {
+                position: fixed;
+                z-index: 10001;
+                min-width: 220px;
+                max-height: 320px;
+                overflow-y: auto;
+                padding: 4px;
+                border-radius: 8px;
+                background: var(--purpura-surface100, var(--color-surface-100, #232527));
+                border: 1px solid var(--purpura-surface300, var(--color-stroke-default, rgba(255,255,255,0.16)));
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+                color: var(--purpura-mainText, var(--color-content-default, #f2f4f5));
+                font-family: inherit;
+                scrollbar-width: thin;
+            }
+            .pgf-menu-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                width: 100%;
+                padding: 8px 10px;
+                border: 0;
+                border-radius: 6px;
+                background: transparent;
+                color: inherit;
+                font: inherit;
+                font-size: 13px;
+                text-align: left;
+                cursor: pointer;
+            }
+            .pgf-menu-item:hover { background: var(--purpura-surface200, var(--color-state-hover, rgba(255,255,255,0.08))); }
+            .pgf-menu-title {
+                padding: 8px 10px 4px;
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--purpura-secondaryText, var(--color-content-muted, #a3a3a3));
+            }
+            .pgf-menu-sep { height: 1px; margin: 4px 6px; background: var(--color-stroke-default, rgba(255,255,255,0.12)); }
+            .pgf-menu-swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+            .pgf-menu-check { margin-left: auto; opacity: 0.9; }
+
+            @media (hover: none) {
+                .pgf-card-menu-btn { opacity: 1; pointer-events: auto; }
+                .pinned-games-carousel .scroller-new[aria-disabled="false"] { opacity: 0.9; pointer-events: auto; }
+            }
+            @media (max-width: 767px) {
+                :where(.pinned-game-card) { width: 128px; min-width: 128px; }
+                .pinned-games-carousel .scroller-new { width: 32px; height: 32px; }
+            }
+        `;
+        document.head.appendChild(s);
+    }
     function createFolderNavigation() {
         injectFolderStyles();
         const nav = document.createElement('div');
@@ -849,11 +1165,19 @@ if (!window.pinnedGamesInitialized) { window.pinnedGamesInitialized = true;
         folders.forEach(folder => nav.appendChild(createFolderButton(folder.name, folder.id, folder.color, getGamesInFolder(folder.id).length)));
 
         const createBtn = document.createElement('button');
+        createBtn.type = 'button';
         createBtn.className = 'pgf-new-btn';
-        createBtn.title = 'New folder';
-        createBtn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>`;
+        createBtn.title = t('pinnedGames_newFolder');
+        createBtn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg><span>${t('pinnedGames_newFolder')}</span>`;
         createBtn.addEventListener('click', () => showCreateFolderDialog());
         nav.appendChild(createBtn);
+
+        nav.addEventListener('wheel', (e) => {
+            if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+            if (nav.scrollWidth - nav.clientWidth <= 1) return;
+            e.preventDefault();
+            nav.scrollLeft += e.deltaY;
+        }, { passive: false });
 
         return nav;
     }
@@ -861,33 +1185,48 @@ if (!window.pinnedGamesInitialized) { window.pinnedGamesInitialized = true;
     function createFolderButton(name, folderId, color, gameCount) {
         const isActive = currentFolderId === folderId;
         const isAll = folderId === null;
-        const chipColor = isAll ? '#a78bfa' : color;
-        const rgb = hexToRgb(chipColor);
 
         const wrap = document.createElement('div');
         wrap.className = 'pgf-chip-wrap';
 
         const btn = document.createElement('button');
+        btn.type = 'button';
         btn.className = `pgf-chip${isActive ? ' active' : ''}${isAll ? ' pgf-chip-all' : ''}`;
         btn.dataset.folderId = folderId || 'null';
-        btn.style.cssText = `--pgf-color:${chipColor};--pgf-hover-bg:rgba(${rgb},0.18);--pgf-active-bg:rgba(${rgb},0.27);`;
 
-        const allSvg = `<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><rect x="0" y="0" width="5" height="5" rx="1"/><rect x="7" y="0" width="5" height="5" rx="1"/><rect x="0" y="7" width="5" height="5" rx="1"/><rect x="7" y="7" width="5" height="5" rx="1"/></svg>`;
-        const folderSvg = `<svg width="13" height="11" viewBox="0 0 22 18" fill="currentColor"><path d="M9 0H2C.9 0 0 .9 0 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2h-9L9 0z"/></svg>`;
-        const iconSvg = isAll ? allSvg : folderSvg;
-        btn.innerHTML = `<span class="pgf-chip-icon" style="color:${chipColor};">${iconSvg}</span><span>${name}</span><span class="pgf-chip-count">${gameCount}</span>`;
-        btn.addEventListener('click', () => switchToFolder(folderId));
-        wrap.appendChild(btn);
-
-        if (folderId !== null) {
-            const actions = document.createElement('div');
-            actions.className = 'pgf-actions';
-            actions.innerHTML = `<button class="pgf-action-btn edit" title="Edit">✎</button><button class="pgf-action-btn del" title="Delete">✕</button>`;
-            actions.querySelector('.edit').addEventListener('click', e => { e.stopPropagation(); showEditFolderDialog(folderId); });
-            actions.querySelector('.del').addEventListener('click', e => { e.stopPropagation(); showDeleteFolderConfirmation(folderId); });
-            wrap.appendChild(actions);
+        if (!isAll) {
+            const dot = document.createElement('span');
+            dot.className = 'pgf-chip-dot';
+            dot.style.background = color;
+            btn.appendChild(dot);
         }
 
+        const label = document.createElement('span');
+        label.textContent = name;
+        btn.appendChild(label);
+
+        const count = document.createElement('span');
+        count.className = 'pgf-chip-count';
+        count.textContent = gameCount;
+        btn.appendChild(count);
+
+        if (!isAll) {
+            const more = document.createElement('span');
+            more.className = 'pgf-chip-more';
+            more.setAttribute('role', 'button');
+            more.setAttribute('tabindex', '-1');
+            more.setAttribute('aria-label', `${t('pinnedGames_options')} ${name}`);
+            more.textContent = '⋯';
+            more.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showFolderChipMenu(folderId, more);
+            });
+            btn.appendChild(more);
+        }
+
+        btn.addEventListener('click', () => switchToFolder(folderId));
+        wrap.appendChild(btn);
         return wrap;
     }
 
@@ -1033,418 +1372,286 @@ if (!window.pinnedGamesInitialized) { window.pinnedGamesInitialized = true;
         return !(node.closest && node.closest(EXCLUDED_ANCHOR_SELECTOR));
     }
 
+    function makePinnedIconButton(iconSvg, label) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'pgf-icon-btn';
+        btn.title = label;
+        btn.setAttribute('aria-label', label);
+        btn.innerHTML = iconSvg;
+        return btn;
+    }
+
+    function syncCarouselArrows() {
+        const carousel = document.querySelector('.pinned-games-carousel');
+        if (!carousel) return;
+        const container = carousel.querySelector('.pinned-games-container');
+        const left = carousel.querySelector('.scroller-new.prev');
+        const right = carousel.querySelector('.scroller-new.next');
+        if (!container || !left || !right) return;
+        const maxScroll = container.scrollWidth - container.clientWidth;
+        const hasOverflow = maxScroll > 4;
+        const setDisabled = (btn, disabled) => {
+            btn.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+            btn.tabIndex = disabled ? -1 : 0;
+        };
+        setDisabled(left, !hasOverflow || container.scrollLeft <= 2);
+        setDisabled(right, !hasOverflow || container.scrollLeft >= maxScroll - 2);
+    }
+
+    function applyPinnedGamesSearch() {
+        const carousel = document.querySelector('.pinned-games-carousel');
+        if (!carousel) return;
+        const container = carousel.querySelector('.pinned-games-container');
+        const input = carousel.querySelector('.pgf-search input');
+        if (!container) return;
+
+        const term = (input?.value || '').trim().toLowerCase();
+        let anyVisible = false;
+
+        allGameCards.forEach(({ card, game }) => {
+            const visible = !term || game.name.toLowerCase().includes(term);
+            card.style.display = visible ? '' : 'none';
+            if (visible) anyVisible = true;
+        });
+
+        const existing = carousel.querySelector('.pgf-search-empty');
+        const showEmpty = !!term && allGameCards.length > 0 && !anyVisible;
+        if (showEmpty && !existing) {
+            const msg = document.createElement('div');
+            msg.className = 'pgf-empty pgf-search-empty';
+            msg.textContent = t('pinnedGames_noGames');
+            container.appendChild(msg);
+        } else if (!showEmpty && existing) {
+            existing.remove();
+        }
+
+        syncCarouselArrows();
+    }
+
+    function renderPinnedGamesInto(container) {
+        allGameCards = [];
+        container.innerHTML = '';
+
+        const games = getGamesInFolder(currentFolderId);
+
+        if (games.length === 0) {
+            const empty = document.createElement('li');
+            empty.className = 'pgf-empty';
+            const img = document.createElement('img');
+            img.src = chrome.runtime.getURL('images/builderman_signature.png');
+            img.alt = '';
+            img.style.filter = currentTheme === 'light' ? 'grayscale(1) contrast(0.4) opacity(0.5)' : 'invert(1) opacity(0.35)';
+            const msg = document.createElement('span');
+            msg.textContent = currentFolderId === null ? t('pinnedGames_buildermanLives') : t('pinnedGames_noGames');
+            empty.appendChild(img);
+            empty.appendChild(msg);
+            container.appendChild(empty);
+        } else {
+            games.forEach(game => {
+                const card = createGameCard(game);
+                container.appendChild(card);
+                allGameCards.push({ card, game });
+            });
+        }
+
+        applyPinnedGamesSearch();
+        startLivePlayerCountUpdates(allGameCards);
+        refreshVotePercents(allGameCards);
+        requestAnimationFrame(syncCarouselArrows);
+    }
+
+    const NATIVE_HEADER_WRAPPERS = ['[data-testid="section-header"]', '.game-sort-header-container'];
+    const NATIVE_HEADER_SKIP = '.pinned-games-carousel, #purpuras-selection-container';
+
+    function createNativeSectionHeader(text) {
+        for (const selector of NATIVE_HEADER_WRAPPERS) {
+            const template = Array.from(document.querySelectorAll(selector)).find(el =>
+                !el.closest(NATIVE_HEADER_SKIP) &&
+                !el.querySelector('.pinned-games-carousel, #purpuras-selection-container') &&
+                el.querySelector('[data-testid="text-icon-row-text"], h2')
+            );
+            if (!template) continue;
+
+            const header = template.cloneNode(true);
+            header.removeAttribute('id');
+
+            const title = header.querySelector('[data-testid="text-icon-row-text"], h2');
+            if (!title) continue;
+
+            let node = title;
+            while (node && node !== header && node.parentElement) {
+                const parent = node.parentElement;
+                Array.from(parent.children).forEach(child => {
+                    if (child !== node && !child.contains(title)) child.remove();
+                });
+                node = parent;
+            }
+
+            header.querySelectorAll('a').forEach(link => {
+                const replacement = document.createElement('span');
+                for (const attr of Array.from(link.attributes)) {
+                    if (attr.name === 'href' || attr.name === 'target' || attr.name === 'rel') continue;
+                    replacement.setAttribute(attr.name, attr.value);
+                }
+                replacement.append(...link.childNodes);
+                link.replaceWith(replacement);
+            });
+
+            header.querySelectorAll('.games-filter-changer').forEach(el => el.classList.remove('games-filter-changer'));
+            title.textContent = text;
+            title.setAttribute('aria-label', text);
+            header.setAttribute('aria-label', text);
+            return header;
+        }
+        return null;
+    }
+
     function createPinnedGamesCarousel(referenceElement, position) {
         if (document.querySelector('.pinned-games-carousel')) return;
         if (!isSafeMainContentAnchor(referenceElement)) return;
 
+        injectFolderStyles();
+        injectCarouselStyles();
+
         const carousel = document.createElement('div');
         carousel.className = 'pinned-games-carousel';
-        carousel.style.cssText = `
-            margin: 24px 0;
-            padding: 24px;
-            background: var(--pg-bg);
-            backdrop-filter: var(--pg-glass);
-            -webkit-backdrop-filter: var(--pg-glass);
-            border-radius: 20px;
-            border: 1px solid var(--pg-border);
-            box-shadow: var(--pg-shadow);
-            position: relative;
-            overflow: visible;
-            animation: pgf-up 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            box-sizing: border-box;
-        `;
-
-        const headerSection = document.createElement('div');
-        headerSection.style.cssText = `
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        `;
+        carousel.setAttribute('aria-label', t('pinnedGames_title'));
 
         const header = document.createElement('div');
-        header.style.cssText = 'display:flex;align-items:center;gap:10px;';
-        header.innerHTML = `
-            <h3 style="
-                color: var(--pg-accent);
-                margin: 0;
-                font-size: 1.4rem;
-                font-weight: 800;
-                letter-spacing: -0.02em;
-            ">${t('pinnedGames_pinnedGamesHeader')}</h3>
-            <div class="pgf-help-btn" style="
-                position: relative;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                width: 16px;
-                height: 16px;
-                border-radius: 50%;
-                border: 1px solid var(--pg-border);
-                background: var(--pg-input-bg);
-                color: var(--pg-accent);
-                font-size: 10px;
-                font-weight: 700;
-                cursor: default;
-                flex-shrink: 0;
-                user-select: none;
-            " data-pgf-help>?<div style="
-                display: none;
-                position: absolute;
-                bottom: calc(100% + 10px);
-                left: 50%;
-                transform: translateX(-50%);
-                background: var(--pg-tooltip-bg);
-                backdrop-filter: blur(20px);
-                border: 1px solid var(--pg-border);
-                border-radius: 12px;
-                padding: 10px 14px;
-                font-size: 11px;
-                font-weight: 600;
-                color: var(--pg-text);
-                white-space: nowrap;
-                pointer-events: none;
-                box-shadow: var(--pg-shadow);
-                z-index: 9999;
-                line-height: 1.6;
-            ">${t('pinnedGames_helpText')}</div></div>
-        `;
+        header.className = 'pgf-header';
 
-        headerSection.appendChild(header);
-
-        const helpBtn = header.querySelector('[data-pgf-help]');
-        const helpTooltip = helpBtn?.querySelector('div');
-        if (helpBtn && helpTooltip) {
-            helpBtn.addEventListener('mouseenter', () => {
-                helpTooltip.style.display = 'block';
-            });
-            helpBtn.addEventListener('mouseleave', () => {
-                helpTooltip.style.display = 'none';
-            });
+        const nativeHeader = createNativeSectionHeader(t('pinnedGames_pinnedGamesHeader'));
+        if (nativeHeader) {
+            nativeHeader.classList.add('pgf-native-header');
+            header.appendChild(nativeHeader);
+        } else {
+            const title = document.createElement('h2');
+            title.className = 'pgf-title';
+            title.textContent = t('pinnedGames_pinnedGamesHeader');
+            header.appendChild(title);
         }
 
-        const collapseBtn = document.createElement('button');
-        collapseBtn.style.cssText = `
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            border: 1px solid var(--pg-border);
-            background: var(--pg-input-bg);
-            cursor: pointer;
-            padding: 0;
-            color: var(--pg-muted);
-            transition: all 0.2s ease;
-            flex-shrink: 0;
+        const tools = document.createElement('div');
+        tools.className = 'pgf-header-tools';
+
+        const searchBtn = makePinnedIconButton(
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>',
+            t('pinnedGames_searchPlaceholder')
+        );
+
+        const collapseBtn = makePinnedIconButton(
+            '<svg class="pgf-collapse-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease;"><polyline points="18 15 12 9 6 15"/></svg>',
+            t('pinnedGames_collapse')
+        );
+
+        tools.append(searchBtn, collapseBtn);
+        header.appendChild(tools);
+
+        const body = document.createElement('div');
+        body.className = 'pgf-body';
+
+        const searchRow = document.createElement('div');
+        searchRow.className = 'pgf-search-row';
+        searchRow.innerHTML = `
+            <div class="pgf-search">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:0.6;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" placeholder="${t('pinnedGames_searchPlaceholder')}" aria-label="${t('pinnedGames_searchPlaceholder')}">
+                <button type="button" class="pgf-search-clear" aria-label="${t('pinnedGames_searchPlaceholder')}">✕</button>
+            </div>
         `;
-        collapseBtn.innerHTML = `<svg class="pgf-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s ease;"><polyline points="18 15 12 9 6 15"/></svg>`;
-        collapseBtn.addEventListener('mouseenter', () => {
-            collapseBtn.style.background = 'rgba(138,43,226,0.22)';
-            collapseBtn.style.borderColor = 'rgba(138,43,226,0.6)';
-            collapseBtn.style.color = 'white';
-        });
-        collapseBtn.addEventListener('mouseleave', () => {
-            collapseBtn.style.background = 'rgba(138,43,226,0.08)';
-            collapseBtn.style.borderColor = 'rgba(138,43,226,0.3)';
-            collapseBtn.style.color = 'rgba(200,170,255,0.6)';
-        });
-        headerSection.appendChild(collapseBtn);
 
-        const collapseBody = document.createElement('div');
-        collapseBody.className = 'pgf-body';
-        collapseBody.style.cssText = 'overflow:hidden;transition:max-height 0.25s ease, opacity 0.2s ease;max-height:2000px;opacity:1;';
+        const folderNav = createFolderNavigation();
 
-        let isCollapsed = false;
+        const viewport = document.createElement('div');
+        viewport.className = 'pgf-carousel';
 
-        const applyCollapsed = (collapsed, animate) => {
-            isCollapsed = collapsed;
-            const chevron = collapseBtn.querySelector('.pgf-chevron');
-            if (collapsed) {
-                if (!animate) collapseBody.style.transition = 'none';
-                collapseBody.style.maxHeight = '0';
-                collapseBody.style.opacity = '0';
-                carousel.style.paddingBottom = '12px';
-                headerSection.style.marginBottom = '0';
-                if (chevron) chevron.style.transform = 'rotate(180deg)';
-                collapseBody.style.overflow = 'hidden';
-            } else {
-                if (!animate) collapseBody.style.transition = 'none';
-                collapseBody.style.maxHeight = '2000px';
-                collapseBody.style.opacity = '1';
-                carousel.style.paddingBottom = '20px';
-                headerSection.style.marginBottom = '12px';
-                if (chevron) chevron.style.transform = 'rotate(0deg)';
-            }
-            if (animate) {
-                requestAnimationFrame(() => {
-                    collapseBody.style.transition = 'max-height 0.25s ease, opacity 0.2s ease';
-                    if (!collapsed) {
-                        setTimeout(() => { if (!isCollapsed) collapseBody.style.overflow = 'visible'; }, 250);
-                    }
-                });
-            } else {
-                if (!collapsed) collapseBody.style.overflow = 'visible';
-            }
+        const gamesContainer = document.createElement('ul');
+        gamesContainer.className = 'hlist games game-cards game-tile-list pinned-games-container';
+
+        const makeCarouselScrollButton = (direction, label) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = `scroller-new ${direction}`;
+            btn.setAttribute('data-testid', 'game-carousel-scroll-bar');
+            btn.setAttribute('aria-disabled', 'true');
+            btn.setAttribute('aria-label', label);
+            btn.tabIndex = -1;
+            btn.innerHTML = '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M8.583 14c0-.332.132-.65.366-.884l6.25-6.25a1.25 1.25 0 0 1 1.768 1.768L11.6 14l5.366 5.366a1.25 1.25 0 0 1-1.768 1.768l-6.25-6.25A1.25 1.25 0 0 1 8.583 14"/></svg>';
+            return btn;
         };
 
-        window.__PurpuraSettings.ready.then(function() {
-            applyCollapsed(window.__PurpuraSettings.get('pgfCollapsed') === true, false);
-        });
+        const leftArrow = makeCarouselScrollButton('prev', t('pinnedGames_scrollLeft'));
+        const rightArrow = makeCarouselScrollButton('next', t('pinnedGames_scrollRight'));
 
-        collapseBtn.addEventListener('click', () => {
-            const next = !isCollapsed;
-            applyCollapsed(next, true);
-            chrome.storage.local.set({ pgfCollapsed: next });
-        });
+        viewport.append(leftArrow, gamesContainer, rightArrow);
+        body.append(searchRow, folderNav, viewport);
+        carousel.append(header, body);
+        referenceElement.insertAdjacentElement(position, carousel);
 
-        const searchBar = document.createElement('div');
-        searchBar.style.cssText = `
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 16px;
-            background: var(--pg-input-bg);
-            border: 1px solid var(--pg-border);
-            border-radius: 12px;
-            padding: 10px 16px;
-            transition: all 0.2s ease;
-            box-sizing: border-box;
-            width: 100%;
-        `;
-        searchBar.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--pg-muted)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-            </svg>
-            <input type="text" placeholder="${t('pinnedGames_searchPlaceholder')}" style="
-                flex: 1;
-                background: transparent;
-                border: none;
-                outline: none;
-                color: var(--pg-text);
-                font-size: 14px;
-                padding: 0;
-                margin: 0;
-            ">
-            <button style="
-                display: none;
-                background: none;
-                border: none;
-                color: rgba(200,170,255,0.5);
-                cursor: pointer;
-                padding: 0;
-                line-height: 1;
-                font-size: 14px;
-            ">✕</button>
-        `;
-        const searchInput = searchBar.querySelector('input');
-        const clearBtn = searchBar.querySelector('button');
-        searchBar.addEventListener('focusin', () => {
-            searchBar.style.borderColor = 'rgba(138,43,226,0.5)';
-        });
-        searchBar.addEventListener('focusout', () => {
-            searchBar.style.borderColor = 'rgba(138,43,226,0.18)';
-        });
+        const searchInput = searchRow.querySelector('input');
+        const clearBtn = searchRow.querySelector('.pgf-search-clear');
+
+        const setSearchOpen = (open) => {
+            searchRow.classList.toggle('open', open);
+            searchBtn.classList.toggle('is-active', open);
+            if (open) {
+                searchInput.focus();
+            } else if (searchInput.value) {
+                searchInput.value = '';
+                clearBtn.style.display = 'none';
+                applyPinnedGamesSearch();
+            }
+            syncCarouselArrows();
+        };
+
+        searchBtn.addEventListener('click', () => setSearchOpen(!searchRow.classList.contains('open')));
         searchInput.addEventListener('input', () => {
             clearBtn.style.display = searchInput.value ? 'block' : 'none';
+            applyPinnedGamesSearch();
         });
         clearBtn.addEventListener('click', () => {
             searchInput.value = '';
             clearBtn.style.display = 'none';
-            searchInput.dispatchEvent(new Event('input'));
+            applyPinnedGamesSearch();
             searchInput.focus();
         });
-
-        const folderNav = createFolderNavigation();
-        folderNav.style.width = '100%';
-        folderNav.style.boxSizing = 'border-box';
-
-        const gamesContainer = document.createElement('div');
-        gamesContainer.className = 'pinned-games-container';
-        gamesContainer.style.cssText = `
-            display: flex;
-            gap: 20px;
-            overflow-x: auto;
-            padding: 50px 10px 10px;
-            margin-top: -30px;
-            scrollbar-width: none;
-        `;
-
-        const style = document.createElement('style');
-        style.textContent = `
-            .pinned-games-container::-webkit-scrollbar {
-                height: 8px;
-            }
-            .pinned-games-container::-webkit-scrollbar-track {
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 4px;
-            }
-            .pinned-games-container::-webkit-scrollbar-thumb {
-                background: #8A2BE2;
-                border-radius: 4px;
-            }
-            .pinned-games-container::-webkit-scrollbar-thumb:hover {
-                background: #9933FF;
-            }
-            .pinned-games-search::placeholder {
-                color: rgba(255, 255, 255, 0.5);
-            }
-            
-            /* Drag & Drop Animations */
-            .pinned-game-card {
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                animation: fadeInCard 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            }
-            
-            @keyframes fadeInCard {
-                from {
-                    opacity: 0;
-                    transform: translateY(10px) scale(0.95);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0) scale(1);
-                }
-            }
-            
-            .pinned-game-card.dragging {
-                opacity: 0.5;
-                transform: scale(0.95) rotate(2deg);
-                cursor: grabbing !important;
-                box-shadow: 0 8px 32px rgba(138, 43, 226, 0.6);
-                z-index: 1000;
-            }
-            
-            .pinned-game-card.drag-over {
-                transform: scale(1.05) translateY(-5px);
-                border: 2px solid #FFD700;
-                box-shadow: 0 0 20px rgba(255, 215, 0, 0.5), 0 8px 32px rgba(138, 43, 226, 0.4);
-                background: rgba(138, 43, 226, 0.3);
-            }
-            
-            .pinned-game-card.drag-over::before {
-                content: '';
-                position: absolute;
-                top: -4px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 80%;
-                height: 4px;
-                background: linear-gradient(90deg, transparent, #FFD700, transparent);
-                border-radius: 2px;
-                animation: pulse 1s ease-in-out infinite;
-            }
-            
-            @keyframes pulse {
-                0%, 100% {
-                    opacity: 0.6;
-                    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-                }
-                50% {
-                    opacity: 1;
-                    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-                }
-            }
-            
-            .pinned-game-card.drop-success {
-                animation: dropSuccess 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            }
-            
-            @keyframes dropSuccess {
-                0% {
-                    transform: scale(0.9);
-                }
-                50% {
-                    transform: scale(1.1);
-                    box-shadow: 0 0 30px rgba(76, 175, 80, 0.8);
-                    border-color: #4caf50;
-                }
-                100% {
-                    transform: scale(1);
-                }
-            }
-            
-            .drag-ghost {
-                position: fixed;
-                pointer-events: none;
-                z-index: 10000;
-                opacity: 0.9;
-                transform: rotate(5deg);
-                transition: transform 0.2s ease;
-                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-                border: 2px solid #8A2BE2;
-                animation: floatGhost 2s ease-in-out infinite;
-            }
-            
-            @keyframes floatGhost {
-                0%, 100% {
-                    transform: translateY(0px) rotate(5deg);
-                }
-                50% {
-                    transform: translateY(-10px) rotate(3deg);
-                }
-            }
-        `;
-        document.head.appendChild(style);
-        allGameCards = [];
-        const currentGames = getGamesInFolder(currentFolderId);
-        
-        currentGames.forEach(game => {
-            const gameCard = createGameCard(game);
-            gamesContainer.appendChild(gameCard);
-            allGameCards.push({card: gameCard, game: game});
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') setSearchOpen(false);
         });
 
-        if (currentGames.length === 0) {
-            const empty = document.createElement('div');
-            empty.style.cssText = `display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 16px 20px;width:100%;box-sizing:border-box;gap:10px;opacity:0.72;`;
-            const img = document.createElement('img');
-            img.src = chrome.runtime.getURL('images/builderman_signature.png');
-            msg.textContent = t('pinnedGames_buildermanLives');
-            msg.style.cssText = `font-size:13px;color:var(--pg-muted);font-weight:600;letter-spacing:0.02em;`;
-            const imgFilter = currentTheme === 'light' ? 'grayscale(1) contrast(0.5) opacity(0.15)' : 'invert(1) opacity(0.18)';
-            img.style.cssText = `width:160px;max-width:80%;filter:${imgFilter};pointer-events:none;user-select:none;`;
-            empty.appendChild(img);
-            empty.appendChild(msg);
-            gamesContainer.appendChild(empty);
-        }
+        let isCollapsed = false;
+        const applyCollapsed = (collapsed) => {
+            isCollapsed = collapsed;
+            body.classList.toggle('is-collapsed', collapsed);
+            const chevron = collapseBtn.querySelector('.pgf-collapse-chevron');
+            if (chevron) chevron.style.transform = collapsed ? 'rotate(180deg)' : 'rotate(0deg)';
+            const label = collapsed ? t('pinnedGames_expand') : t('pinnedGames_collapse');
+            collapseBtn.title = label;
+            collapseBtn.setAttribute('aria-label', label);
+        };
 
-        searchInput.addEventListener('input', () => {
-            const term = searchInput.value.toLowerCase().trim();
-            let anyVisible = false;
-            allGameCards.forEach(({card, game}) => {
-                const visible = !term || game.name.toLowerCase().includes(term);
-                card.style.display = visible ? '' : 'none';
-                if (visible) anyVisible = true;
+        applyCollapsed(window.__PurpuraSettings.get('pgfCollapsed') === true);
+        collapseBtn.addEventListener('click', () => {
+            const next = !isCollapsed;
+            applyCollapsed(next);
+            chrome.storage.local.set({ pgfCollapsed: next });
+        });
+
+        const scrollByPage = (direction) => {
+            gamesContainer.scrollBy({
+                left: direction * Math.max(240, gamesContainer.clientWidth * 0.8),
+                behavior: 'smooth'
             });
-            const existingEmpty = gamesContainer.querySelector('.pgf-search-empty');
-            if (!anyVisible && term) {
-                if (!existingEmpty) {
-                    const noResults = document.createElement('div');
-                    noResults.className = 'pgf-search-empty';
-                    noResults.style.cssText = `display:flex;align-items:center;justify-content:center;padding:24px 16px;width:100%;box-sizing:border-box;font-size:13px;color:var(--pg-muted);font-weight:600;animation: pgf-fade-in 0.3s ease;`;
-                    noResults.textContent = `No games match "${term}"`;
-                    gamesContainer.appendChild(noResults);
-                } else {
-                    existingEmpty.textContent = `No games match "${term}"`;
-                }
-            } else if (existingEmpty) {
-                existingEmpty.remove();
-            }
-        });
+        };
+        leftArrow.addEventListener('click', () => scrollByPage(-1));
+        rightArrow.addEventListener('click', () => scrollByPage(1));
+        gamesContainer.addEventListener('scroll', syncCarouselArrows, { passive: true });
+        window.addEventListener('resize', syncCarouselArrows);
 
-        collapseBody.appendChild(searchBar);
-        collapseBody.appendChild(folderNav);
-        collapseBody.appendChild(gamesContainer);
-        carousel.appendChild(headerSection);
-        carousel.appendChild(collapseBody);
-        
-        referenceElement.insertAdjacentElement(position, carousel);
-
-        startLivePlayerCountUpdates(allGameCards);
+        renderPinnedGamesInto(gamesContainer);
+        requestAnimationFrame(syncCarouselArrows);
     }
-
     async function findSmallestServer(gameId) {
         try {
 
@@ -1555,7 +1762,9 @@ if (!window.pinnedGamesInitialized) { window.pinnedGamesInitialized = true;
         if (oldNav) {
             oldNav.replaceWith(newNav);
         } else {
-            carousel.appendChild(newNav);
+            const viewport = carousel.querySelector('.pgf-carousel');
+            if (viewport) viewport.before(newNav);
+            else carousel.appendChild(newNav);
         }
 
         const gamesContainer = carousel.querySelector('.pinned-games-container');
@@ -1570,44 +1779,8 @@ if (!window.pinnedGamesInitialized) { window.pinnedGamesInitialized = true;
             autoSyncInterval = null;
         }
 
-        gamesContainer.innerHTML = '';
-        gamesContainer.style.animation = 'none';
-        gamesContainer.offsetHeight; // trigger reflow
-        gamesContainer.style.animation = 'pgf-fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
-        
-        allGameCards = [];
-        const currentGames = getGamesInFolder(currentFolderId);
-
-        currentGames.forEach(game => {
-            const card = createGameCard(game);
-            gamesContainer.appendChild(card);
-            allGameCards.push({ game, card });
-        });
-
-        if (currentGames.length === 0) {
-            const empty = document.createElement('div');
-            empty.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 16px 20px;width:100%;box-sizing:border-box;gap:10px;opacity:0.72;';
-            const img = document.createElement('img');
-            img.src = chrome.runtime.getURL('images/builderman_signature.png');
-            const imgFilter = currentTheme === 'light' ? 'grayscale(1) contrast(0.5) opacity(0.15)' : 'invert(1) opacity(0.18)';
-            img.style.cssText = `width:160px;max-width:80%;filter:${imgFilter};pointer-events:none;user-select:none;`;
-            const msg = document.createElement('span');
-            msg.textContent = currentFolderId === null ? 'The builderman lives here.' : 'This folder is empty.';
-            msg.style.cssText = 'font-size:13px;color:var(--pg-muted);font-weight:600;letter-spacing:0.02em;';
-            empty.appendChild(img);
-            empty.appendChild(msg);
-            gamesContainer.appendChild(empty);
-        }
-
-        const searchInput = carousel.querySelector('input[type="text"]');
-        if (searchInput && searchInput.value.trim()) {
-            const query = searchInput.value.trim().toLowerCase();
-            allGameCards.forEach(({ card, game }) => {
-                card.style.display = game.name.toLowerCase().includes(query) ? '' : 'none';
-            });
-        }
-
-        startLivePlayerCountUpdates(allGameCards);
+        gamesContainer.scrollLeft = 0;
+        renderPinnedGamesInto(gamesContainer);
     }
 
     function refreshPinnedGamesCarousel() {
@@ -1644,421 +1817,151 @@ if (!window.pinnedGamesInitialized) { window.pinnedGamesInitialized = true;
     }
 
     function createGameCard(game) {
-        const card = document.createElement('div');
-        card.className = 'pinned-game-card';
-        card.draggable = true;
-        card.dataset.gameId = game.id;
-        card.style.cssText = `
-            min-width: 220px;
-            background: var(--pg-card-bg);
-            border-radius: 16px;
-            padding: 14px;
-            border: 1px solid var(--pg-border);
-            cursor: grab;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        `;
+        const item = document.createElement('li');
+        item.className = 'list-item game-card game-tile pinned-game-card';
+        item.dataset.gameId = game.id;
+        item.draggable = true;
 
-        card.innerHTML = `
-            <div class="drag-handle" style="
-                position: absolute;
-                top: 8px;
-                left: 8px;
-                width: 16px;
-                height: 16px;
-                cursor: grab;
-                opacity: 0.6;
-                transition: opacity 0.2s ease;
-                z-index: 2;
-            " title="${t('pinnedGames_dragToReorder')}">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--pg-muted)">
-                    <path d="M3 5h2v2H3V5zm4 0h2v2H7V5zm4 0h2v2h-2V5zm4 0h2v2h-2V5zm4 0h2v2h-2V5zM3 11h2v2H3v-2zm4 0h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2zM3 17h2v2H3v-2zm4 0h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2z"/>
-                </svg>
-            </div>
-            <button class="sync-game-btn" style="
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                width: 28px;
-                height: 28px;
-                background: var(--pg-input-bg);
-                border: 1px solid var(--pg-border);
-                border-radius: 8px;
-                cursor: pointer;
-                transition: all 0.2s ease;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 2;
-                padding: 0;
-            ">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(138, 43, 226, 0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
-                </svg>
-                <span class="sync-tooltip" style="
-                    display: none;
-                    position: absolute;
-                    bottom: calc(100% + 8px);
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: var(--pg-tooltip-bg);
-                    backdrop-filter: blur(20px);
-                    border: 1px solid var(--pg-border);
-                    border-radius: 12px;
-                    padding: 6px 10px;
-                    font-size: 11px;
-                    font-weight: 600;
-                    color: var(--pg-text);
-                    white-space: nowrap;
-                    pointer-events: none;
-                    box-shadow: var(--pg-shadow);
-                    z-index: 9999;
-                ">${t('pinnedGames_syncDetails')}</span>
-            </button>
-            <button class="folder-menu-btn" style="
-                position: absolute;
-                top: 10px;
-                right: 44px;
-                width: 28px;
-                height: 28px;
-                background: var(--pg-input-bg);
-                border: 1px solid var(--pg-border);
-                border-radius: 8px;
-                cursor: pointer;
-                transition: all 0.2s ease;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 2;
-                padding: 0;
-            ">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(138, 43, 226, 0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                </svg>
-                <span class="folder-tooltip" style="
-                    display: none;
-                    position: absolute;
-                    bottom: calc(100% + 8px);
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: var(--pg-tooltip-bg);
-                    backdrop-filter: blur(20px);
-                    border: 1px solid var(--pg-border);
-                    border-radius: 12px;
-                    padding: 6px 10px;
-                    font-size: 11px;
-                    font-weight: 600;
-                    color: var(--pg-text);
-                    white-space: nowrap;
-                    pointer-events: none;
-                    box-shadow: var(--pg-shadow);
-                    z-index: 9999;
-                ">${t('pinnedGames_folders')}</span>
-            </button>
-            <img src="${game.thumbnail}" alt="${game.name}" style="
-                width: 100%;
-                height: 120px;
-                object-fit: cover;
-                border-radius: 10px;
-                margin-bottom: 12px;
-                border: 1px solid var(--pg-border);
-            ">
-            <h4 style="
-                color: var(--pg-text);
-                font-size: 1rem;
-                font-weight: 700;
-                margin-bottom: 4px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            ">${game.name}</h4>
-            <p style="
-                color: var(--pg-muted);
-                font-size: 0.85rem;
-                font-weight: 500;
-                margin-bottom: 12px;
-            ">${t('pinnedGames_playingCount', [formatPlayerCount(game.playerCount)])}</p>
-            <div class="game-actions" style="
-                display: flex;
-                gap: 6px;
-                margin-top: 8px;
-            ">
-                <button class="join-game-btn" style="
-                    position: relative;
-                    flex: 1;
-                    background: var(--pg-accent);
-                    color: white;
-                    border: none;
-                    border-radius: 10px;
-                    padding: 12px 0;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                ">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M5 3l14 9-14 9V3z"/></svg>
-                    <span style="
-                        display: none;
-                        position: absolute;
-                        bottom: calc(100% + 8px);
-                        left: 50%;
-                        transform: translateX(-50%);
-                        background: var(--pg-tooltip-bg);
-                        backdrop-filter: blur(20px);
-                        border: 1px solid var(--pg-border);
-                        border-radius: 12px;
-                        padding: 6px 10px;
-                        font-size: 11px;
-                        font-weight: 600;
-                        color: var(--pg-text);
-                        white-space: nowrap;
-                        pointer-events: none;
-                        box-shadow: var(--pg-shadow);
-                        z-index: 9999;
-                    ">${t('pinnedGames_playTooltip')}</span>
-                </button>
-                <button class="join-smallest-btn" style="
-                    position: relative;
-                    flex: 1;
-                    background: var(--pg-input-bg);
-                    color: var(--pg-accent);
-                    border: 1px solid var(--pg-accent-muted);
-                    border-radius: 10px;
-                    padding: 12px 0;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                ">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.418 3.582-8 8-8s8 3.582 8 8"/></svg>
-                    <span style="
-                        display: none;
-                        position: absolute;
-                        bottom: calc(100% + 8px);
-                        left: 50%;
-                        transform: translateX(-50%);
-                        background: var(--pg-tooltip-bg);
-                        backdrop-filter: blur(20px);
-                        border: 1px solid var(--pg-border);
-                        border-radius: 12px;
-                        padding: 6px 10px;
-                        font-size: 11px;
-                        font-weight: 600;
-                        color: var(--pg-text);
-                        white-space: nowrap;
-                        pointer-events: none;
-                        box-shadow: var(--pg-shadow);
-                        z-index: 9999;
-                    ">${t('pinnedGames_joinSmallestTooltip')}</span>
-                </button>
-            </div>
-        `;
+        const container = document.createElement('div');
+        container.className = 'game-card-container';
+        container.setAttribute('data-testid', 'game-tile');
 
-        const dragHandle = card.querySelector('.drag-handle');
-        dragHandle.addEventListener('mouseenter', () => {
-            dragHandle.style.opacity = '1';
-        });
+        const link = document.createElement('a');
+        link.className = 'game-card-link';
+        link.href = `https://www.roblox.com/games/${game.id}/`;
+        link.draggable = false;
 
-        dragHandle.addEventListener('mouseleave', () => {
-            dragHandle.style.opacity = '0.6';
-        });
+        const thumbContainer = document.createElement('div');
+        thumbContainer.className = 'game-card-thumb-container';
 
-        card.addEventListener('mouseenter', () => {
-            card.style.background = 'var(--pg-card-hover)';
-            card.style.borderColor = 'var(--pg-accent)';
-            card.style.transform = 'translateY(-4px)';
-            card.style.boxShadow = '0 12px 24px rgba(0,0,0,0.1)';
-        });
+        const thumbSpan = document.createElement('span');
+        thumbSpan.className = 'thumbnail-2d-container game-card-thumb';
 
-        card.addEventListener('mouseleave', () => {
-            card.style.background = 'var(--pg-card-bg)';
-            card.style.borderColor = 'var(--pg-border)';
-            card.style.transform = 'translateY(0)';
-            card.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)';
-        });
+        const img = document.createElement('img');
+        img.src = game.thumbnail;
+        img.alt = game.name;
+        img.title = game.name;
+        img.loading = 'lazy';
+        img.draggable = false;
 
-        const joinGameBtn = card.querySelector('.join-game-btn');
-        const joinSmallestBtn = card.querySelector('.join-smallest-btn');
+        thumbSpan.appendChild(img);
+        thumbContainer.appendChild(thumbSpan);
+        link.appendChild(thumbContainer);
 
-        const joinGameTooltip = joinGameBtn.querySelector('span');
-        joinGameBtn.addEventListener('mouseenter', () => {
-            joinGameBtn.style.transform = 'scale(1.05)';
-            joinGameBtn.style.filter = 'brightness(1.1)';
-            if (joinGameTooltip) joinGameTooltip.style.display = 'block';
-        });
+        const name = document.createElement('div');
+        name.className = 'game-card-name game-name-title';
+        name.title = game.name;
+        name.textContent = game.name;
+        link.appendChild(name);
 
-        joinGameBtn.addEventListener('mouseleave', () => {
-            joinGameBtn.style.transform = 'scale(1)';
-            joinGameBtn.style.filter = 'none';
-            if (joinGameTooltip) joinGameTooltip.style.display = 'none';
-        });
+        const info = document.createElement('div');
+        info.className = 'game-card-info';
+        info.setAttribute('data-testid', 'game-tile-stats');
 
-        joinGameBtn.addEventListener('click', (e) => {
+        const votesIcon = document.createElement('span');
+        votesIcon.className = 'info-label icon-votes-gray';
+
+        const votesLabel = document.createElement('span');
+        votesLabel.className = 'info-label vote-percentage-label';
+        votesLabel.textContent = '--';
+
+        const playingIcon = document.createElement('span');
+        playingIcon.className = 'info-label icon-playing-counts-gray';
+
+        const playingLabel = document.createElement('span');
+        playingLabel.className = 'info-label playing-counts-label';
+        playingLabel.textContent = formatCompactCount(game.playerCount);
+        playingLabel.title = t('pinnedGames_playingCount', [formatPlayerCount(game.playerCount)]);
+
+        info.append(votesIcon, votesLabel, playingIcon, playingLabel);
+        link.appendChild(info);
+
+        container.appendChild(link);
+
+        const menuBtn = document.createElement('button');
+        menuBtn.type = 'button';
+        menuBtn.className = 'pgf-card-menu-btn';
+        menuBtn.title = t('pinnedGames_options');
+        menuBtn.setAttribute('aria-label', `${t('pinnedGames_options')} ${game.name}`);
+        menuBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>';
+        menuBtn.addEventListener('click', (e) => {
+            e.preventDefault();
             e.stopPropagation();
-            window.location.href = `roblox://placeid=${game.id}`;
+            showGameMenu(game.id, menuBtn);
         });
 
-        const joinSmallestTooltip = joinSmallestBtn.querySelector('span');
-        joinSmallestBtn.addEventListener('mouseenter', () => {
-            joinSmallestBtn.style.background = 'var(--pg-accent-muted)';
-            joinSmallestBtn.style.color = 'white';
-            joinSmallestBtn.style.transform = 'scale(1.05)';
-            if (joinSmallestTooltip) joinSmallestTooltip.style.display = 'block';
-        });
+        container.appendChild(menuBtn);
+        item.appendChild(container);
 
-        joinSmallestBtn.addEventListener('mouseleave', () => {
-            joinSmallestBtn.style.background = 'var(--pg-input-bg)';
-            joinSmallestBtn.style.color = 'var(--pg-accent)';
-            joinSmallestBtn.style.transform = 'scale(1)';
-            if (joinSmallestTooltip) joinSmallestTooltip.style.display = 'none';
-        });
-
-        joinSmallestBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            findSmallestServer(game.id);
-        });
-
-        const syncGameBtn = card.querySelector('.sync-game-btn');
-
-        const syncTooltip = syncGameBtn.querySelector('.sync-tooltip');
-
-        syncGameBtn.addEventListener('mouseenter', () => {
-            syncGameBtn.style.background = 'var(--pg-accent)';
-            syncGameBtn.style.borderColor = 'var(--pg-accent)';
-            const svg = syncGameBtn.querySelector('svg');
-            if (svg) {
-                svg.style.stroke = 'white';
-                svg.style.transform = 'rotate(180deg)';
-            }
-            if (syncTooltip) syncTooltip.style.display = 'block';
-        });
-
-        syncGameBtn.addEventListener('mouseleave', () => {
-            syncGameBtn.style.background = 'var(--pg-input-bg)';
-            syncGameBtn.style.borderColor = 'var(--pg-border)';
-            const svg = syncGameBtn.querySelector('svg');
-            if (svg) {
-                svg.style.stroke = 'var(--pg-accent)';
-                svg.style.transform = 'rotate(0deg)';
-            }
-            if (syncTooltip) syncTooltip.style.display = 'none';
-        });
-
-        syncGameBtn.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            await syncGameDetails(game.id, card);
-        });
-
-        const folderMenuBtn = card.querySelector('.folder-menu-btn');
-        
-        const folderTooltip = folderMenuBtn.querySelector('.folder-tooltip');
-
-        folderMenuBtn.addEventListener('mouseenter', () => {
-            folderMenuBtn.style.background = 'var(--pg-accent)';
-            folderMenuBtn.style.borderColor = 'var(--pg-accent)';
-            const svg = folderMenuBtn.querySelector('svg');
-            if (svg) svg.style.stroke = 'white';
-            if (folderTooltip) folderTooltip.style.display = 'block';
-        });
-        
-        folderMenuBtn.addEventListener('mouseleave', () => {
-            folderMenuBtn.style.background = 'var(--pg-input-bg)';
-            folderMenuBtn.style.borderColor = 'var(--pg-border)';
-            const svg = folderMenuBtn.querySelector('svg');
-            if (svg) svg.style.stroke = 'var(--pg-accent)';
-            if (folderTooltip) folderTooltip.style.display = 'none';
-        });
-        
-        folderMenuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            showGameFolderMenu(game.id, folderMenuBtn);
-        });
-
-        card.addEventListener('click', (e) => {
-            if (e.target.closest('.game-actions')) {
+        item.addEventListener('dragstart', (e) => {
+            if (e.target.closest('.pgf-card-menu-btn')) {
+                e.preventDefault();
                 return;
             }
-            window.location.href = `https://www.roblox.com/games/${game.id}/`;
-        });
-
-        card.addEventListener('dragstart', (e) => {
             e.dataTransfer.setData('text/plain', game.id);
-            card.classList.add('dragging');
-            
-            const ghost = card.cloneNode(true);
+            item.classList.add('dragging');
+
+            const ghost = item.cloneNode(true);
             ghost.classList.add('drag-ghost');
             ghost.classList.remove('dragging');
             ghost.style.position = 'fixed';
             ghost.style.top = '-9999px';
             ghost.style.left = '-9999px';
-            ghost.style.width = card.offsetWidth + 'px';
-            ghost.style.height = card.offsetHeight + 'px';
+            ghost.style.width = item.offsetWidth + 'px';
+            ghost.style.height = item.offsetHeight + 'px';
             ghost.style.pointerEvents = 'none';
+            ghost.style.opacity = '0.9';
+            ghost.style.zIndex = '10000';
             document.body.appendChild(ghost);
-            
-            e.dataTransfer.setDragImage(ghost, card.offsetWidth / 2, card.offsetHeight / 2);
-            
-            setTimeout(() => {
-                if (ghost.parentNode) {
-                    ghost.remove();
-                }
-            }, 0);
-            
-            document.querySelectorAll('.pinned-game-card').forEach(c => {
-                if (c !== card) {
-                    c.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                    c.style.opacity = '0.6';
-                }
-            });
 
+            e.dataTransfer.setDragImage(ghost, item.offsetWidth / 2, item.offsetHeight / 2);
+
+            setTimeout(() => {
+                if (ghost.parentNode) ghost.remove();
+            }, 0);
         });
 
-        card.addEventListener('dragend', (e) => {
-            card.classList.remove('dragging');
-            
+        item.addEventListener('dragend', () => {
+            item.classList.remove('dragging');
+
             document.querySelectorAll('.pinned-game-card').forEach(c => {
                 c.classList.remove('drag-over');
-                c.style.opacity = '1';
             });
-            
+
             document.querySelectorAll('.drag-ghost').forEach(g => g.remove());
         });
 
-        card.addEventListener('dragover', (e) => {
+        item.addEventListener('dragover', (e) => {
             e.preventDefault();
-            card.classList.add('drag-over');
+            item.classList.add('drag-over');
         });
 
-        card.addEventListener('dragleave', (e) => {
-            if (!card.contains(e.relatedTarget)) {
-                card.classList.remove('drag-over');
+        item.addEventListener('dragleave', (e) => {
+            if (!item.contains(e.relatedTarget)) {
+                item.classList.remove('drag-over');
             }
         });
 
-        card.addEventListener('drop', (e) => {
+        item.addEventListener('drop', (e) => {
             e.preventDefault();
             const draggedGameId = e.dataTransfer.getData('text/plain');
             const targetGameId = game.id;
-            
-            card.classList.remove('drag-over');
-            
-            if (draggedGameId !== targetGameId) {
-                card.classList.add('drop-success');
-                
+
+            item.classList.remove('drag-over');
+
+            if (draggedGameId && draggedGameId !== targetGameId) {
+                item.classList.add('drop-success');
+
                 setTimeout(() => {
-                    card.classList.remove('drop-success');
-                }, 600);
-                
+                    item.classList.remove('drop-success');
+                }, 400);
+
                 handleGameReorder(draggedGameId, targetGameId);
             }
         });
 
-        return card;
+        return item;
     }
-
     function startLivePlayerCountUpdates(gameCards) {
         if (liveUpdateInterval) {
             clearInterval(liveUpdateInterval);
@@ -2169,13 +2072,13 @@ if (!window.pinnedGamesInitialized) { window.pinnedGamesInitialized = true;
                             if (game.universeId) {
                                 const cachedData = playerCountCache.get(game.universeId);
                                 if (cachedData) {
-                                    const playerCountElement = card.querySelector('p');
+                                    const playerCountElement = card.querySelector('.playing-counts-label');
                                     if (playerCountElement) {
-                                        playerCountElement.textContent = `${formatPlayerCount(cachedData.count)} playing`;
-                                        playerCountElement.style.transition = 'color 0.3s ease';
-                                        playerCountElement.style.color = '#4caf50';
+                                        playerCountElement.textContent = formatCompactCount(cachedData.count);
+                                        playerCountElement.title = t('pinnedGames_playingCount', [formatPlayerCount(cachedData.count)]);
+                                        playerCountElement.style.color = '#00b06f';
                                         setTimeout(() => {
-                                            playerCountElement.style.color = 'var(--pg-muted)';
+                                            playerCountElement.style.color = '';
                                         }, 1000);
                                     }
                                 }
@@ -2198,15 +2101,14 @@ if (!window.pinnedGamesInitialized) { window.pinnedGamesInitialized = true;
             
             try {
                 const newPlayerCount = await getLivePlayerCount(game.id, game.universeId);
-                const playerCountElement = card.querySelector('p');
+                const playerCountElement = card.querySelector('.playing-counts-label');
                 
                 if (playerCountElement && newPlayerCount !== null) {
-                    playerCountElement.textContent = `${formatPlayerCount(newPlayerCount)} playing`;
-                    
-                    playerCountElement.style.transition = 'color 0.3s ease';
-                    playerCountElement.style.color = '#4caf50';
+                    playerCountElement.textContent = formatCompactCount(newPlayerCount);
+                    playerCountElement.title = t('pinnedGames_playingCount', [formatPlayerCount(newPlayerCount)]);
+                    playerCountElement.style.color = '#00b06f';
                     setTimeout(() => {
-                        playerCountElement.style.color = 'var(--pg-muted)';
+                        playerCountElement.style.color = '';
                     }, 1000);
                 }
             } catch (error) {
@@ -2296,17 +2198,58 @@ if (!window.pinnedGamesInitialized) { window.pinnedGamesInitialized = true;
         return count.toLocaleString('en-US');
     }
 
+    function formatCompactCount(count) {
+        const value = Number(count);
+        if (!Number.isFinite(value) || value < 0) return '0';
+        if (value >= 1e9) return (value / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+        if (value >= 1e6) return (value / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (value >= 1e3) return (value / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+        return String(value);
+    }
+
+    async function refreshVotePercents(gameCards) {
+        const ids = [...new Set(gameCards.map(({ game }) => game.universeId).filter(Boolean))];
+        const stale = ids.filter(id => {
+            const cached = voteCache.get(id);
+            return !cached || Date.now() - cached.timestamp > VOTE_CACHE_DURATION;
+        });
+
+        for (let i = 0; i < stale.length; i += 50) {
+            const chunk = stale.slice(i, i + 50);
+            try {
+                const response = await fetch(`https://games.roblox.com/v1/games/votes?universeIds=${chunk.join(',')}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    (data.data || []).forEach(vote => {
+                        const total = (vote.upVotes || 0) + (vote.downVotes || 0);
+                        voteCache.set(vote.id, {
+                            percent: total > 0 ? Math.round((vote.upVotes / total) * 100) : null,
+                            timestamp: Date.now()
+                        });
+                    });
+                }
+            } catch (e) { }
+        }
+
+        gameCards.forEach(({ game, card }) => {
+            const label = card.querySelector('.vote-percentage-label');
+            if (!label) return;
+            const cached = game.universeId ? voteCache.get(game.universeId) : null;
+            label.textContent = cached && cached.percent !== null && cached.percent !== undefined ? `${cached.percent}%` : '--';
+        });
+    }
+
     async function syncGameDetails(gameId, card) {
 
-        const syncBtn = card.querySelector('.sync-game-btn');
+        const syncBtn = card.querySelector('.pgf-sync-btn');
+        if (!syncBtn) return;
         const originalSyncContent = syncBtn.innerHTML;
         
-        syncBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;">
+        syncBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;">
             <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
         </svg>`;
         syncBtn.disabled = true;
-        syncBtn.style.cursor = 'wait';
-        syncBtn.style.opacity = '0.7';
+        syncBtn.classList.add('is-busy');
 
         if (!document.querySelector('#sync-spin-animation')) {
             const style = document.createElement('style');
@@ -2341,9 +2284,9 @@ if (!window.pinnedGamesInitialized) { window.pinnedGamesInitialized = true;
 
                 await chrome.storage.local.set({ pinnedGamesList: pinnedGames });
 
-                const thumbnailImg = card.querySelector('img');
-                const titleElement = card.querySelector('h4');
-                const playerCountElement = card.querySelector('p');
+                const thumbnailImg = card.querySelector('.game-card-thumb img');
+                const titleElement = card.querySelector('.game-card-name');
+                const playerCountElement = card.querySelector('.playing-counts-label');
 
                 if (thumbnailImg) {
                     thumbnailImg.src = updatedGameInfo.thumbnail;
@@ -2353,45 +2296,24 @@ if (!window.pinnedGamesInitialized) { window.pinnedGamesInitialized = true;
                     titleElement.title = updatedGameInfo.name;
                 }
                 if (playerCountElement) {
-                    playerCountElement.textContent = `${formatPlayerCount(updatedGameInfo.playerCount)} playing`;
-                    
-                    playerCountElement.style.transition = 'color 0.3s ease';
-                    playerCountElement.style.color = '#4caf50';
+                    playerCountElement.textContent = formatCompactCount(updatedGameInfo.playerCount);
+                    playerCountElement.title = t('pinnedGames_playingCount', [formatPlayerCount(updatedGameInfo.playerCount)]);
+                    playerCountElement.style.color = '#00b06f';
                     setTimeout(() => {
-                        playerCountElement.style.color = 'var(--pg-muted)';
+                        playerCountElement.style.color = '';
                     }, 1500);
                 }
 
-                syncBtn.style.background = 'rgba(76, 175, 80, 0.9)';
-                syncBtn.style.borderColor = '#4caf50';
-                syncBtn.style.boxShadow = '0 0 8px rgba(76, 175, 80, 0.5)';
-                const successSvg = syncBtn.querySelector('svg');
-                if (successSvg) successSvg.style.stroke = 'white';
-                setTimeout(() => {
-                    syncBtn.style.background = 'rgba(25, 0, 51, 0.8)';
-                    syncBtn.style.borderColor = 'rgba(138, 43, 226, 0.4)';
-                    syncBtn.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.3)';
-                    if (successSvg) successSvg.style.stroke = 'rgba(138, 43, 226, 0.9)';
-                }, 1000);
+                syncBtn.classList.add('is-success');
+                setTimeout(() => syncBtn.classList.remove('is-success'), 1000);
             }
         } catch (error) {
-
-            syncBtn.style.background = 'rgba(244, 67, 54, 0.9)';
-            syncBtn.style.borderColor = '#f44336';
-            syncBtn.style.boxShadow = '0 0 8px rgba(244, 67, 54, 0.5)';
-            const errorSvg = syncBtn.querySelector('svg');
-            if (errorSvg) errorSvg.style.stroke = 'white';
-            setTimeout(() => {
-                syncBtn.style.background = 'rgba(25, 0, 51, 0.8)';
-                syncBtn.style.borderColor = 'rgba(138, 43, 226, 0.4)';
-                syncBtn.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.3)';
-                if (errorSvg) errorSvg.style.stroke = 'rgba(138, 43, 226, 0.9)';
-            }, 1000);
+            syncBtn.classList.add('is-error');
+            setTimeout(() => syncBtn.classList.remove('is-error'), 1000);
         } finally {
             syncBtn.innerHTML = originalSyncContent;
             syncBtn.disabled = false;
-            syncBtn.style.cursor = 'pointer';
-            syncBtn.style.opacity = '1';
+            syncBtn.classList.remove('is-busy');
         }
     }
 
@@ -2490,190 +2412,168 @@ if (!window.pinnedGamesInitialized) { window.pinnedGamesInitialized = true;
         }
     }
 
-    function showGameFolderMenu(gameId, anchorElement) {
-        const existingMenu = document.querySelector('.game-folder-menu');
-        if (existingMenu) existingMenu.remove();
-
-        injectFolderStyles();
-
-        const game = pinnedGames.find(g => g.id === gameId);
-        const gameFolderIds = game?.folderIds || [];
-
+    function openAnchoredMenu(anchorElement, menu, estimatedHeight) {
         const rect = anchorElement.getBoundingClientRect();
         const viewportHeight = window.innerHeight;
-        const menuHeight = Math.min(300, 56 + folders.length * 40 + 52);
         const spaceBelow = viewportHeight - rect.bottom - 8;
-        const openUpward = spaceBelow < menuHeight && rect.top > menuHeight;
+        const openUpward = spaceBelow < estimatedHeight && rect.top > estimatedHeight;
+
+        menu.style.left = `${Math.max(8, Math.min(rect.right - 220, window.innerWidth - 232))}px`;
+        if (openUpward) menu.style.bottom = `${viewportHeight - rect.top + 6}px`;
+        else menu.style.top = `${rect.bottom + 6}px`;
+
+        function onOutsideClick(e) {
+            if (!menu.contains(e.target) && e.target !== anchorElement) close();
+        }
+
+        function onKey(e) {
+            if (e.key === 'Escape') close();
+        }
+
+        function close() {
+            menu.remove();
+            document.removeEventListener('click', onOutsideClick);
+            document.removeEventListener('keydown', onKey);
+        }
+
+        document.body.appendChild(menu);
+        setTimeout(() => {
+            document.addEventListener('click', onOutsideClick);
+            document.addEventListener('keydown', onKey);
+        }, 0);
+
+        return close;
+    }
+
+    function showFolderChipMenu(folderId, anchorElement) {
+        const existingMenu = document.querySelector('.pgf-menu');
+        if (existingMenu) existingMenu.remove();
+
+        injectCarouselStyles();
+
+        const folder = folders.find(f => f.id === folderId);
+        if (!folder) return;
 
         const menu = document.createElement('div');
-        menu.className = 'game-folder-menu';
-        menu.style.cssText = `
-            position: fixed;
-            left: ${Math.max(8, Math.min(rect.left, window.innerWidth - 220))}px;
-            ${openUpward ? `bottom: ${viewportHeight - rect.top + 10}px;` : `top: ${rect.bottom + 10}px;`}
-            background: var(--pg-bg);
-            backdrop-filter: var(--pg-glass);
-            -webkit-backdrop-filter: var(--pg-glass);
-            border: 1px solid var(--pg-border);
-            border-radius: 12px;
-            padding: 8px;
-            z-index: 10001;
-            box-shadow: var(--pg-shadow);
-            max-height: 300px;
-            overflow-y: auto;
-            min-width: 220px;
-            scrollbar-width: none;
-            animation: pgf-up 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        `;
+        menu.className = 'pgf-menu';
+        menu.setAttribute('role', 'menu');
 
-        const menuTitle = document.createElement('div');
-        menuTitle.style.cssText = `
-            font-size: 11px;
-            font-weight: 800;
-            color: var(--pg-accent);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            padding: 6px 10px 8px;
-            border-bottom: 1px solid var(--pg-border);
-            margin-bottom: 6px;
-        `;
-        menuTitle.textContent = t('pinnedGames_addToFolder');
-        menu.appendChild(menuTitle);
+        const closeMenu = openAnchoredMenu(anchorElement, menu, 110);
 
-        const allGamesRow = document.createElement('div');
-        allGamesRow.style.cssText = `
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 10px;
-            border-radius: 8px;
-            color: var(--pg-muted);
-            font-size: 13px;
-            cursor: default;
-            user-select: none;
-        `;
-        allGamesRow.innerHTML = `
-            <span style="display:flex;align-items:center;color:var(--pg-accent);">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-            </span>
-            <span style="flex:1;font-weight:600;margin-left:4px;">${t('pinnedGames_allGames')}</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        `;
-        menu.appendChild(allGamesRow);
+        const addAction = (label, onClick) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'pgf-menu-item';
+            btn.setAttribute('role', 'menuitem');
+            btn.textContent = label;
+            btn.addEventListener('click', () => {
+                closeMenu();
+                onClick();
+            });
+            menu.appendChild(btn);
+            return btn;
+        };
 
-        if (folders.length > 0) {
-            const sep = document.createElement('div');
-            sep.style.cssText = `height:1px;background:var(--pg-border);margin:6px 0;`;
-            menu.appendChild(sep);
+        addAction(t('pinnedGames_rename'), () => showEditFolderDialog(folderId));
+        addAction(t('pinnedGames_delete'), () => showDeleteFolderConfirmation(folderId));
+    }
+
+    function showGameMenu(gameId, anchorElement) {
+        const existingMenu = document.querySelector('.pgf-menu');
+        if (existingMenu) existingMenu.remove();
+
+        injectCarouselStyles();
+
+        const game = pinnedGames.find(g => g.id === gameId);
+        if (!game) return;
+
+        const gameFolderIds = game.folderIds || [];
+        const card = document.querySelector(`.pinned-game-card[data-game-id="${gameId}"]`);
+
+        const menu = document.createElement('div');
+        menu.className = 'pgf-menu';
+        menu.setAttribute('role', 'menu');
+
+        const closeMenu = openAnchoredMenu(anchorElement, menu, Math.min(340, 220 + folders.length * 34));
+
+        const addAction = (label, onClick) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'pgf-menu-item';
+            btn.setAttribute('role', 'menuitem');
+            btn.textContent = label;
+            btn.addEventListener('click', () => {
+                closeMenu();
+                onClick();
+            });
+            menu.appendChild(btn);
+            return btn;
+        };
+
+        addAction(t('pinnedGames_playTooltip'), () => {
+            window.location.href = `roblox://placeid=${gameId}`;
+        });
+        addAction(t('pinnedGames_joinSmallestTooltip'), () => findSmallestServer(gameId));
+        addAction(t('pinnedGames_syncDetails'), () => {
+            if (card) syncGameDetails(gameId, card);
+        });
+
+        const sep1 = document.createElement('div');
+        sep1.className = 'pgf-menu-sep';
+        menu.appendChild(sep1);
+
+        const title = document.createElement('div');
+        title.className = 'pgf-menu-title';
+        title.textContent = t('pinnedGames_addToFolder');
+        menu.appendChild(title);
+
+        const allRow = document.createElement('div');
+        allRow.className = 'pgf-menu-item';
+        allRow.textContent = t('pinnedGames_allGames');
+        if (!gameFolderIds.length) {
+            const check = document.createElement('span');
+            check.className = 'pgf-menu-check';
+            check.textContent = '✓';
+            allRow.appendChild(check);
         }
+        menu.appendChild(allRow);
 
         folders.forEach(folder => {
             const inFolder = gameFolderIds.includes(folder.id);
-            const rgb = hexToRgb(folder.color);
-
             const row = document.createElement('button');
-            row.style.cssText = `
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                width: 100%;
-                padding: 8px 10px;
-                background: ${inFolder ? `rgba(${rgb},0.2)` : 'transparent'};
-                border: 1px solid ${inFolder ? `rgba(${rgb},0.4)` : 'transparent'};
-                color: var(--pg-text);
-                text-align: left;
-                cursor: pointer;
-                border-radius: 8px;
-                font-size: 13px;
-                font-weight: ${inFolder ? '700' : '500'};
-                transition: all 0.2s ease;
-                margin-bottom: 4px;
-                box-sizing: border-box;
-            `;
-            row.innerHTML = `
-                <span style="width:12px;height:12px;border-radius:3px;background:${folder.color};flex-shrink:0;display:inline-block;"></span>
-                <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${folder.name}</span>
-                ${inFolder
-                    ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
-                    : `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>`
-                }
-            `;
+            row.type = 'button';
+            row.className = 'pgf-menu-item';
+            row.setAttribute('role', 'menuitemcheckbox');
+            row.setAttribute('aria-checked', inFolder ? 'true' : 'false');
 
-            row.addEventListener('mouseenter', () => {
-                if (inFolder) {
-                    row.style.background = `rgba(${rgb},0.32)`;
-                } else {
-                    row.style.background = `rgba(${rgb},0.15)`;
-                    row.style.borderColor = `rgba(${rgb},0.3)`;
-                }
-            });
-            row.addEventListener('mouseleave', () => {
-                row.style.background = inFolder ? `rgba(${rgb},0.22)` : 'transparent';
-                row.style.borderColor = inFolder ? `rgba(${rgb},0.4)` : 'transparent';
-            });
-            row.addEventListener('click', async () => {
-                menu.remove();
-                await animateGameMove(gameId, folder.id);
-            });
+            const swatch = document.createElement('span');
+            swatch.className = 'pgf-menu-swatch';
+            swatch.style.background = folder.color;
+            row.appendChild(swatch);
 
+            const label = document.createElement('span');
+            label.textContent = folder.name;
+            row.appendChild(label);
+
+            if (inFolder) {
+                const check = document.createElement('span');
+                check.className = 'pgf-menu-check';
+                check.textContent = '✓';
+                row.appendChild(check);
+            }
+
+            row.addEventListener('click', () => {
+                closeMenu();
+                animateGameMove(gameId, folder.id);
+            });
             menu.appendChild(row);
         });
 
-        const divider = document.createElement('div');
-        divider.style.cssText = `height:1px;background:var(--pg-border);margin:6px 0;`;
-        menu.appendChild(divider);
+        const sep2 = document.createElement('div');
+        sep2.className = 'pgf-menu-sep';
+        menu.appendChild(sep2);
 
-        const createBtn = document.createElement('button');
-        createBtn.style.cssText = `
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: 100%;
-            padding: 10px;
-            background: var(--pg-input-bg);
-            border: 1px dashed var(--pg-accent-muted);
-            color: var(--pg-accent);
-            text-align: center;
-            cursor: pointer;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 700;
-            transition: all 0.2s ease;
-            box-sizing: border-box;
-        `;
-        createBtn.innerHTML = `
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-            <span>${t('pinnedGames_newFolder')}</span>
-        `;
-        createBtn.addEventListener('mouseenter', () => {
-            createBtn.style.background = 'var(--pg-accent)';
-            createBtn.style.borderColor = 'var(--pg-accent)';
-            createBtn.style.color = 'white';
-            createBtn.style.transform = 'translateY(-1px)';
-        });
-        createBtn.addEventListener('mouseleave', () => {
-            createBtn.style.background = 'var(--pg-input-bg)';
-            createBtn.style.borderColor = 'var(--pg-accent-muted)';
-            createBtn.style.color = 'var(--pg-accent)';
-            createBtn.style.transform = 'translateY(0)';
-        });
-        createBtn.addEventListener('click', () => {
-            menu.remove();
-            showCreateFolderDialog(gameId);
-        });
-        menu.appendChild(createBtn);
-
-        document.body.appendChild(menu);
-
-        setTimeout(() => {
-            document.addEventListener('click', function closeMenu(e) {
-                if (!menu.contains(e.target) && e.target !== anchorElement) {
-                    menu.remove();
-                    document.removeEventListener('click', closeMenu);
-                }
-            });
-        }, 100);
+        addAction(t('pinnedGames_newFolder'), () => showCreateFolderDialog(gameId));
     }
 
     chrome.storage.onChanged.addListener((changes, namespace) => {

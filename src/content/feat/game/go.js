@@ -209,8 +209,6 @@
 
     var wearOutfitRunning = false;
 
-    // Outfit details is a GET on avatar.roblox.com. Sending it as a POST returns
-    // 405/404, which made every equip attempt report "Failed".
     async function fetchOutfitDetails(outfitId) {
         var url = 'https://avatar.roblox.com/v3/outfits/' + outfitId + '/details';
         var retries = 3;
@@ -255,7 +253,6 @@
                 results.push(r.ok);
             }
 
-            // v2/v3 outfit details expose body colors as `bodyColor3s`.
             var bodyColors = details.bodyColor3s || details.bodyColors;
             if (bodyColors) {
                 var bcUrl = bodyColors.brickColorId !== undefined ? 'https://avatar.roblox.com/v1/avatar/set-body-colors' : 'https://avatar.roblox.com/v2/avatar/set-body-colors';

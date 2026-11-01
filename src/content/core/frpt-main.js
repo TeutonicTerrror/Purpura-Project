@@ -57,8 +57,11 @@
     }
 
     function applyUserSettingsThemeOverride(data) {
-        if (!knownTheme || !data || typeof data !== 'object' || Array.isArray(data)) return false;
+        if (!frptEnabled || !knownTheme || !data || typeof data !== 'object' || Array.isArray(data)) return false;
         if (data.accountTheme === knownTheme) return false;
+        if (typeof data.accountTheme === 'string' && data.accountTheme && data.accountTheme !== 'Default' && data.accountTheme !== 'Classic') {
+            return false;
+        }
         data.accountTheme = knownTheme;
         return true;
     }
@@ -103,7 +106,7 @@
     }
 
     async function applyUserSettingsResponseOverrides(response) {
-        if (!knownTheme) return response;
+        if (!frptEnabled || !knownTheme) return response;
         try {
             const data = await response.clone().json();
             return applyUserSettingsThemeOverride(data) ? responseWithJson(response, data) : response;
@@ -113,31 +116,48 @@
     }
 
     const originalFetch = window.fetch;
-    window.fetch = async function (...args) {
-        const url = args[0];
-        const requestUrl = typeof url === 'string' ? url : (url instanceof Request ? url.url : '');
-        const requestMethod = (args[1] && args[1].method) || (url instanceof Request ? url.method : 'GET');
-        const requestBody = args[1] && typeof args[1].body === 'string' ? args[1].body : '';
-        const isUserSettings = typeof requestUrl === 'string' && isUserSettingsRequest(requestUrl);
+    if (typeof originalFetch === 'function') {
+        window.fetch = async function (...args) {
+            const url = args[0];
+            const isReqObj = typeof Request !== 'undefined' && url instanceof Request;
+            const requestUrl = typeof url === 'string' ? url : (isReqObj ? url.url : '');
+            const requestMethod = (args[1] && args[1].method) || (isReqObj ? url.method : 'GET');
+            const requestBody = args[1] && typeof args[1].body === 'string' ? args[1].body : '';
+            const isUserSettings = typeof requestUrl === 'string' && isUserSettingsRequest(requestUrl);
 
-        if (isUserSettings && !isGetMethod(requestMethod)) announcePickedTheme(requestBody);
+            if (isUserSettings && !isGetMethod(requestMethod)) {
+                if (requestBody) {
+                    announcePickedTheme(requestBody);
+                } else if (isReqObj && typeof url.clone === 'function') {
+                    url.clone().text().then(announcePickedTheme).catch(() => {});
+                }
+            }
 
-        let response = await originalFetch(...args);
+            let response = await originalFetch(...args);
 
-        if (frptEnabled && isAccountSettingsUiRequest(requestUrl)) {
-            try {
-                const data = await response.clone().json();
-                if (applyAccountSettingsUiOverrides(data)) response = responseWithJson(response, data);
-            } catch {}
-        }
+            if (frptEnabled && isAccountSettingsUiRequest(requestUrl)) {
+                try {
+                    const data = await response.clone().json();
+                    if (applyAccountSettingsUiOverrides(data)) response = responseWithJson(response, data);
+                } catch {}
+            }
 
-        if (isUserSettings) {
-            if (isGetMethod(requestMethod)) response = await applyUserSettingsResponseOverrides(response);
-            response.clone().json().then(dispatchUserSettingsResponse).catch(() => {});
-        }
+            if (isUserSettings) {
+                if (!isGetMethod(requestMethod) && !response.ok && frptEnabled && knownTheme) {
+                    response = new Response(JSON.stringify({ accountTheme: knownTheme }), {
+                        status: 200,
+                        statusText: 'OK',
+                        headers: new Headers({ 'content-type': 'application/json' })
+                    });
+                } else if (isGetMethod(requestMethod)) {
+                    response = await applyUserSettingsResponseOverrides(response);
+                }
+                response.clone().json().then(dispatchUserSettingsResponse).catch(() => {});
+            }
 
-        return response;
-    };
+            return response;
+        };
+    }
 
     const originalXhrOpen = XMLHttpRequest.prototype.open;
     const originalXhrSend = XMLHttpRequest.prototype.send;
@@ -153,7 +173,7 @@
     XMLHttpRequest.prototype.send = function (...args) {
         const xhr = this;
         const spoofAccountSettingsUi = xhr._purpura_frpt_account_settings_ui && frptEnabled;
-        const spoofUserSettings = xhr._purpura_frpt_user_settings && isGetMethod(xhr._purpura_frpt_method) && !!knownTheme;
+        const spoofUserSettings = xhr._purpura_frpt_user_settings && isGetMethod(xhr._purpura_frpt_method) && frptEnabled && !!knownTheme;
 
         if (!isGetMethod(xhr._purpura_frpt_method) && xhr._purpura_frpt_user_settings) {
             announcePickedTheme(typeof args[0] === 'string' ? args[0] : '');
@@ -168,12 +188,12 @@
                     if (this.readyState !== 4) return original;
                     try {
                         const data = JSON.parse(original);
-                        if (spoofAccountSettingsUi) applyAccountSettingsUiOverrides(data);
-                        if (spoofUserSettings) applyUserSettingsThemeOverride(data);
-                        return xhr._purpura_frpt_cached_response = JSON.stringify(data);
-                    } catch {
-                        return original;
-                    }
+                        let changed = false;
+                        if (spoofAccountSettingsUi && applyAccountSettingsUiOverrides(data)) changed = true;
+                        if (spoofUserSettings && applyUserSettingsThemeOverride(data)) changed = true;
+                        if (changed) return xhr._purpura_frpt_cached_response = JSON.stringify(data);
+                    } catch {}
+                    return original;
                 }
             });
             Object.defineProperty(xhr, 'response', {
@@ -190,6 +210,7 @@
                 }
             });
         }
+
         xhr.addEventListener('load', function () {
             if (typeof xhr._purpura_frpt_url === 'string' && isUserSettingsRequest(xhr._purpura_frpt_url)) {
                 try {
@@ -197,6 +218,7 @@
                 } catch {}
             }
         });
+
         return originalXhrSend.apply(this, args);
     };
 })();

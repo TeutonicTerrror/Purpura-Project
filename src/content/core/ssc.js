@@ -16,17 +16,36 @@
     } catch {}
 
     function isStreamerActive() {
-        if (streamerModeEnabled) return true;
         try {
             const val = sessionStorage.getItem('purpura_streamermode');
             if (val === 'true') {
                 streamerModeEnabled = true;
                 return true;
             }
-            return false;
+            if (val === 'false') {
+                streamerModeEnabled = false;
+                return false;
+            }
+        } catch {}
+        return streamerModeEnabled;
+    }
+
+    function getStreamerItems() {
+        try {
+            const raw = sessionStorage.getItem('purpura_streamer_items');
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            return parsed && typeof parsed === 'object' ? parsed : null;
         } catch {
-            return false;
+            return null;
         }
+    }
+
+    function isItemHidden(item) {
+        if (!isStreamerActive()) return false;
+        const items = getStreamerItems();
+        if (!items) return true;
+        return items[item] !== false;
     }
 
     const originalFetch = window.fetch;
@@ -78,12 +97,12 @@
 
     function getStreamerTarget(url) {
         if (!url || typeof url !== 'string') return null;
-        if (url.includes('/my/settings/json')) return 'settings';
+        if (url.includes('/my/settings/json')) return 'email';
         if (url.includes('v1/phone')) return 'phone';
         if (url.includes('v1/birthdate')) return 'birthdate';
         if (url.includes('verified-age')) return 'age';
         if (url.includes('account-country')) return 'country';
-        if (url.includes('age-group')) return 'agegroup';
+        if (url.includes('age-group')) return 'age';
         if (url.includes('sessions')) return 'sessions';
         if (url.includes('v1/emails')) return 'email';
         return null;
@@ -92,13 +111,11 @@
     function applySpoof(data, target) {
         if (!data || typeof data !== 'object') return data;
         switch (target) {
-            case 'settings':
-                data.UserEmail = SPOOF_MSG;
-                data.UserEmailVerified = true;
-                data.PreviousUserNames = SPOOF_MSG;
-                break;
             case 'email':
-                data.verifiedEmail = SPOOF_MSG;
+                if ('UserEmail' in data) data.UserEmail = SPOOF_MSG;
+                if ('UserEmailVerified' in data) data.UserEmailVerified = true;
+                if ('PreviousUserNames' in data) data.PreviousUserNames = SPOOF_MSG;
+                if ('verifiedEmail' in data) data.verifiedEmail = SPOOF_MSG;
                 break;
             case 'phone':
                 data.countryCode = SPOOF_MSG;
@@ -111,8 +128,9 @@
                 data.birthYear = 0;
                 break;
             case 'age':
-                data.verifiedAge = 0;
-                data.isSeventeenPlus = false;
+                if ('verifiedAge' in data) data.verifiedAge = 0;
+                if ('isSeventeenPlus' in data) data.isSeventeenPlus = false;
+                if ('ageGroupTranslationKey' in data) data.ageGroupTranslationKey = SPOOF_MSG;
                 break;
             case 'country':
                 if (data.value) {
@@ -120,9 +138,6 @@
                     data.value.localizedName = SPOOF_MSG;
                     data.value.countryId = 1;
                 }
-                break;
-            case 'agegroup':
-                data.ageGroupTranslationKey = SPOOF_MSG;
                 break;
             case 'sessions':
                 if (data.sessions) {
@@ -169,7 +184,7 @@
         }
 
         if (isStreamerActive()) {
-            if (requestUrl.includes('presence')) {
+            if (requestUrl.includes('presence') && isItemHidden('presence')) {
                 const modifiedInit = init ? { ...init } : {};
                 if (!modifiedInit.method || modifiedInit.method === 'GET') {
                     return originalFetch(input, init);
@@ -186,7 +201,7 @@
             }
 
             const target = getStreamerTarget(requestUrl);
-            if (target) {
+            if (target && isItemHidden(target)) {
                 const response = await originalFetch(input, init);
                 return spoofFetchResponse(response, target);
             }
@@ -201,9 +216,9 @@
     };
 
     XMLHttpRequest.prototype.send = function() {
-        if (isStreamerActive() && this._purpura_url) {
+        if (this._purpura_url) {
             const target = getStreamerTarget(this._purpura_url);
-            if (target) {
+            if (target && isItemHidden(target)) {
                 const xhr = this;
                 const originalReadyStateChange = xhr.onreadystatechange;
                 xhr.addEventListener('readystatechange', function handler() {

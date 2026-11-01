@@ -120,16 +120,13 @@
             let allKeybinds;
             
             if (Array.isArray(data)) {
-                // Old format: plain array of binds -- treat as enabled, migrate to new format
                 isPageBindsEnabled = true;
                 allKeybinds = data;
                 chrome.storage.sync.set({ 'pb': { enabled: true, binds: data } });
             } else if (data && typeof data === 'object' && Array.isArray(data.binds)) {
-                // New format: { enabled, binds }
                 isPageBindsEnabled = data.enabled === true;
                 allKeybinds = data.binds;
             } else {
-                // No data -- feature disabled by default
                 isPageBindsEnabled = false;
                 keybinds = [];
                 return;

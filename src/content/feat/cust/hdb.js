@@ -13,7 +13,6 @@
     const STORAGE_KEY = 'hdb';
     const DOWNLOAD_SELECTOR = '.navbar-download-app-item';
     const HIDE_CSS = `
-        /* Purpura Hide Download Button */
         ${DOWNLOAD_SELECTOR} {
             display: none !important;
         }

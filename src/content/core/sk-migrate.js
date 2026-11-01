@@ -21,6 +21,8 @@
             'page-binds': 'pb',
             'avatar-search': 'as',
             'infinite-avatar': 'ia',
+            'adjust-accessories': 'aa',
+            'adjustAccessories': 'aa',
             'sticky-avatar-preview': 'sap',
             'save-lots-robux': 'slr',
             'quick-status-switcher': 'qs',
@@ -46,6 +48,8 @@
             'purpura-cursors': 'pcr',
             'purpuraTabs': 'pt',
             'purpura-tabs': 'pt',
+            'customBackdrop': 'cbg',
+            'custom-backdrop': 'cbg',
             'homePageTweaks': 'hpt',
             'home-page-tweaks': 'hpt',
             'bloatwareRemover': 'bwr',
@@ -68,23 +72,23 @@
         pb: { enabled: false, binds: [] },
         hpt: { enabled: true, todaysGamePicks: true, continuePlaying: false, recommendedGames: true, favoriteGames: false, standoutGames: true, friends: false },
         ghos: { enabled: false, webRequestPermission: false },
-        bwr: { enabled: false },
+        bwr: { enabled: false, sponsored: true, navigation: true, footer: true, premium: true, faq: true, badges: true, plusAds: true, plusAssets: true },
+        sft: { enabled: false, fontUrl: '' },
+        cbg: { enabled: false, image: '', fit: 'cover', opacity: 100, blur: 0, dim: 0 },
         pcr: { enabled: false, preset: 'default', cursor: 'auto', name: 'Default', type: 'preset', trailEffects: false },
         pt: { enabled: false, favicon: { type: 'purpura' }, titleFormat: '{n} Purpura' },
         sdbr: { enabled: false },
+        sbt: { enabled: true, hoverExpand: true, layout: false, transactions: false, order: [], hidden: [] },
         slr: { enabled: false, placeId: '' },
         rat: { enabled: false, theme: 'Normal Roblox' },
+        tcs: true,
         spc: { enabled: false, mode: 'offline' },
         uncConfig: { enabled: true, sections: { charts: true, marketplace: true, create: true, groups: true } }
     };
 
-    // Keys for features that have been removed from Purpura. Swept from
-    // storage on every migration run so existing users' orphaned values are
-    // cleaned up (removing a nonexistent key is a no-op, so this is safe to
-    // run unconditionally).
     const REMOVED_FEATURE_KEYS = {
-        sync: [],
-        local: ['fix-memory-leak', 'blm', 'betterLightMode', 'better-light-mode']
+        sync: ['ecd', 'vrc'],
+        local: ['fix-memory-leak', 'blm', 'betterLightMode', 'better-light-mode', 'onb']
     };
 
     const SKIP_NORMALIZE_KEYS = new Set([
@@ -172,7 +176,7 @@
             if (stored.purpuraDefaultSettings && typeof stored.purpuraDefaultSettings === 'object') {
                 return { ...FALLBACK_DEFAULTS, ...stored.purpuraDefaultSettings };
             }
-        } catch { /* ignore */ }
+        } catch { }
 
         try {
             const url = chrome.runtime.getURL('data/default_settings.json');
@@ -181,7 +185,7 @@
                 const json = await resp.json();
                 return { ...FALLBACK_DEFAULTS, ...json };
             }
-        } catch { /* ignore */ }
+        } catch { }
 
         return { ...FALLBACK_DEFAULTS };
     }

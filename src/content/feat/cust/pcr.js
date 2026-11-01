@@ -644,47 +644,39 @@
         styleElement = document.createElement('style');
         styleElement.id = 'purpura-cursor-style';
         styleElement.textContent = `
-            /* Universal cursor override with maximum specificity */
             *, *:hover, *:active, *:focus, *:visited, *::before, *::after {
                 cursor: ${cursorCSS} !important;
             }
             
-            /* Specific overrides for interactive elements */
             a, button, input[type="button"], input[type="submit"], 
             .btn, [role="button"], [onclick], .clickable, .interactive {
                 cursor: ${cursorCSS} !important;
             }
             
-            /* Text input areas */
             input[type="text"], input[type="password"], input[type="email"],
             textarea, [contenteditable="true"] {
                 cursor: ${cursorCSS} !important;
             }
             
-            /* Game canvas and interactive areas */
             canvas, #game-instances, .game-container, .game-viewport {
                 cursor: ${cursorCSS} !important;
             }
             
-            /* Drag and drop elements - critical for fixing drag cursor reversion */
             [draggable="true"], [draggable], .draggable, .drag-handle,
             .sortable-item, .ui-draggable, .ui-sortable {
                 cursor: ${cursorCSS} !important;
             }
             
-            /* Force override during drag operations */
             *:active, *[style*="cursor"], *[data-cursor] {
                 cursor: ${cursorCSS} !important;
             }
             
-            /* Roblox specific selectors */
             .rbx-tab, .tab-content, .game-card, .game-tile,
             .avatar-card, .item-card, .catalog-item, .notification,
             .dropdown, .modal, .dialog, .menu, .tooltip {
                 cursor: ${cursorCSS} !important;
             }
             
-            /* Override all possible cursor states */
             html.purpura-cursor-override *,
             html.purpura-cursor-override *:active,
             html.purpura-cursor-override *:hover,

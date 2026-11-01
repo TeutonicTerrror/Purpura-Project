@@ -6,6 +6,22 @@
 if (!window.bloatwareRemoverInitialized) {
     window.bloatwareRemoverInitialized = true;
 
+    const STORAGE_KEY = 'bwr';
+    const HIDDEN_ATTR = 'data-bloatware-hidden';
+
+    const CATEGORIES = [
+        { key: 'sponsored', apply: hideSponsoredContent },
+        { key: 'navigation', apply: hideNavigationElements },
+        { key: 'footer', apply: hideFooterLinks },
+        { key: 'premium', apply: hidePremiumElements },
+        { key: 'faq', apply: hideFaqPanels },
+        { key: 'badges', apply: hidePopularityBadges },
+        { key: 'plusAds', apply: hideRobloxPlusAdElements },
+        { key: 'plusAssets', apply: hideRobloxPlusAssetElements },
+        { key: 'phoneUpsell', apply: hidePhoneNumberUpsellCards }
+    ];
+
+    let config = null;
     let isEnabled = false;
     let observer = null;
     let styleElement = null;
@@ -16,9 +32,7 @@ if (!window.bloatwareRemoverInitialized) {
 
     function initializeBloatwareRemover() {
         window.__PurpuraSettings.ready.then(function() {
-            const config = window.__PurpuraSettings.get('bwr');
-            isEnabled = config?.enabled || false;
-            
+            readConfig();
             if (isEnabled) {
                 applyBloatwareRemoval();
                 setupObserver();
@@ -26,40 +40,64 @@ if (!window.bloatwareRemoverInitialized) {
         });
     }
 
+    function readConfig() {
+        config = window.__PurpuraSettings.get(STORAGE_KEY) || null;
+        isEnabled = config === true || !!config?.enabled;
+    }
+
+    function isCategoryEnabled(key) {
+        if (!config || typeof config !== 'object') return true;
+        const value = config[key];
+        return value === undefined ? true : value === true;
+    }
+
+    function markHidden(element, type, selector, text) {
+        if (!element || element.hasAttribute(HIDDEN_ATTR)) return;
+        element.setAttribute(HIDDEN_ATTR, 'true');
+        removedElements.push({
+            type: type,
+            selector: selector,
+            element: element.tagName.toLowerCase(),
+            text: text || 'N/A'
+        });
+    }
+
+    function clearHiddenMarkers() {
+        document.querySelectorAll(`[${HIDDEN_ATTR}="true"]`).forEach(element => {
+            element.removeAttribute(HIDDEN_ATTR);
+        });
+        removedElements = [];
+    }
+
     chrome.storage.onChanged.addListener(changes => {
-        if (changes.bwr) {
-            const newConfig = window.__PurpuraSettings.get('bwr');
-            isEnabled = newConfig?.enabled || false;
-            
-            if (isEnabled) {
-                applyBloatwareRemoval();
-                setupObserver();
-            } else {
-                revertBloatwareRemoval();
-                removeObserver();
-            }
+        if (!changes[STORAGE_KEY]) return;
+        readConfig();
+
+        if (isEnabled) {
+            applyBloatwareRemoval();
+            setupObserver();
+        } else {
+            revertBloatwareRemoval();
+            removeObserver();
         }
     });
 
     function applyBloatwareRemoval() {
-        removedElements = []; 
-        
+        readConfig();
+
+        if (!isEnabled) {
+            revertBloatwareRemoval();
+            return;
+        }
+
+        clearHiddenMarkers();
+
         createBloatwareCSS();
-        
-        hideSponsoredContent();
-        
-        hideNavigationElements();
-        
-        hideFooterLinks();
-        
-        hidePremiumElements();
 
-        hideFaqPanels();
+        CATEGORIES.forEach(category => {
+            if (isCategoryEnabled(category.key)) category.apply();
+        });
 
-        hidePopularityBadges();
-
-        hideRobloxPlusAdElements();
-        
         logBloatwareRemoval();
     }
 
@@ -71,11 +109,10 @@ if (!window.bloatwareRemoverInitialized) {
         if (styleElement) {
             styleElement.remove();
         }
-        
+
         styleElement = document.createElement('style');
         styleElement.id = 'purpura-bloatware-remover';
         styleElement.textContent = `
-            /* Purpura Bloatware Remover Styles */
             [data-bloatware-hidden="true"] {
                 display: none !important;
                 visibility: hidden !important;
@@ -107,15 +144,7 @@ if (!window.bloatwareRemoverInitialized) {
         sponsoredSelectors.forEach(selector => {
             const elements = document.querySelectorAll(selector);
             elements.forEach(element => {
-                if (!element.hasAttribute('data-bloatware-hidden')) {
-                    element.setAttribute('data-bloatware-hidden', 'true');
-                    removedElements.push({
-                        type: 'Sponsored Content',
-                        selector: selector,
-                        element: element.tagName.toLowerCase(),
-                        text: element.textContent?.trim().substring(0, 50) || 'N/A'
-                    });
-                }
+                markHidden(element, 'Sponsored Content', selector, element.textContent?.trim().substring(0, 50));
             });
         });
     }
@@ -131,15 +160,8 @@ if (!window.bloatwareRemoverInitialized) {
 
         navElements.forEach(({ selector, name }) => {
             const element = document.querySelector(selector);
-            if (element && !element.hasAttribute('data-bloatware-hidden')) {
-                const targetElement = element.closest('li') || element;
-                targetElement.setAttribute('data-bloatware-hidden', 'true');
-                removedElements.push({
-                    type: 'Navigation Element',
-                    selector: selector,
-                    element: targetElement.tagName.toLowerCase(),
-                    text: name
-                });
+            if (element && !element.hasAttribute(HIDDEN_ATTR)) {
+                markHidden(element.closest('li') || element, 'Navigation Element', selector, name);
             }
         });
 
@@ -147,16 +169,9 @@ if (!window.bloatwareRemoverInitialized) {
         navLinks.forEach(link => {
             const text = link.textContent.trim().toLowerCase();
             const href = (link.getAttribute('href') || '').toLowerCase();
-            if ((text.includes('blog') || text.includes('official store') || text.includes('gift cards') || text.includes('buy gift cards') || text.includes('premium') || href.includes('blog.roblox.com') || href.includes('/giftcards') || href.includes('/premium/membership')) 
-                && !link.hasAttribute('data-bloatware-hidden')) {
-                const targetElement = link.closest('li') || link;
-                targetElement.setAttribute('data-bloatware-hidden', 'true');
-                removedElements.push({
-                    type: 'Navigation Element (Dynamic)',
-                    selector: 'text-based',
-                    element: targetElement.tagName.toLowerCase(),
-                    text: text.substring(0, 30)
-                });
+            if ((text.includes('blog') || text.includes('official store') || text.includes('gift cards') || text.includes('buy gift cards') || text.includes('premium') || href.includes('blog.roblox.com') || href.includes('/giftcards') || href.includes('/premium/membership'))
+                && !link.hasAttribute(HIDDEN_ATTR)) {
+                markHidden(link.closest('li') || link, 'Navigation Element (Dynamic)', 'text-based', text.substring(0, 30));
             }
         });
     }
@@ -172,34 +187,19 @@ if (!window.bloatwareRemoverInitialized) {
         footerSelectors.forEach(({ selector, name }) => {
             const elements = document.querySelectorAll(selector);
             elements.forEach(element => {
-                if (!element.hasAttribute('data-bloatware-hidden')) {
-                    element.setAttribute('data-bloatware-hidden', 'true');
-                    removedElements.push({
-                        type: 'Footer Container',
-                        selector: selector,
-                        element: element.tagName.toLowerCase(),
-                        text: name
-                    });
-                }
+                markHidden(element, 'Footer Container', selector, name);
             });
         });
 
         const footerLinks = document.querySelectorAll('.footer-link a, .text-footer-nav');
         const hideTexts = ['about us', 'jobs', 'blog', 'parents', 'gift cards', 'buy gift cards', 'help', 'terms', 'accessibility', 'privacy', 'your privacy choices', 'sitemap'];
-        
+
         footerLinks.forEach(link => {
             const text = link.textContent.trim().toLowerCase();
             const shouldHide = hideTexts.some(hideText => text.includes(hideText));
-            
-            if (shouldHide && !link.hasAttribute('data-bloatware-hidden')) {
-                const targetElement = link.closest('li') || link;
-                targetElement.setAttribute('data-bloatware-hidden', 'true');
-                removedElements.push({
-                    type: 'Footer Link',
-                    selector: 'text-based',
-                    element: targetElement.tagName.toLowerCase(),
-                    text: text.substring(0, 30)
-                });
+
+            if (shouldHide && !link.hasAttribute(HIDDEN_ATTR)) {
+                markHidden(link.closest('li') || link, 'Footer Link', 'text-based', text.substring(0, 30));
             }
         });
     }
@@ -217,16 +217,8 @@ if (!window.bloatwareRemoverInitialized) {
         premiumSelectors.forEach(({ selector, name }) => {
             const elements = document.querySelectorAll(selector);
             elements.forEach(element => {
-                if (!element.hasAttribute('data-bloatware-hidden')) {
-                    const targetElement = element.closest('li') || element;
-                    targetElement.setAttribute('data-bloatware-hidden', 'true');
-                    removedElements.push({
-                        type: 'Premium Element',
-                        selector: selector,
-                        element: targetElement.tagName.toLowerCase(),
-                        text: name
-                    });
-                }
+                if (element.hasAttribute(HIDDEN_ATTR)) return;
+                markHidden(element.closest('li') || element, 'Premium Element', selector, name);
             });
         });
     }
@@ -240,14 +232,8 @@ if (!window.bloatwareRemoverInitialized) {
             const headingText = (heading?.textContent || '').trim().toLowerCase();
             const hasFaqRows = !!cardElement.querySelector('[aria-controls^="faq-panel-"]');
 
-            if ((headingText.includes('faq') || hasFaqRows) && !cardElement.hasAttribute('data-bloatware-hidden')) {
-                cardElement.setAttribute('data-bloatware-hidden', 'true');
-                removedElements.push({
-                    type: 'FAQ Panel',
-                    selector: '[data-slot="card"].brr-section',
-                    element: cardElement.tagName.toLowerCase(),
-                    text: (heading?.textContent || 'FAQ').trim().substring(0, 30)
-                });
+            if ((headingText.includes('faq') || hasFaqRows) && !cardElement.hasAttribute(HIDDEN_ATTR)) {
+                markHidden(cardElement, 'FAQ Panel', '[data-slot="card"].brr-section', (heading?.textContent || 'FAQ').trim().substring(0, 30));
             }
         });
     }
@@ -257,71 +243,107 @@ if (!window.bloatwareRemoverInitialized) {
 
         badges.forEach(badge => {
             const text = (badge.textContent || '').trim().toLowerCase();
-            if (text.includes('popular') && !badge.hasAttribute('data-bloatware-hidden')) {
-                badge.setAttribute('data-bloatware-hidden', 'true');
-                removedElements.push({
-                    type: 'Popularity Badge',
-                    selector: '.foundation-web-badge',
-                    element: badge.tagName.toLowerCase(),
-                    text: text.substring(0, 30)
-                });
+            if (text.includes('popular') && !badge.hasAttribute(HIDDEN_ATTR)) {
+                markHidden(badge, 'Popularity Badge', '.foundation-web-badge', text.substring(0, 30));
             }
         });
     }
 
     function hideRobloxPlusAdElements() {
-        // Remove the Roblox Plus link from the sidebar navigation
         const plusNavLinks = document.querySelectorAll(
             '#left-navigation-container .left-nav div a[href="https://www.roblox.com/plus"], ' +
             '#left-navigation-container a[href="/plus"], ' +
-            '#left-navigation-container a[href*="roblox.com/plus"]'
+            '#left-navigation-container a[href*="roblox.com/plus"], ' +
+            '#left-navigation-container .left-nav li:not(.padding-top-xsmall) a[href$="/plus"]'
         );
         plusNavLinks.forEach(link => {
-            const target = link.closest('li') || link;
-            if (!target.hasAttribute('data-bloatware-hidden')) {
-                target.setAttribute('data-bloatware-hidden', 'true');
-                removedElements.push({
-                    type: 'Roblox Plus Ad',
-                    selector: 'sidebar-plus-link',
-                    element: target.tagName.toLowerCase(),
-                    text: 'Sidebar Plus Link'
-                });
-            }
+            markHidden(link.closest('li') || link, 'Roblox Plus Advertising', 'sidebar-plus-link', 'Sidebar Plus Link');
         });
 
-        // Replace or remove the plus subscription note in sidebar
+        const PLUS_COPY = /join plus|roblox plus|get \d+ robux/i;
+        const plusSidebarEntries = document.querySelectorAll(
+            '#left-navigation-container [class*="icon-regular-roblox-plus"], ' +
+            '#left-navigation-container button'
+        );
+        plusSidebarEntries.forEach(entry => {
+            const hasPlusIcon = entry.matches('[class*="icon-regular-roblox-plus"]');
+            const text = (entry.textContent || '').trim();
+            if (!hasPlusIcon && !PLUS_COPY.test(text)) return;
+            markHidden(
+                entry.closest('li') || entry,
+                'Roblox Plus Advertising',
+                hasPlusIcon ? 'sidebar-plus-icon' : 'sidebar-plus-copy',
+                text.substring(0, 40) || 'Sidebar Plus Entry'
+            );
+        });
+
         const plusNotes = document.querySelectorAll(
-            '#left-navigation-container .left-nav div li.padding-top-xsmall a[href="/plus"]'
+            '#left-navigation-container .left-nav div li.padding-top-xsmall a[href="/plus"], ' +
+            '#left-navigation-container li.padding-top-xsmall a[href="/plus"]'
         );
         plusNotes.forEach(note => {
-            const parent = note.closest('li') || note.parentElement;
-            if (!parent.hasAttribute('data-bloatware-hidden')) {
-                parent.setAttribute('data-bloatware-hidden', 'true');
-                removedElements.push({
-                    type: 'Roblox Plus Ad',
-                    selector: 'sidebar-plus-note',
-                    element: parent.tagName.toLowerCase(),
-                    text: 'Sidebar Plus Note'
-                });
-            }
+            markHidden(note.closest('li') || note.parentElement, 'Roblox Plus Advertising', 'sidebar-plus-note', 'Sidebar Plus Note');
         });
 
-        // Remove the Roblox Plus snippet in the Buy Robux page
-        const plusBuyRobuxSections = document.querySelectorAll(
-            'div.buy-robux-content div div div.flex a[href="/plus"]'
-        );
-        plusBuyRobuxSections.forEach(link => {
+        document.querySelectorAll('div.buy-robux-content div div div.flex a[href="/plus"]').forEach(link => {
             const container = link.closest('[class*="card"]') || link.parentElement?.parentElement?.parentElement;
             const targetSection = container?.children?.[1] || container;
-            if (targetSection && !targetSection.hasAttribute('data-bloatware-hidden')) {
-                targetSection.setAttribute('data-bloatware-hidden', 'true');
-                removedElements.push({
-                    type: 'Roblox Plus Ad',
-                    selector: 'buy-robux-plus-snippet',
-                    element: targetSection.tagName.toLowerCase(),
-                    text: 'Buy Robux Plus Section'
-                });
-            }
+            markHidden(targetSection, 'Roblox Plus Advertising', 'buy-robux-plus-snippet', 'Buy Robux Plus Section');
+        });
+
+        document.querySelectorAll('.subscribe-upsell-container.subscribe-upsell-banner').forEach(banner => {
+            markHidden(banner, 'Roblox Plus Advertising', 'subscribe-upsell-banner', 'Subscribe Upsell Banner');
+        });
+    }
+
+    function hideRobloxPlusAssetElements() {
+        document.querySelectorAll('#game-instances .padding-bottom-large .icon-regular-roblox-plus').forEach(icon => {
+            markHidden(icon.closest('.padding-bottom-large') || icon, 'Roblox Plus Asset', 'private-server-plus-block', 'Private Server Plus Block');
+        });
+
+        document.querySelectorAll('[class*="icon-regular-roblox-plus"]').forEach(icon => {
+            if (icon.closest('#left-navigation-container')) return;
+            if (icon.hasAttribute(HIDDEN_ATTR) || icon.closest(`[${HIDDEN_ATTR}="true"]`)) return;
+            markHidden(icon, 'Roblox Plus Asset', 'plus-icon-asset', 'Roblox Plus Icon');
+        });
+    }
+
+    function hidePhoneNumberUpsellCards() {
+        document.querySelectorAll('#home-page-upsell-card-container, [id*="home-page-upsell-card"], [class*="home-page-upsell-card"]').forEach(card => {
+            markHidden(card, 'Phone Upsell Card', '#home-page-upsell-card-container', 'Home Page Upsell Cards');
+        });
+
+        const PHONE_UPSELL_COPY = /add (?:a )?phone number|verify (?:your )?phone|phone number verification|confirm your phone/i;
+        const homeRoot = document.querySelector('#HomeContainer') || document.querySelector('main.container-main');
+        if (!homeRoot) return;
+
+        const cardSelectors = [
+            '[class*="phone-number-upsell"]',
+            '[class*="phone-verification"]',
+            '[data-testid*="phone-upsell" i]'
+        ];
+
+        cardSelectors.forEach(selector => {
+            homeRoot.querySelectorAll(selector).forEach(card => {
+                markHidden(card, 'Phone Upsell Card', selector, (card.textContent || '').trim().substring(0, 50));
+            });
+        });
+
+        const sectionSelectors = [
+            '.game-sort-carousel-wrapper',
+            '.home-sort-container',
+            '[data-testid="home-page-carousel-container"]',
+            '[data-testid*="game-grid" i]'
+        ];
+
+        sectionSelectors.forEach(selector => {
+            homeRoot.querySelectorAll(selector).forEach(section => {
+                const heading = section.querySelector('h2, [data-testid="text-icon-row-text"], [data-testid="section-header-title-subtitle-container"]');
+                const text = (heading?.textContent || '').trim();
+                if (text && PHONE_UPSELL_COPY.test(text) && !section.hasAttribute(HIDDEN_ATTR)) {
+                    markHidden(section, 'Phone Upsell Card', selector, text.substring(0, 50));
+                }
+            });
         });
     }
 
@@ -333,36 +355,30 @@ if (!window.bloatwareRemoverInitialized) {
             styleElement.remove();
             styleElement = null;
         }
-        
-        const hiddenElements = document.querySelectorAll('[data-bloatware-hidden="true"]');
-        hiddenElements.forEach(element => {
-            element.removeAttribute('data-bloatware-hidden');
-        });
-        
-        removedElements = [];
+
+        clearHiddenMarkers();
     }
 
     function setupObserver() {
         if (!isEnabled) return;
-        
-        removeObserver(); 
-        
-        
+
+        removeObserver();
+
         observer = new MutationObserver(mutations => {
             let shouldApply = false;
-            
+
             mutations.forEach(mutation => {
                 mutation.addedNodes.forEach(node => {
                     if (node.nodeType === Node.ELEMENT_NODE) {
-                        const hasTargetElements = node.matches?.('li, a, button, ul') || 
-                                                node.querySelector?.('li, a, button, ul');
+                        const hasTargetElements = node.matches?.('li, a, button, ul, [class*="roblox-plus"]') ||
+                                                node.querySelector?.('li, a, button, ul, [class*="roblox-plus"]');
                         if (hasTargetElements) {
                             shouldApply = true;
                         }
                     }
                 });
             });
-            
+
             if (shouldApply) {
                 if (applyTimeout) {
                     clearTimeout(applyTimeout);
@@ -376,7 +392,7 @@ if (!window.bloatwareRemoverInitialized) {
                 }, 120);
             }
         });
-        
+
         observer.observe(document.body, {
             childList: true,
             subtree: true

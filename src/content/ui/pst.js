@@ -10,9 +10,6 @@
     if (window.purpuraStoreInjected) return;
     window.purpuraStoreInjected = true;
 
-    // The Purpura Store replaces Roblox's store section UI, so it must only run
-    // on the official Purpura store page. Running it on every game store hid the
-    // real store cards and broke game pass purchases.
     const STORE_PATH = '/games/store-section/7191592908';
     const isStorePage = () => window.location.pathname.replace(/\/+$/, '') === STORE_PATH;
 
@@ -487,8 +484,6 @@
         observer.observe(document.body, { childList: true, subtree: true });
     }
 
-    // Roblox navigates to the store section client side, so also boot whenever
-    // the route changes into the Purpura store instead of only once on load.
     let started = false;
 
     function boot() {

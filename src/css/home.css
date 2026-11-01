@@ -1449,7 +1449,6 @@ input:checked + .toggle-slider:before {
     font-style: italic;
 }
 
-/* Ko-Fi widget styles */
 img.kofiimg {
     display: initial!important;
     vertical-align: middle;

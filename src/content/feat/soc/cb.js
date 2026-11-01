@@ -87,8 +87,6 @@
     if (document.getElementById(STYLE_ID)) return;
     var s = document.createElement('style');
     s.id = STYLE_ID;
-    // Per-badge masks in stylesheet so the mask image starts loading before
-    // any badge is injected -- avoids a 1-frame unmasked shine flash.
     var contribMask = 'url(\"' + CONTRIBUTOR_URL.replace(/\"/g, '\\\"') + '\") center/contain no-repeat';
     var testerMask = 'url(\"' + TESTER_URL.replace(/\"/g, '\\\"') + '\") center/contain no-repeat';
     s.textContent = [
@@ -129,7 +127,6 @@
     var sideEdge = (Math.round(Math.random() * 4) - 7) + 'px';
     var vertEdge = (Math.round(Math.random() * 4) - 3) + 'px';
     var pick = Math.floor(Math.random() * 4);
-    // When stacked, fully exclude the gap-facing side so halos never crowd the middle.
     if (avoidEdge === 'right' && pick === 1) pick = [0, 2, 3][Math.floor(Math.random() * 3)];
     if (avoidEdge === 'left' && pick === 3) pick = [0, 1, 2][Math.floor(Math.random() * 3)];
     switch (pick) {
@@ -159,9 +156,6 @@
       sp.style.pointerEvents = 'none';
       sp.style.zIndex = '3';
       var phase = (cfg.delay + delayOffset) % 2.2;
-      // Negative delay starts the sparkle mid-cycle so neither badge
-      // has a 0.5-1s blank window on first paint; all 8 particles are
-      // already distributed around the 2.2s cycle at mount.
       sp.style.animation = 'purpura-cb-sparkle 2.2s ease-in-out 0s infinite';
       sp.style.animationDelay = '-' + phase.toFixed(2) + 's';
       wrap.style.color = color;
@@ -261,15 +255,11 @@
     var shine = document.createElement('span');
     shine.className = 'purpura-cb-shine';
     shine.setAttribute('aria-hidden', 'true');
-    // Mask is set via stylesheet class (BADGE_CLASS/TESTER_CLASS .purpura-cb-shine)
-    // so the browser pre-resolves the image -- no per-element style thrash.
     var bar = document.createElement('span');
     bar.className = 'purpura-cb-shine-bar';
     shine.appendChild(bar);
     wrap.appendChild(shine);
 
-    // 0.275s = half the 0.55s intra-badge spacing -> 8 even phases. isStacked
-    // widens to 16px gap (stylesheet) and each halo excludes its gap side.
     var avoid = !isStacked ? null : (isTester ? 'left' : 'right');
     addSparkles(wrap, cfg.color, isTester ? 0.275 : 0, avoid);
     attachTooltip(wrap, cfg);
@@ -288,7 +278,6 @@
     var neededKey = needed.slice().sort().join(',');
     if (existing && existingTypes === neededKey) return true;
     if (existing) existing.remove();
-    // Also remove any orphan single badges (legacy from previous build)
     parent.querySelectorAll('[' + BADGE_ATTR + ']').forEach(function (el) { if (!el.closest('[' + WRAP_ATTR + ']')) el.remove(); });
     var container = document.createElement('span');
     container.className = 'purpura-badges';
@@ -306,7 +295,6 @@
     var needed = uid ? getNeededTypes(uid) : [];
     if (!needed.length) {
       document.querySelectorAll('[' + WRAP_ATTR + ']').forEach(function (el) { el.remove(); });
-      // legacy singletons
       document.querySelectorAll('[' + BADGE_ATTR + ']').forEach(function (el) { el.remove(); });
       document.querySelectorAll('[' + OBSERVED_ATTR + ']').forEach(function (el) {
         el.removeAttribute(OBSERVED_ATTR);
@@ -322,7 +310,6 @@
     var lastUser = parent.getAttribute(USER_ATTR) || '';
     var hasWrap = !!parent.querySelector('[' + WRAP_ATTR + ']');
     if (observed && lastUser === String(uid) && hasWrap) {
-      // Verify the wrap still holds the correct types, else re-inject
       var existingTypes = Array.from(parent.querySelector('[' + WRAP_ATTR + ']').querySelectorAll('[' + BADGE_ATTR + ']')).map(function (el) { return el.getAttribute(BADGE_ATTR); }).sort().join(',');
       if (existingTypes === needed.slice().sort().join(',')) return;
     }

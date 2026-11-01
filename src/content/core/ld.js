@@ -11,9 +11,13 @@
 })();
 
 chrome.storage.local.get('stm', function(r) {
-    var enabled = !!(r && r.stm === true);
+    var stored = r && r.stm;
+    var enabled = stored === true || !!(stored && typeof stored === 'object' && stored.enabled === true);
     try {
         sessionStorage.setItem('purpura_streamermode', String(enabled));
+        if (stored && typeof stored === 'object') {
+            sessionStorage.setItem('purpura_streamer_items', JSON.stringify(stored));
+        }
     } catch(e) {}
     document.dispatchEvent(new CustomEvent('purpura-streamer-mode', { detail: enabled }));
 });
@@ -32,11 +36,13 @@ if (!window.purpuraLoadedLogged) {
             '  └ Database': syncData['bd']?.showDatabase ?? true,
             '  └ Round Numbers': syncData['bd']?.roundToWholeNumbers ?? true,
             'Server Info': syncData['si']?.enabled ?? true,
-            'Pinned Games': syncData['pg'] ?? false,
+            'Pinned Games': syncData['pg'] ?? true,
             'Game Launcher Widget': syncData['glw'] ?? false,
             'Game Outfits': syncData['go']?.enabled ?? true,
             'Game Reviews': syncData['grev'] ?? true,
+            'In-game Discounts': syncData['sho'] ?? true,
             'Share Server Links': syncData['ssl'] ?? true,
+            'Recent Servers': syncData['rs'] ?? true,
             'Unsafe Trade Protection': syncData['otp']?.enabled ?? false,
             '  └ Threshold': syncData['otp']?.threshold ?? '50',
             'Projected Trade Value Warnings': syncData['pwi'] ?? true,
@@ -46,8 +52,10 @@ if (!window.purpuraLoadedLogged) {
             '  └ Visits': syncData['lc']?.visits ?? true,
             "Purpura's Selection": syncData['ps'] ?? true,
             'Quick Play': syncData['qp'] ?? true,
-            'Reworked Sidebar': localData['sdbr']?.enabled ?? false,
-            '  └ Trade Button': localData['sdbr']?.tradeButton ?? false,
+            'Sidebar Tweaks': localData['sbt']?.enabled ?? true,
+            '  └ Purpura-style Sidebar': localData['sdbr']?.enabled ?? false,
+            '  └ Hover-to-Expand Mode': localData['sbt']?.hoverExpand ?? true,
+            '  └ Layout Customization': localData['sbt']?.layout ?? false,
             'Better Continue': localData['bc'] ?? false,
             'Page Binds': syncData['pb'] ? 'Configured' : 'None',
             'Home Page Tweaks': localData['hpt']?.enabled ?? false,
@@ -58,25 +66,50 @@ if (!window.purpuraLoadedLogged) {
             'Theme Editor': localData['rothemerActive'] ?? false,
             'Free Roblox Plus Themes': syncData['frpt'] ?? false,
             'Bloatware Remover': localData['bwr']?.enabled ?? false,
+            '  └ Sponsored Content': localData['bwr']?.sponsored ?? true,
+            '  └ Navigation Links': localData['bwr']?.navigation ?? true,
+            '  └ Footer Links': localData['bwr']?.footer ?? true,
+            '  └ Premium Promotions': localData['bwr']?.premium ?? true,
+            '  └ FAQ Panels': localData['bwr']?.faq ?? true,
+            '  └ Popularity Badges': localData['bwr']?.badges ?? true,
+            '  └ Roblox Plus Advertising': localData['bwr']?.plusAds ?? true,
+            '  └ Roblox Plus Assets': localData['bwr']?.plusAssets ?? true,
+            'Site Fixes': localData['sfix'] ?? false,
+            'View Roblox Chat Username Color': localData['ucp'] ?? false,
+            'Thumbnail Background Disabler': localData['tbd'] ?? false,
+            'Avatar Image Downloader': localData['dav'] ?? false,
+            'Site Font': localData['sft']?.enabled ?? false,
+            '  └ Font Link': localData['sft']?.fontUrl || 'Not set',
+            'Custom Backdrop': localData['cbg']?.enabled ?? false,
+            '  └ Image': localData['cbg']?.image ? (String(localData['cbg'].image).startsWith('data:') ? 'Uploaded image' : localData['cbg'].image) : 'Not set',
             'Greetings': localData['gr'] ?? true,
             'Friends Manager': syncData['fm'] ?? false,
             'No Rent': syncData['nr'] ?? true,
-            'Robux Conversations': syncData['rconv'] ?? true,
+            'Robux Conversions': syncData['rconv']?.enabled ?? true,
+            '  └ Rate type': syncData['rconv']?.rateType ?? 'Regular',
+            '  └ Currency': syncData['rconv']?.currency ?? 'USD',
+            'Robux Balance Precision': syncData['rbp'] ?? '2',
+            'Choose Robux Bonus Item': syncData['rbon'] ?? true,
             'Bundle Item Viewer': syncData['biv'] ?? true,
             'Item Explorer': syncData['explr'] ?? true,
             'Ghost Profiles': localData['ghos']?.enabled ?? true,
             'Last Online': syncData['lo'] ?? true,
+            'Rolimons Profile Values': syncData['rvp'] ?? true,
             'Avatar Search': syncData['as'] ?? true,
             'Infinite Avatar': syncData['ia'] ?? false,
+            'Adjust Accessories': syncData['aa'] ?? true,
+            'Extra Outfits': syncData['eo'] ?? true,
             'Redesigned Avatar Editor': syncData['rae']?.enabled ?? false,
-            'Streamer Mode': localData['stm'] ?? false,
+            'Streamer Mode': (localData['stm'] === true ? true : localData['stm']?.enabled === true),
             'Status Spoofer': syncData['spc']?.enabled ?? false,
-            'Unpending Robux': syncData['up'] ?? false,
+            'Unpending Robux': syncData['up']?.enabled ?? true,
+            '  └ Show Pending Robux in Menu': syncData['up']?.showPending ?? true,
             'Save Lots Robux': syncData['slr']?.enabled ?? false,
             'Remaining Robux': syncData['rr'] ?? true,
             'Roblox Age Theme': localData['rat']?.enabled ?? false,
             'Hide Download Button': localData['hdb'] ?? true,
             'Legacy Theme Switcher': localData['lts'] ?? false,
+            'Trusted Creator Status': localData['tcs'] ?? true,
             'Quick Status Switcher': syncData['qs'] ?? false,
             'Login Security Banner': localData['lb'] ?? false,
             'Sticky Avatar Preview': localData['sap'] ?? false,
@@ -172,72 +205,48 @@ if (!window.purpuraLoadedLogged) {
     var _x1 = 'purpura-kofi-abc';
     var _x2 = 'https://ko-fi.com/teutonic';
     var _x3 = 'https://storage.ko-fi.com/cdn/cup-border.png';
+    var _s = 'purpura-kofi-sidebar-style';
 
-    function _fn1() {
-        var r = document.documentElement;
-        if (r.classList.contains('dark-theme') || r.getAttribute('data-theme') === 'dark') return 'dark';
-        if (r.classList.contains('light-theme') || r.getAttribute('data-theme') === 'light') return 'light';
-        if (document.body) {
-            if (document.body.classList.contains('dark-theme') || document.body.classList.contains('theme-dark')) return 'dark';
-            if (document.body.classList.contains('light-theme') || document.body.classList.contains('theme-light')) return 'light';
-        }
-        return 'dark';
+    function _styles() {
+        if (document.getElementById(_s)) return;
+        var style = document.createElement('style');
+        style.id = _s;
+        style.textContent = [
+            '#purpura-kofi-abc{display:block!important;margin:10px 8px 6px!important;padding:0!important;list-style:none!important}',
+            '#purpura-kofi-abc>a{display:flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;box-sizing:border-box!important;min-height:46px!important;padding:0 14px!important;border:1px solid var(--purpura-playButton,var(--color-action-primary-background,#1a8fc0))!important;border-radius:10px!important;background-color:var(--purpura-surface200,var(--color-surface-200,rgba(128,128,128,.12)))!important;color:var(--purpura-mainText,var(--color-content-emphasis,#191b1d))!important;font-family:inherit!important;font-size:15px!important;font-weight:700!important;line-height:20px!important;text-decoration:none!important;cursor:pointer!important;box-shadow:0 2px 8px rgba(0,0,0,.18)!important;transition:background-color .15s ease,border-color .15s ease,box-shadow .15s ease,transform .15s ease!important}',
+            '#purpura-kofi-abc>a:hover{background-color:var(--purpura-surface300,var(--color-surface-300,rgba(128,128,128,.2)))!important;box-shadow:0 4px 14px rgba(0,0,0,.24)!important;transform:translateY(-1px)!important}',
+            '#purpura-kofi-abc>a:active{transform:none!important;box-shadow:0 1px 4px rgba(0,0,0,.18)!important}',
+            '#purpura-kofi-abc>a:focus-visible{outline:2px solid var(--purpura-playButton,var(--color-action-primary-background,#1a8fc0))!important;outline-offset:2px!important}',
+            '#purpura-kofi-abc .purpura-kofi-icon{display:flex!important;align-items:center!important;justify-content:center!important;flex:0 0 24px!important;width:24px!important;height:24px!important;border-radius:7px!important;background-color:var(--purpura-playButton,var(--color-action-primary-background,#1a8fc0))!important;background-image:linear-gradient(rgba(0,0,0,.22),rgba(0,0,0,.22))!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)!important;overflow:hidden!important}',
+            '#purpura-kofi-abc .purpura-kofi-icon img{display:block!important;width:16px!important;height:auto!important;margin:0!important;padding:0!important;border:0!important;filter:none!important}',
+            '#purpura-kofi-abc .purpura-kofi-label{flex:0 1 auto!important;min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;color:inherit!important;font:inherit!important}',
+            '@media (prefers-reduced-motion:reduce){#purpura-kofi-abc>a{transition:none!important}}'
+        ].join('\n');
+        (document.head || document.documentElement).appendChild(style);
     }
-
-    var _t = {
-        dark: { a: 'linear-gradient(135deg,#1a1a2e 0%,#2d1b3d 50%,#1a1a2e 100%)', b: 'linear-gradient(135deg,#2d1b3d 0%,#3d2950 50%,#2d1b3d 100%)', c: 'rgba(179,136,255,0.2)', d: 'rgba(179,136,255,0.4)', e: '#f0e6ff', f: '#ffffff', g: '0 1px 3px rgba(0,0,0,0.3)', h: '0 2px 8px rgba(179,136,255,0.15)', i: 'rgba(179,136,255,0.08)' },
-        light: { a: 'linear-gradient(135deg,#f5f0ff 0%,#ede4f7 50%,#f5f0ff 100%)', b: 'linear-gradient(135deg,#ede4f7 0%,#e0d4ef 50%,#ede4f7 100%)', c: 'rgba(179,136,255,0.3)', d: 'rgba(179,136,255,0.5)', e: '#3d2950', f: '#1a1a2e', g: '0 1px 3px rgba(0,0,0,0.1)', h: '0 2px 8px rgba(179,136,255,0.2)', i: 'rgba(179,136,255,0.12)' }
-    };
-
-    var _ct = 'dark', _el1 = null, _el2 = null, _ob = null;
-
-    function _fn2(r, h) {
-        var t = _t[r] || _t.dark;
-        if (!_el1) return;
-        if (h) {
-            _el1.style.setProperty('background', t.b, 'important');
-            _el1.style.setProperty('border-color', t.d, 'important');
-            _el1.style.setProperty('box-shadow', t.h, 'important');
-            _el1.style.setProperty('color', t.f, 'important');
-            _el1.style.setProperty('transform', 'translateY(-1px)', 'important');
-            if (_el2) { _el2.style.setProperty('background', 'linear-gradient(90deg,transparent 0%,' + t.i + ' 50%,transparent 100%)', 'important'); _el2.style.setProperty('opacity', '1', 'important'); }
-        } else {
-            _el1.style.setProperty('background', t.a, 'important');
-            _el1.style.setProperty('border-color', t.c, 'important');
-            _el1.style.setProperty('box-shadow', t.g, 'important');
-            _el1.style.setProperty('color', t.e, 'important');
-            _el1.style.setProperty('transform', 'translateY(0)', 'important');
-            if (_el2) { _el2.style.setProperty('background', 'linear-gradient(90deg,transparent 0%,' + t.i + ' 50%,transparent 100%)', 'important'); _el2.style.setProperty('opacity', '0', 'important'); }
-        }
-    }
-
-    function _fn3(t) { _ct = t || _fn1(); _fn2(_ct, false); }
 
     function _fn4() {
         if (document.getElementById(_x1)) return null;
+        _styles();
         var li = document.createElement('li');
         li.id = _x1;
         li.setAttribute('role', 'none');
         var a = document.createElement('a');
-        a.href = _x2; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.setAttribute('role', 'menuitem');
-        a.setAttribute('style', 'display:flex !important;align-items:center !important;gap:10px !important;padding:10px 16px !important;border-radius:10px !important;font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif !important;font-size:14px !important;font-weight:600 !important;line-height:20px !important;text-decoration:none !important;cursor:pointer !important;transition:all 0.25s ease !important;margin:6px 8px !important;opacity:1 !important;visibility:visible !important;position:relative !important;z-index:2147483647 !important;pointer-events:auto !important;user-select:none !important;overflow:hidden !important');
-        _el1 = a;
-        var _g = document.createElement('div');
-        _g.setAttribute('style', 'position:absolute !important;inset:0 !important;pointer-events:none !important;transition:opacity 0.3s ease !important;opacity:0 !important');
-        _el2 = _g;
-        a.insertBefore(_g, a.firstChild);
-        a.onmouseenter = function() { _fn2(_ct, true); };
-        a.onmouseleave = function() { _fn2(_ct, false); };
+        a.href = _x2;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.setAttribute('role', 'menuitem');
+        a.setAttribute('aria-label', 'Support Purpura on Ko-fi');
+        a.setAttribute('title', 'Support Purpura on Ko-fi');
         var w = document.createElement('span');
-        w.setAttribute('style', 'display:flex !important;align-items:center !important;justify-content:center !important;width:20px !important;height:20px !important;flex-shrink:0 !important;');
+        w.className = 'purpura-kofi-icon';
         var _i = document.createElement('img');
         _i.src = _x3;
         _i.alt = '';
-        _i.setAttribute('style', 'height:18px !important;width:auto !important;display:block !important;flex-shrink:0 !important;filter:brightness(1.2) !important');
         w.appendChild(_i);
         var l = document.createElement('span');
+        l.className = 'purpura-kofi-label';
         l.textContent = 'Support Purpura';
-        l.setAttribute('style', 'flex:1 !important;font-weight:600 !important;font-size:14px !important;line-height:20px !important;color:inherit !important');
         a.appendChild(w);
         a.appendChild(l);
         li.appendChild(a);
@@ -263,19 +272,10 @@ if (!window.purpuraLoadedLogged) {
         return false;
     }
 
-    if (_fn6()) { _fn7(); return; }
+    if (_fn6()) { _styles(); return; }
 
-    var _mo = new MutationObserver(function() { if (_fn6()) { _mo.disconnect(); _fn7(); } });
+    var _mo = new MutationObserver(function() { if (_fn6()) { _mo.disconnect(); _styles(); } });
     _mo.observe(document.body || document.documentElement, { childList: true, subtree: true });
-
-    function _fn7() {
-        _fn3(_fn1());
-        if (_ob) _ob.disconnect();
-        _ob = new MutationObserver(function() { _fn3(_fn1()); });
-        var o = { attributes: true, attributeFilter: ['class', 'data-theme'] };
-        _ob.observe(document.documentElement, o);
-        if (document.body) _ob.observe(document.body, o);
-    }
 
     function _fn8(el) {
         if (!el || !el.style) return;
@@ -283,39 +283,15 @@ if (!window.purpuraLoadedLogged) {
         s.setProperty('display', 'flex', 'important');
         s.setProperty('visibility', 'visible', 'important');
         s.setProperty('opacity', '1', 'important');
-        s.setProperty('filter', 'none', 'important');
-        s.setProperty('clipPath', 'none', 'important');
-        s.setProperty('transform', 'none', 'important');
-        s.setProperty('overflow', 'visible', 'important');
-        s.setProperty('maxHeight', 'none', 'important');
-        s.setProperty('maxWidth', 'none', 'important');
-        s.setProperty('height', 'auto', 'important');
-        s.setProperty('width', 'auto', 'important');
-        s.setProperty('position', 'relative', 'important');
-        s.setProperty('left', 'auto', 'important');
-        s.setProperty('top', 'auto', 'important');
-        s.setProperty('pointerEvents', 'auto', 'important');
-        s.setProperty('zIndex', '2147483647', 'important');
-        s.setProperty('contentVisibility', 'visible', 'important');
-        s.setProperty('isolation', 'auto', 'important');
-        s.setProperty('scale', '1', 'important');
-        s.setProperty('translate', 'none', 'important');
-        s.setProperty('rotate', 'none', 'important');
+        s.setProperty('pointer-events', 'auto', 'important');
     }
 
     var _tm = setInterval(function() {
         var b = document.getElementById(_x1);
         if (!b) { _fn6(); return; }
+        _styles();
         var a = b.querySelector('a');
-        if (getComputedStyle(b).display === 'none' || b.offsetHeight === 0) { b.removeAttribute('style'); b.setAttribute('style', 'display:block !important'); }
         _fn8(a);
-        var c = getComputedStyle(a);
-        if (c.display === 'none' || c.visibility === 'hidden' || parseFloat(c.opacity) < 0.5 || parseFloat(c.height || '0') < 5 || parseFloat(c.width || '0') < 5) {
-            _fn8(a);
-            a.style.setProperty('display', 'flex', 'important');
-            a.style.setProperty('visibility', 'visible', 'important');
-            a.style.setProperty('opacity', '1', 'important');
-        }
     }, 1000);
     setTimeout(function() { clearInterval(_tm); }, 120000);
 })();

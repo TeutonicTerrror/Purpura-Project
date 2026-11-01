@@ -410,10 +410,6 @@
 
     let csrfToken = null;
 
-    // Roblox rejects API POSTs that are missing a valid X-CSRF-TOKEN, and the
-    // legacy XSRF-TOKEN cookie is no longer kept in sync. The page meta tag is the
-    // reliable source, with a logout probe as the fallback (same flow the other
-    // Purpura features use).
     async function getCsrfToken() {
         if (csrfToken) return csrfToken;
 
@@ -439,9 +435,6 @@
         return csrfToken || '';
     }
 
-    // POSTs JSON with the CSRF token and retries once with a refreshed token when
-    // Roblox reports an expired one. Without this the catalog lookups silently
-    // failed, which left every card filtering out and the list looking stuck.
     async function postJson(url, body) {
         for (let attempt = 0; attempt < 2; attempt++) {
             try {
@@ -753,8 +746,6 @@
                 await processItemIds(Array.from(itemIdsToRecheck), currentSession);
             }
         } catch (e) {} finally {
-            // Never leave the spinner up; the DOM update below is the only thing
-            // that would otherwise clear it.
             const spinner = document.getElementById('purpura-filter-loading');
             if (spinner) spinner.style.display = 'none';
             if (currentSession === scanSessionId) triggerDomUpdate();

@@ -208,6 +208,60 @@
         document.head.appendChild(style);
     }
 
+    const NATIVE_HEADER_WRAPPERS = ['[data-testid="section-header"]', '.game-sort-header-container'];
+    const NATIVE_HEADER_SKIP = '#purpuras-selection-container, .pinned-games-carousel';
+
+    function createNativeSectionHeader(text) {
+        for (const selector of NATIVE_HEADER_WRAPPERS) {
+            const template = Array.from(document.querySelectorAll(selector)).find(el =>
+                !el.closest(NATIVE_HEADER_SKIP) &&
+                !el.querySelector('#purpuras-selection-container, .pinned-games-carousel') &&
+                el.querySelector('[data-testid="text-icon-row-text"], h2')
+            );
+            if (!template) continue;
+
+            const header = template.cloneNode(true);
+            header.removeAttribute('id');
+
+            const title = header.querySelector('[data-testid="text-icon-row-text"], h2');
+            if (!title) continue;
+
+            let node = title;
+            while (node && node !== header && node.parentElement) {
+                const parent = node.parentElement;
+                Array.from(parent.children).forEach(child => {
+                    if (child !== node && !child.contains(title)) child.remove();
+                });
+                node = parent;
+            }
+
+            header.querySelectorAll('a').forEach(link => {
+                const replacement = document.createElement('span');
+                for (const attr of Array.from(link.attributes)) {
+                    if (attr.name === 'href' || attr.name === 'target' || attr.name === 'rel') continue;
+                    replacement.setAttribute(attr.name, attr.value);
+                }
+                replacement.append(...link.childNodes);
+                link.replaceWith(replacement);
+            });
+
+            header.querySelectorAll('.games-filter-changer').forEach(el => el.classList.remove('games-filter-changer'));
+            title.textContent = text;
+            title.setAttribute('aria-label', text);
+            header.setAttribute('aria-label', text);
+            return header;
+        }
+
+        const fallback = document.createElement('div');
+        fallback.className = 'home-sort-header-container';
+        const heading = document.createElement('h2');
+        heading.className = 'sort-header';
+        heading.textContent = text;
+        heading.setAttribute('aria-label', text);
+        fallback.appendChild(heading);
+        return fallback;
+    }
+
     function buildCarousel(games, thumbnailMap, statsMap) {
         injectGenrePillStyles();
 
@@ -215,33 +269,8 @@
         container.className = 'games-list-container';
         container.id = CONTAINER_ID;
 
-        const headerContainer = document.createElement('div');
-        headerContainer.className = 'home-sort-header-container';
+        const headerContainer = createNativeSectionHeader("Purpura's Selection");
         headerContainer.style.marginBottom = '16px';
-
-        const sectionHeader = document.createElement('div');
-        sectionHeader.className = 'css-ibw9t7-sectionHeader';
-        sectionHeader.setAttribute('data-testid', 'section-header');
-
-        const titleContainer = document.createElement('div');
-        titleContainer.className = 'css-1h1fine-titleSubtitleContainer';
-        titleContainer.setAttribute('data-testid', 'section-header-title-subtitle-container');
-
-        const textIconRow = document.createElement('div');
-        textIconRow.className = 'css-j5e4nw-textIconRow';
-        textIconRow.setAttribute('aria-label', "Purpura's Selection");
-        textIconRow.setAttribute('data-testid', 'text-icon-row');
-
-        const titleSpan = document.createElement('span');
-        titleSpan.className = 'css-4izgel-textIconRowText css-59f5rs-textOverride';
-        titleSpan.setAttribute('data-testid', 'text-icon-row-text');
-        titleSpan.setAttribute('data-sdui-text', 'true');
-        titleSpan.textContent = "Purpura's Selection";
-
-        textIconRow.appendChild(titleSpan);
-        titleContainer.appendChild(textIconRow);
-        sectionHeader.appendChild(titleContainer);
-        headerContainer.appendChild(sectionHeader);
         container.appendChild(headerContainer);
 
         const carouselWrapper = document.createElement('div');
@@ -337,7 +366,6 @@
             return li;
         }
 
-        // Prepend clones of the last CLONE_COUNT items (seamless prev wrap)
         const prependStart = Math.max(0, games.length - CLONE_COUNT);
         for (let i = prependStart; i < games.length; i++) {
             const game = games[i];
@@ -357,7 +385,6 @@
             ul.appendChild(li);
         }
 
-        // Append clones of the first CLONE_COUNT items (seamless next wrap)
         for (let i = 0; i < CLONE_COUNT && i < games.length; i++) {
             const clone = ul.children[prependCount + i].cloneNode(true);
             clone.setAttribute('aria-hidden', 'true');
@@ -413,7 +440,6 @@
             if (animFrame) {
                 cancelAnimationFrame(animFrame);
                 animFrame = null;
-                // Snap to current position for the next animation
                 scrollable.style.left = `-${scrollOffset}px`;
             }
 
@@ -431,9 +457,6 @@
 
                 let current = animFrom + (animTarget - animFrom) * eased;
 
-                // Seamless wrap: if we cross the boundary during animation,
-                // shift both from and target so the animation continues smoothly.
-                // Only wrap when crossing 0 or MAX_OFFSET, not the clone boundaries.
                 if (current >= MAX_OFFSET) {
                     current -= REAL_MAX;
                     animFrom -= REAL_MAX;
@@ -533,8 +556,6 @@
             subtree: true
         });
 
-        // Staggered retries: the DOM may not be ready when observer starts,
-        // especially on first navigation after extension reload.
         function scheduleRetry(delay) {
             retryTimer = setTimeout(() => {
                 retryTimer = null;

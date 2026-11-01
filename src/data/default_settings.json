@@ -5,6 +5,8 @@
       "region": true,
       "ping": true,
       "fps": true,
+      "uptime": true,
+      "language": true,
       "serverVersion": false,
       "serverId": false
     }
@@ -14,7 +16,11 @@
     "showDatabase": true,
     "roundToWholeNumbers": true
   },
-  "pg": false,
+  "pg": true,
+  "pgr": {
+    "enabled": true,
+    "region": "US|Virginia|Ashburn"
+  },
   "plt": true,
   "glw": false,
   "go": {
@@ -118,12 +124,46 @@
     }
   },
   "bwr": {
-    "enabled": false
+    "enabled": false,
+    "sponsored": true,
+    "navigation": true,
+    "footer": true,
+    "premium": true,
+    "faq": true,
+    "badges": true,
+    "plusAds": true,
+    "plusAssets": true,
+    "phoneUpsell": true
+  },
+  "sfix": true,
+  "ucp": false,
+  "tbd": false,
+  "dav": false,
+  "sft": {
+    "enabled": false,
+    "fontUrl": ""
+  },
+  "cbg": {
+    "enabled": false,
+    "image": "",
+    "fit": "cover",
+    "opacity": 100,
+    "blur": 0,
+    "dim": 0
   },
   "gr": true,
-  "up": true,
+  "up": {
+    "enabled": true,
+    "showPending": true
+  },
   "tse": true,
   "qp": true,
+  "psc": {
+    "enabled": true,
+    "quickLink": true,
+    "friendsToggle": true,
+    "autoAllowOnCreate": true
+  },
   "ghos": {
     "enabled": false,
     "webRequestPermission": false
@@ -136,7 +176,15 @@
   "ac": true,
   "rae": false,
   "nr": true,
-  "rconv": true,
+  "rconv": {
+    "enabled": true,
+    "rateType": "Regular",
+    "currency": "USD",
+    "customRate": "",
+    "color": "#ffffff"
+  },
+  "rbp": "2",
+  "rbon": true,
   "biv": true,
   "explr": true,
   "rr": true,
@@ -155,23 +203,15 @@
   "bc": true,
   "bcAutoRefresh": true,
   "sdbr": {
-    "enabled": false,
-    "sidebarLayout": [
-      "home",
-      "charts",
-      "profile",
-      "friends",
-      "avatar",
-      "catalog",
-      "groups",
-      "messages",
-      "trade",
-      "purpuraSettings"
-    ],
-    "hiddenButtons": [
-      "trade",
-      "purpuraSettings"
-    ]
+    "enabled": false
+  },
+  "sbt": {
+    "enabled": true,
+    "hoverExpand": true,
+    "layout": true,
+    "transactions": false,
+    "order": [],
+    "hidden": []
   },
   "pcr": {
     "enabled": false,
@@ -210,11 +250,15 @@
     "theme": "Normal Roblox"
   },
   "lts": false,
+  "tcs": true,
   "thmEnabled": true,
   "frpt": false,
   "bsn": false,
   "dva": false,
   "r6w": true,
+  "aa": true,
+  "eo": true,
+  "rvp": true,
   "pfl": true,
   "oilp": true,
   "es": {
@@ -226,8 +270,14 @@
   },
   "cs": true,
   "grev": true,
+  "sho": true,
   "ssl": true,
-  "otp": { "enabled": false, "threshold": "50" },
+  "pf": true,
+  "rs": true,
+  "otp": {
+    "enabled": false,
+    "threshold": "50"
+  },
   "pwi": true,
   "lc": {
     "enabled": true,

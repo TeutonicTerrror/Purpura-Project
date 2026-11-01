@@ -755,15 +755,9 @@ function xn(t) {
 async function xo(i, f) {
   const h = {};
   if (f) h["Roblox-AssetFormat"] = f;
-  // Roblox-Browser-Asset-Request is never sent from page context - it triggers
-  // CORS preflight that the Roblox server rejects. The header is not needed
-  // for the asset delivery API to return correct data.
 
   const url = `https://assetdelivery.roblox.com/v2/asset/?id=${i}`;
 
-  // Always route through background script to bypass Roblox's service worker
-  // which intercepts and modifies fetch requests from page context, adding
-  // headers that trigger CORS preflight failures.
   return xo_bg(url, h);
 }
 
@@ -818,12 +812,10 @@ function xo_bg(url, h) {
 }
 
 async function xp(i, f) {
-  // All assetdelivery fetches go through background script (bypasses Roblox service worker CORS)
   try {
     return await xo(i, f);
   } catch (x) {
     const e = [`fmt: ${x.message || String(x)}`];
-    // If format header was set, try without it as a fallback
     if (f) {
       try {
         return await xo(i, null);

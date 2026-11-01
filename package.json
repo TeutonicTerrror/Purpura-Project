@@ -1,7 +1,7 @@
 {
   "name": "purpura",
   "private": true,
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Purpura Project -- An all-in-one, always given free, Roblox extension.",
   "scripts": {
     "build": "vite build"

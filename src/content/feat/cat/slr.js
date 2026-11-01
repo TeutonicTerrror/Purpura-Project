@@ -1024,7 +1024,6 @@
         closePurchaseModal(modal);
         showSaveNotification(context);
 
-        // Poll until modal is removed from DOM before launching
         var attempts = 0;
         var checkInterval = setInterval(function() {
             attempts++;
@@ -1036,7 +1035,6 @@
     }
 
     function showSaveNotification(context) {
-        // Show a brief toast confirming the savings before Roblox launches
         if (!document.body) return;
 
         var toast = document.createElement('div');
@@ -1229,7 +1227,6 @@
 
         ensureStyles();
 
-        // Clone the original buy button classes so our button matches Roblox's native look
         var existingBtn = modal.querySelector(`.${BUTTON_CLASS}`);
         if (existingBtn) {
             var existingKey = existingBtn.getAttribute('data-purpura-launch-data');
@@ -1246,7 +1243,6 @@
             handleSaveButtonClick(modal, context);
         });
 
-        // Insert after the original buy button in its parent
         buyButton.insertAdjacentElement('afterend', button);
 
         calculateAccurateSavings(context).then(function(accurateSavings) {

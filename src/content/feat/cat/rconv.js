@@ -6,7 +6,17 @@
 if (!window.purpuraRobuxConversationsInitialized) {
     window.purpuraRobuxConversationsInitialized = true;
 
-    const RATE_USD = 0.0125;
+    const SETTING_KEY = 'rconv';
+    const DEVEX_URL = 'https://economy.roblox.com/v1/developer-exchange/info';
+    const DEVEX_TTL = 10 * 60 * 1000;
+    const RATE_TYPES = [ 'Regular', 'DevEx', 'Premium', 'Custom' ];
+    const DEFAULT_CONFIG = {
+        enabled: true,
+        rateType: 'Regular',
+        currency: 'USD',
+        customRate: '',
+        color: '#ffffff'
+    };
     const SELECTORS = [
         "span.text-robux-lg",
         "span.text-robux",
@@ -25,6 +35,10 @@ if (!window.purpuraRobuxConversationsInitialized) {
     let observer = null;
     let enabled = false;
     let navHooksInstalled = false;
+    let config = { ...DEFAULT_CONFIG };
+    let devex = null;
+
+    const fx = window.__PurpuraFx || null;
 
     function toNumber(value) {
         if (value == null) return null;
@@ -44,20 +58,62 @@ if (!window.purpuraRobuxConversationsInitialized) {
         return num;
     }
 
-    function formatUSD(amount) {
-        return amount.toLocaleString("en-US", {
-            style: "currency",
-            currency: "USD",
-            maximumFractionDigits: 2
-        });
+    function normalize(value) {
+        if (value === false) return { ...DEFAULT_CONFIG, enabled: false };
+        if (!value || typeof value !== "object") return { ...DEFAULT_CONFIG };
+
+        const currency = typeof value.currency === "string" ? value.currency.toUpperCase() : "";
+        const customRate = typeof value.customRate === "number" ? String(value.customRate) : value.customRate;
+
+        return {
+            enabled: value.enabled !== false,
+            rateType: RATE_TYPES.indexOf(value.rateType) !== -1 ? value.rateType : DEFAULT_CONFIG.rateType,
+            currency: fx && fx.rates[currency] ? currency : DEFAULT_CONFIG.currency,
+            customRate: typeof customRate === "string" ? customRate.trim() : "",
+            color: typeof value.color === "string" && /^#[0-9a-f]{6}$/i.test(value.color) ? value.color : DEFAULT_CONFIG.color
+        };
     }
 
-    function convertRobuxToUsd(robux) {
-        const num = toNumber(robux);
-        return num === null ? null : num * RATE_USD;
+    async function devexRate() {
+        if (devex && Date.now() - devex.at < DEVEX_TTL) return devex.rate;
+
+        let rate = fx ? fx.baseRates.DevEx : 0.0038;
+        try {
+            const response = await fetch(DEVEX_URL, { credentials: "include" });
+            if (response.ok) {
+                const data = await response.json();
+                const percent = Number(data && data.conversionPercent);
+                if (Number.isFinite(percent) && percent > 0) rate = percent;
+            }
+        } catch {
+        }
+
+        devex = { rate, at: Date.now() };
+        return rate;
     }
 
-    function tagRobuxSpan(span) {
+    async function currentRate() {
+        let base;
+        if (config.rateType === "Custom") {
+            const custom = Number(String(config.customRate).replace(",", "."));
+            base = Number.isFinite(custom) && custom > 0 ? custom : (fx ? fx.baseRates.Regular : 0.0125);
+        } else if (config.rateType === "DevEx") {
+            base = await devexRate();
+        } else if (config.rateType === "Premium") {
+            base = fx ? fx.baseRates.Premium : 0.01136;
+        } else {
+            base = fx ? fx.baseRates.Regular : 0.0125;
+        }
+
+        return fx ? fx.rateFor(base, config.currency) : base;
+    }
+
+    function formatCurrency(amount) {
+        if (fx) return fx.format(amount, config.currency);
+        return `$${amount.toFixed(2)}`;
+    }
+
+    function tagRobuxSpan(span, rate) {
         if (!span) return;
         const attributeValue = span.getAttribute("data-robux") || span.getAttribute("data-robux-value") || span.getAttribute("data-robux-amount");
         const rawText = attributeValue || span.textContent.trim();
@@ -65,46 +121,52 @@ if (!window.purpuraRobuxConversationsInitialized) {
         const robux = toNumber(rawText);
         if (robux === null) return;
 
-        const usdValue = convertRobuxToUsd(robux);
-        if (usdValue === null) return;
+        const formatted = `(${formatCurrency(robux * rate)})`;
+        const rateLabel = `1 Robux = ${rate.toFixed(6)} ${config.currency}`;
 
-        const formattedUsd = `(${formatUSD(usdValue)})`;
-
-        const existingUsdSpan = span.nextElementSibling;
-        if (existingUsdSpan && existingUsdSpan.dataset && existingUsdSpan.dataset.purpuraRobuxUsdInjected === "1") {
-            if (existingUsdSpan.textContent !== formattedUsd) {
-                existingUsdSpan.textContent = formattedUsd;
-            }
-            span.dataset.purpuraRobuxUsdInjected = "1";
+        const existing = span.nextElementSibling;
+        if (existing && existing.dataset && existing.dataset.purpuraRobuxUsdInjected === "1") {
+            if (existing.textContent !== formatted) existing.textContent = formatted;
+            existing.style.color = config.color;
+            existing.title = rateLabel;
+            span.dataset.purpuraRobuxUsdTagged = "1";
             return;
         }
 
-        const usdSpan = document.createElement("span");
-        usdSpan.className = "text-secondary";
-        usdSpan.style.paddingLeft = "4px";
-        usdSpan.textContent = formattedUsd;
-        usdSpan.dataset.purpuraRobuxUsdInjected = "1";
+        const converted = document.createElement("span");
+        converted.className = "text-secondary";
+        converted.style.paddingLeft = "4px";
+        converted.style.color = config.color;
+        converted.textContent = formatted;
+        converted.title = rateLabel;
+        converted.dataset.purpuraRobuxUsdInjected = "1";
 
-        span.after(usdSpan);
-        span.dataset.purpuraRobuxUsdInjected = "1";
+        span.after(converted);
+        span.dataset.purpuraRobuxUsdTagged = "1";
     }
 
-    function scanAndInject(root = document) {
+    async function scanAndInject(root = document) {
         if (!enabled) return;
         if (!root) return;
         if (root.nodeType !== 1 && root.nodeType !== 9) return;
         if (typeof root.querySelectorAll !== "function") return;
 
+        const rate = await currentRate();
+        if (!enabled) return;
+
         try {
-            root.querySelectorAll(SELECTORS.join(", ")).forEach(span => tagRobuxSpan(span));
+            root.querySelectorAll(SELECTORS.join(", ")).forEach(span => tagRobuxSpan(span, rate));
         } catch {
         }
     }
 
     function removeInjected() {
         document
-            .querySelectorAll("span[data-purpura-robux-usd-injected]")
-            .forEach(span => span.remove());
+            .querySelectorAll("[data-purpura-robux-usd-injected]")
+            .forEach(element => element.remove());
+        document
+            .querySelectorAll("[data-purpura-robux-usd-tagged]")
+            .forEach(element => delete element.dataset.purpuraRobuxUsdTagged);
     }
 
     function startObserver() {
@@ -137,7 +199,7 @@ if (!window.purpuraRobuxConversationsInitialized) {
             subtree: true,
             characterData: true,
             attributes: true,
-            attributeFilter: ["class", "data-robux", "data-robux-value", "data-robux-amount"]
+            attributeFilter: [ "class", "data-robux", "data-robux-value", "data-robux-amount" ]
         });
     }
 
@@ -184,19 +246,29 @@ if (!window.purpuraRobuxConversationsInitialized) {
         removeInjected();
     }
 
-    window.__PurpuraSettings.ready.then(function() {
-        var v = window.__PurpuraSettings.get('rconv');
-        if (v !== false) enable();
+    function applyConfig(next) {
+        const wasEnabled = enabled;
+        config = normalize(next);
+        if (!config.enabled) {
+            disable();
+            return;
+        }
+        if (wasEnabled) {
+            removeInjected();
+            scanAndInject();
+            return;
+        }
+        enable();
+    }
+
+    window.__PurpuraSettings.ready.then(function () {
+        applyConfig(window.__PurpuraSettings.get(SETTING_KEY));
     });
 
-    chrome.storage.onChanged.addListener(function(changes, area) {
-        if (area !== 'sync') return;
-        var change = changes['rconv'];
+    chrome.storage.onChanged.addListener(function (changes, area) {
+        if (area !== "sync") return;
+        const change = changes[SETTING_KEY];
         if (!change) return;
-        if (change.newValue !== false) {
-            enable();
-        } else {
-            disable();
-        }
+        applyConfig(change.newValue);
     });
 }

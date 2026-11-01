@@ -24,15 +24,33 @@ if (!window.purpuraUnpendingRobuxInitialized) {
     const TOOLTIP_TEXT = t('unpending_tooltip');
     const INSUFFICIENT_DATA_TEXT = t('unpending_insufficient');
     const INSUFFICIENT_DATA_TOOLTIP = t('unpending_insufficientTooltip');
+    const PENDING_LABEL_TEXT = t('unpending_pending');
+    const PENDING_TOOLTIP_TEXT = t('unpending_pendingTooltip');
+    const PENDING_BADGE_ATTR = 'data-purpura-pending';
+    const PENDING_BADGE_CLASS = 'purpura-pending-badge';
+    const PENDING_STYLE_ID = 'purpura-pending-style';
+    const PENDING_CACHE_KEY = 'purpuraPendingCache';
+    const PENDING_CACHE_MS = 60 * 1000;
+    const PENDING_TOTALS_URL = 'https://apis.roblox.com/transaction-records/v1/users/';
 
     const state = {
         enabled: false,
+        showPending: true,
         observer: null,
         userId: null,
         activeRunId: 0,
         cache: null,
-        scanTimer: null
+        scanTimer: null,
+        navTimer: null,
+        pendingTotal: null,
+        pendingAt: 0,
+        pendingFailedAt: 0,
+        pendingRequest: null
     };
+
+    let hoveredNav = null;
+    const hiddenNavValues = new WeakMap();
+    const pendingHideTimers = new WeakMap();
 
     function setAmountCellText(amountCell, className, text) {
         if (!amountCell) return;
@@ -425,6 +443,319 @@ if (!window.purpuraUnpendingRobuxInitialized) {
         return parent;
     }
 
+    function streamerHidesRobux() {
+        try {
+            if (sessionStorage.getItem('purpura_streamermode') !== 'true') return false;
+            const items = JSON.parse(sessionStorage.getItem('purpura_streamer_items') || 'null');
+            return !items || items.robux !== false;
+        } catch {
+            return false;
+        }
+    }
+
+    function ensurePendingStyles() {
+        if (document.getElementById(PENDING_STYLE_ID)) return;
+
+        const style = document.createElement('style');
+        style.id = PENDING_STYLE_ID;
+        style.textContent =
+            '@keyframes purpura-pending-slide-in {' +
+            ' from { opacity: 0; transform: translateX(-10px); }' +
+            ' to { opacity: 1; transform: translateX(0); }' +
+            ' }' +
+            '@keyframes purpura-pending-slide-out {' +
+            ' from { opacity: 1; transform: translateX(0); }' +
+            ' to { opacity: 0; transform: translateX(8px); }' +
+            ' }' +
+            `.${PENDING_BADGE_CLASS} {` +
+            ' position: absolute;' +
+            ' white-space: nowrap;' +
+            ' pointer-events: none;' +
+            ' animation: purpura-pending-slide-in 180ms ease-out both;' +
+            ' }' +
+            `.${PENDING_BADGE_CLASS}.is-leaving {` +
+            ' animation: purpura-pending-slide-out 140ms ease-in both;' +
+            ' }';
+
+        const root = document.head || document.documentElement;
+        if (root) root.appendChild(style);
+    }
+
+    function readPendingCache() {
+        return new Promise(resolve => {
+            try {
+                chrome.storage.local.get([ PENDING_CACHE_KEY ], stored => {
+                    const cache = stored && stored[PENDING_CACHE_KEY];
+                    if (!cache || typeof cache !== 'object') return resolve(null);
+
+                    const total = Number(cache.total);
+                    if (!Number.isFinite(total)) return resolve(null);
+
+                    resolve({
+                        total,
+                        userId: cache.userId,
+                        at: Number(cache.at) || 0
+                    });
+                });
+            } catch {
+                resolve(null);
+            }
+        });
+    }
+
+    function writePendingCache(total, userId) {
+        try {
+            chrome.storage.local.set({
+                [PENDING_CACHE_KEY]: { total, userId, at: Date.now() }
+            });
+        } catch {
+        }
+    }
+
+    async function getPendingTotal(forceRefresh) {
+        if (!forceRefresh && state.pendingTotal !== null && (Date.now() - state.pendingAt) < PENDING_CACHE_MS) {
+            return state.pendingTotal;
+        }
+
+        if ((Date.now() - state.pendingFailedAt) < PENDING_CACHE_MS) {
+            return state.pendingTotal;
+        }
+
+        if (state.pendingRequest) return state.pendingRequest;
+
+        state.pendingRequest = (async () => {
+            await fetchAuthenticatedUserId();
+            const url = `${PENDING_TOTALS_URL}${state.userId}/transaction-totals?timeFrame=Year&transactionType=summary`;
+            const response = await fetch(url, { credentials: 'include' });
+            if (!response.ok) throw new Error(`Pending totals request failed (${response.status})`);
+
+            const data = await response.json();
+            const total = Number(data && data.pendingRobuxTotal);
+            if (!Number.isFinite(total)) throw new Error('Pending total missing from the response');
+
+            state.pendingTotal = total;
+            state.pendingAt = Date.now();
+            writePendingCache(total, state.userId);
+            return total;
+        })();
+
+        try {
+            return await state.pendingRequest;
+        } catch {
+            state.pendingFailedAt = Date.now();
+
+            if (state.pendingTotal === null) {
+                const cached = await readPendingCache();
+                if (cached && cached.userId === state.userId) {
+
+                    state.pendingTotal = cached.total;
+                    state.pendingAt = 0;
+                }
+            }
+
+            return state.pendingTotal;
+        } finally {
+            state.pendingRequest = null;
+        }
+    }
+
+    async function prefetchPending(force) {
+        if (!state.enabled || !state.showPending) return;
+
+        if (force) {
+            if ((Date.now() - state.pendingAt) < 15000) return;
+            getPendingTotal(true);
+            return;
+        }
+
+        if (state.pendingTotal === null) {
+            const cached = await readPendingCache();
+            if (cached && cached.userId) {
+                try {
+                    await fetchAuthenticatedUserId();
+                } catch {
+                }
+
+                if (cached.userId === state.userId) {
+                    state.pendingTotal = cached.total;
+                    state.pendingAt = 0;
+                }
+            }
+        }
+
+        getPendingTotal();
+    }
+
+    function removePendingBadges() {
+        document.querySelectorAll(`[${PENDING_BADGE_ATTR}]`).forEach(badge => {
+            restoreNavValues(badge.parentElement);
+            badge.remove();
+        });
+    }
+
+    function navValueElements(nav) {
+        if (!nav) return [];
+
+        const values = [];
+        const amount = nav.querySelector('#nav-robux-amount, .rbx-text-navbar-right, [class*="text-robux"]');
+        if (amount) values.push(amount);
+
+        nav.querySelectorAll(`[data-purpura-robux-usd-injected]`).forEach(converted => {
+            if (values.indexOf(converted) === -1) values.push(converted);
+        });
+
+        return values;
+    }
+
+    function hideNavValues(nav) {
+        if (!nav || hiddenNavValues.has(nav)) return;
+
+        const previous = navValueElements(nav).map(element => ({
+            element,
+            visibility: element.style.visibility
+        }));
+
+        if (!previous.length) return;
+
+        previous.forEach(entry => {
+            entry.element.style.visibility = 'hidden';
+        });
+        hiddenNavValues.set(nav, previous);
+    }
+
+    function restoreNavValues(nav) {
+        if (!nav) return;
+
+        const previous = hiddenNavValues.get(nav);
+        if (!previous) return;
+
+        previous.forEach(entry => {
+            entry.element.style.visibility = entry.visibility || '';
+        });
+        hiddenNavValues.delete(nav);
+    }
+
+    function copyTypography(badge, amount) {
+        try {
+            const computed = typeof getComputedStyle === 'function' ? getComputedStyle(amount) : null;
+            if (!computed) return;
+
+            badge.style.fontFamily = computed.fontFamily;
+            badge.style.fontSize = computed.fontSize;
+            badge.style.fontWeight = computed.fontWeight;
+            badge.style.fontStyle = computed.fontStyle;
+            badge.style.lineHeight = computed.lineHeight;
+            badge.style.letterSpacing = computed.letterSpacing;
+            badge.style.color = computed.color;
+        } catch {
+        }
+    }
+
+    function showPendingBadge(nav, total) {
+        if (!nav) return;
+
+        const pendingTimer = pendingHideTimers.get(nav);
+        if (pendingTimer) {
+            clearTimeout(pendingTimer);
+            pendingHideTimers.delete(nav);
+        }
+
+        ensurePendingStyles();
+
+        const amount = nav.querySelector('#nav-robux-amount, .rbx-text-navbar-right, [class*="text-robux"]');
+        if (!amount) return;
+
+        if (!nav.style.position) {
+            nav.dataset.purpuraPendingPosition = '1';
+            nav.style.position = 'relative';
+        }
+
+        const left = amount.offsetLeft || 0;
+        const top = amount.offsetTop || 0;
+
+        hideNavValues(nav);
+
+        const text = `${formatNumber(total)} ${PENDING_LABEL_TEXT}`;
+        let badge = nav.querySelector(`[${PENDING_BADGE_ATTR}]`);
+
+        if (!badge) {
+            badge = document.createElement('span');
+            badge.setAttribute(PENDING_BADGE_ATTR, '1');
+            badge.className = PENDING_BADGE_CLASS;
+            badge.title = PENDING_TOOLTIP_TEXT;
+            nav.appendChild(badge);
+        }
+
+        badge.classList.remove('is-leaving');
+        badge.textContent = text;
+        badge.style.left = `${left}px`;
+        badge.style.top = `${top}px`;
+        copyTypography(badge, amount);
+    }
+
+    function hidePendingBadge(nav) {
+        if (!nav) return;
+
+        const badge = nav.querySelector(`[${PENDING_BADGE_ATTR}]`);
+        if (!badge) {
+            restoreNavValues(nav);
+            return;
+        }
+
+        const existingTimer = pendingHideTimers.get(nav);
+        if (existingTimer) clearTimeout(existingTimer);
+
+        badge.classList.add('is-leaving');
+        pendingHideTimers.set(nav, setTimeout(() => {
+            pendingHideTimers.delete(nav);
+            badge.remove();
+            restoreNavValues(nav);
+            if (nav.dataset && nav.dataset.purpuraPendingPosition === '1') {
+                delete nav.dataset.purpuraPendingPosition;
+                nav.style.position = '';
+            }
+        }, 160));
+    }
+
+    function navElementFrom(target) {
+        if (!(target instanceof Element)) return null;
+        return target.closest('#nav-robux-icon, #nav-robux-amount, .nav-robux-icon');
+    }
+
+    async function showPendingOnHover(nav) {
+        if (!state.enabled || !state.showPending || streamerHidesRobux()) return;
+
+
+        if (state.pendingTotal !== null) {
+            showPendingBadge(nav, state.pendingTotal);
+        }
+
+        const total = await getPendingTotal();
+        if (total === null) return;
+        if (hoveredNav !== nav || !nav.isConnected) return;
+
+        showPendingBadge(nav, total);
+    }
+
+    document.addEventListener('mouseover', event => {
+        const nav = navElementFrom(event.target);
+        if (!nav) return;
+
+        hoveredNav = nav;
+        showPendingOnHover(nav);
+    }, true);
+
+    document.addEventListener('mouseout', event => {
+        const nav = navElementFrom(event.target);
+        if (!nav) return;
+
+        const next = event.relatedTarget;
+        if (next instanceof Node && nav.contains(next)) return;
+
+        if (hoveredNav === nav) hoveredNav = null;
+        hidePendingBadge(nav);
+    }, true);
+
     async function processTarget(targetElement) {
         if (!state.enabled || !isTransactionsPage() || !targetElement) {
             return;
@@ -557,15 +888,41 @@ if (!window.purpuraUnpendingRobuxInitialized) {
         startObserver();
     }
 
-    function setEnabled(enabled) {
-        state.enabled = !!enabled;
+    function readSetting(raw) {
+        if (raw && typeof raw === 'object') {
+            return {
+                enabled: raw.enabled !== false,
+                showPending: raw.showPending !== false
+            };
+        }
+
+        return {
+            enabled: raw !== false,
+            showPending: true
+        };
+    }
+
+    function applySetting(raw) {
+        const next = readSetting(raw);
+
+        state.enabled = next.enabled;
+        state.showPending = next.showPending;
         state.activeRunId += 1;
         onRouteOrStateChange();
+
+        if (!state.enabled || !state.showPending) {
+            hoveredNav = null;
+            removePendingBadges();
+            return;
+        }
+
+        prefetchPending();
     }
 
     function installNavigationHooks() {
         const notify = () => {
             setTimeout(onRouteOrStateChange, 0);
+            prefetchPending(true);
         };
 
         const originalPushState = history.pushState;
@@ -582,11 +939,16 @@ if (!window.purpuraUnpendingRobuxInitialized) {
             return result;
         };
 
-        window.addEventListener('popstate', onRouteOrStateChange);
-        window.addEventListener('pageshow', onRouteOrStateChange);
+        const refresh = () => {
+            onRouteOrStateChange();
+            prefetchPending(true);
+        };
+
+        window.addEventListener('popstate', refresh);
+        window.addEventListener('pageshow', refresh);
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) {
-                onRouteOrStateChange();
+                refresh();
             }
         });
     }
@@ -594,12 +956,12 @@ if (!window.purpuraUnpendingRobuxInitialized) {
     chrome.storage.onChanged.addListener((changes, areaName) => {
         if (areaName !== 'sync') return;
         if (!Object.prototype.hasOwnProperty.call(changes, STORAGE_KEY)) return;
-        setEnabled(!!changes[STORAGE_KEY].newValue);
+        applySetting(changes[STORAGE_KEY].newValue);
     });
 
     installNavigationHooks();
 
     window.__PurpuraSettings.ready.then(function() {
-        setEnabled(!!window.__PurpuraSettings.get(STORAGE_KEY));
+        applySetting(window.__PurpuraSettings.get(STORAGE_KEY));
     });
 }

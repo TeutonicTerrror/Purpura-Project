@@ -141,6 +141,19 @@
         })();
         return true;
     });
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if (request?.type !== 'PURPURA_PROFILE_VALUES') return;
+        (async () => {
+            try {
+                const [sync, local] = await Promise.all([chrome.storage.sync.get('rvp'), chrome.storage.local.get('noFeatures')]);
+                if (sync.rvp === false || local.noFeatures === true) throw new Error('Profile values disabled');
+                sendResponse({ ok: true, ...await itemData(request.ids) });
+            } catch (error) {
+                sendResponse({ ok: false, error: error.message });
+            }
+        })();
+        return true;
+    });
     globalThis.PurpuraTrading = { threshold, loss, fresh, check };
     schedule().catch(() => {});
 })();

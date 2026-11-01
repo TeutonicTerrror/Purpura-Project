@@ -5,8 +5,6 @@
  */
 (function () {
     const STORAGE_KEY = 'dva';
-    // Carousel containers that Roblox's video player may consult for autoplay
-    // (RoPlus approach) and the areas where users interact with media.
     const CAROUSEL_SELECTORS =
         '#carousel-game-details, [data-testid="game-carousel"], .game-carousel';
     const MEDIA_AREA_SELECTOR =
@@ -15,8 +13,6 @@
         'iframe[src*="youtube-nocookie.com/embed"], iframe[src*="youtube.com/embed"]';
     const YT_IFRAME_SELECTOR =
         'iframe[src*="youtube-nocookie.com/embed"], iframe[src*="youtube.com/embed"]';
-    // A play that happens within this window after a user gesture on the media
-    // area counts as manual playback and is allowed.
     const GESTURE_WINDOW_MS = 4000;
     const OBSERVER_TIMEOUT_MS = 60000;
 
@@ -27,7 +23,6 @@
     let lastGestureTarget = null;
     const trackedIframes = new WeakSet();
 
-    // Only allow playback that follows a user gesture on/near the media area.
     function isManualPlay() {
         if (Date.now() - lastGestureAt > GESTURE_WINDOW_MS) return false;
         if (!lastGestureTarget || !lastGestureTarget.closest) return false;
@@ -39,8 +34,6 @@
         lastGestureTarget = e.target;
     }
 
-    // RoPlus attribute approach, kept as belt-and-suspenders: harmless if Roblox
-    // no longer reads the attribute, and effective on pages that still do.
     function applyToCarousels() {
         const carousels = document.querySelectorAll(CAROUSEL_SELECTORS);
         for (let i = 0; i < carousels.length; i++) {
@@ -55,25 +48,19 @@
         }
     }
 
-    // Native HTML5 video: pause any playback that did not follow a user gesture
-    // on the media area, so clicking play still works.
     function onPlayCapture(e) {
         if (!enabled) return;
         const t = e.target;
         if (t && t.tagName === 'VIDEO' && !isManualPlay()) t.pause();
     }
 
-    // YouTube embeds: block the initial autoplay, then release the embed so
-    // manual playback (clicking inside the iframe) is never blocked.
     function pauseIframe(iframe) {
         try {
             iframe.contentWindow.postMessage(
                 JSON.stringify({ event: 'command', func: 'pauseVideo', args: '' }),
                 '*'
             );
-        } catch (e) {
-            /* ignore */
-        }
+        } catch (_) { }
     }
 
     function onWindowMessage(e) {
@@ -85,8 +72,6 @@
             return;
         }
         if (!data || typeof data !== 'object') return;
-        // Block only actual playback (YouTube's onReady fires before playback and
-        // must not consume the single block slot).
         const isPlaying =
             data.event === 'infoDelivery' &&
             data.info &&
@@ -159,7 +144,6 @@
         refreshEnabled();
     });
 
-    // Registered once at document_start; all handlers are gated by `enabled`.
     document.addEventListener('pointerdown', onGesture, true);
     document.addEventListener('keydown', onGesture, true);
     document.addEventListener('touchstart', onGesture, true);

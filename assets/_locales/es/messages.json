@@ -347,6 +347,9 @@
   "pinnedGames_close": {
     "message": "Cerrar"
   },
+  "pinnedGames_collapse": {
+    "message": "Contraer"
+  },
   "pinnedGames_color": {
     "message": "Color"
   },
@@ -384,6 +387,9 @@
   "pinnedGames_editFolder": {
     "message": "Editar carpeta"
   },
+  "pinnedGames_expand": {
+    "message": "Expandir"
+  },
   "pinnedGames_folderName": {
     "message": "Nombre de carpeta"
   },
@@ -407,6 +413,9 @@
   },
   "pinnedGames_noGames": {
     "message": "Aún no hay juegos fijados"
+  },
+  "pinnedGames_options": {
+    "message": "Opciones"
   },
   "pinnedGames_pin": {
     "message": "Fijar juego"
@@ -442,6 +451,12 @@
   },
   "pinnedGames_save": {
     "message": "Guardar"
+  },
+  "pinnedGames_scrollLeft": {
+    "message": "Desplazar a la izquierda"
+  },
+  "pinnedGames_scrollRight": {
+    "message": "Desplazar a la derecha"
   },
   "pinnedGames_searchPlaceholder": {
     "message": "Buscar juegos en esta carpeta…"
@@ -583,6 +598,12 @@
   },
   "popup_debugServerInfo": {
     "message": "Info del servidor"
+  },
+  "popup_debugSiteFixes": {
+    "message": "Correcciones del sitio"
+  },
+  "popup_debugSiteFont": {
+    "message": "Fuente del sitio"
   },
   "popup_debugUncorporatify": {
     "message": "Descorporativizar"
@@ -780,6 +801,24 @@
   "purpuraStore_title": {
     "message": "Tienda Purpura"
   },
+  "privateServerControls_copyLink": {
+    "message": "Copiar enlace"
+  },
+  "privateServerControls_regenerate": {
+    "message": "Regenerar enlace"
+  },
+  "privateServerControls_copied": {
+    "message": "¡Copiado!"
+  },
+  "privateServerControls_regenerated": {
+    "message": "¡Regenerado!"
+  },
+  "privateServerControls_error": {
+    "message": "Reintentar"
+  },
+  "privateServerControls_friendsAllowed": {
+    "message": "Amigos permitidos"
+  },
   "quickPlay_play": {
     "message": "Jugar"
   },
@@ -976,23 +1015,11 @@
   "sdbr_inventory": {
     "message": "Inventario"
   },
-  "sdbr_messages_desc": {
-    "message": "Agrega un botón de Mensajes a la barra lateral."
-  },
-  "sdbr_messages_label": {
-    "message": "Botón de Mensajes"
-  },
   "sdbr_premium": {
     "message": "Premium"
   },
   "sdbr_purpuraSettings": {
     "message": "Purpura"
-  },
-  "sdbr_purpuraSettings_desc": {
-    "message": "Añade un botón de Ajustes de Purpura a la barra lateral."
-  },
-  "sdbr_purpuraSettings_label": {
-    "message": "Botón de Ajustes de Purpura"
   },
   "sdbr_robux": {
     "message": "Robux"
@@ -1003,11 +1030,8 @@
   "sdbr_trade": {
     "message": "Intercambios"
   },
-  "sdbr_tradeButton_desc": {
-    "message": "Añade un botón de Intercambios a la barra lateral."
-  },
-  "sdbr_tradeButton_label": {
-    "message": "Botón de Intercambios"
+  "sdbr_transactions": {
+    "message": "Mis transacciones"
   },
   "serverInfo_average": {
     "message": "Medio"
@@ -1044,6 +1068,23 @@
   },
   "serverInfo_joinSmallest": {
     "message": "Unirse al servidor más pequeño"
+  },
+  "serverInfo_language": {
+    "message": "Idioma"
+  },
+  "serverInfo_languageTooltip": {
+    "message": "$COUNT$ de $TOTAL$ jugadores hablan $LANGUAGE$",
+    "placeholders": {
+      "COUNT": {
+        "content": "$1"
+      },
+      "TOTAL": {
+        "content": "$2"
+      },
+      "LANGUAGE": {
+        "content": "$3"
+      }
+    }
   },
   "serverInfo_na": {
     "message": "N/D"
@@ -1087,6 +1128,20 @@
   },
   "serverInfo_unknown": {
     "message": "Desconocido"
+  },
+  "serverInfo_uptime": {
+    "message": "Tiempo activo"
+  },
+  "serverInfo_uptimeTooltip": {
+    "message": "Tiempo activo: $DURATION$ · iniciado $DATE$",
+    "placeholders": {
+      "DURATION": {
+        "content": "$1"
+      },
+      "DATE": {
+        "content": "$2"
+      }
+    }
   },
   "avatarCycler_active": {
     "message": "¡Cicladores activos!"
@@ -1161,11 +1216,65 @@
   "settings_avatarSearch_label": {
     "message": "Barra de búsqueda de avatar"
   },
+  "settings_bloatwareRemover_badges": {
+    "message": "Insignias de popularidad"
+  },
+  "settings_bloatwareRemover_badgesDesc": {
+    "message": "Oculta las insignias de \"Popular\" que Roblox muestra en algunas experiencias y objetos."
+  },
   "settings_bloatwareRemover_desc": {
     "message": "Elimina elementos innecesarios de la interfaz, contenido patrocinado y funciones promocionales en Roblox."
   },
+  "settings_bloatwareRemover_faq": {
+    "message": "Paneles de preguntas frecuentes"
+  },
+  "settings_bloatwareRemover_faqDesc": {
+    "message": "Oculta la tarjeta de preguntas frecuentes que Roblox inserta en algunas páginas."
+  },
+  "settings_bloatwareRemover_footer": {
+    "message": "Enlaces del pie de página"
+  },
+  "settings_bloatwareRemover_footerDesc": {
+    "message": "Oculta los enlaces promocionales y no esenciales del pie de página de Roblox."
+  },
   "settings_bloatwareRemover_label": {
     "message": "Eliminador de bloatware"
+  },
+  "settings_bloatwareRemover_navigation": {
+    "message": "Enlaces de navegación"
+  },
+  "settings_bloatwareRemover_navigationDesc": {
+    "message": "Oculta las entradas promocionales de la barra de navegación de Roblox, como Blog, Tienda oficial y Tarjetas de regalo."
+  },
+  "settings_bloatwareRemover_phoneUpsell": {
+    "message": "Tarjetas de upsell de teléfono"
+  },
+  "settings_bloatwareRemover_phoneUpsellDesc": {
+    "message": "Elimina las tarjetas de upsell del número de teléfono en la página de inicio."
+  },
+  "settings_bloatwareRemover_plusAds": {
+    "message": "Publicidad de Roblox Plus"
+  },
+  "settings_bloatwareRemover_plusAdsDesc": {
+    "message": "Oculta la publicidad de Roblox Plus, como el enlace y la nota de Plus en la barra lateral, la oferta de Plus al comprar Robux y el banner de suscripción a Plus."
+  },
+  "settings_bloatwareRemover_plusAssets": {
+    "message": "Recursos de Roblox Plus"
+  },
+  "settings_bloatwareRemover_plusAssetsDesc": {
+    "message": "Oculta los iconos de Roblox Plus que aparecen en las listas de servidores y en otras partes del sitio."
+  },
+  "settings_bloatwareRemover_premium": {
+    "message": "Promociones de Premium"
+  },
+  "settings_bloatwareRemover_premiumDesc": {
+    "message": "Oculta los botones de suscripción a Premium y los avisos para mejorarlo."
+  },
+  "settings_bloatwareRemover_sponsored": {
+    "message": "Contenido patrocinado"
+  },
+  "settings_bloatwareRemover_sponsoredDesc": {
+    "message": "Oculta experiencias patrocinadas, tarjetas promocionadas y espacios publicitarios."
   },
   "settings_botDetector_desc": {
     "message": "Analiza servidores de juego para detectar actividad potencial de bots."
@@ -1206,7 +1315,7 @@
   "settings_cat_games": {
     "message": "Juegos"
   },
-  "settings_cat_miscellanious": {
+  "settings_cat_miscellaneous": {
     "message": "Miscelánea"
   },
   "settings_cat_navigation": {
@@ -1234,11 +1343,28 @@
     "message": "servidor de Discord"
   },
   "settings_credits_footer": {
-    "message": "Gracias a todos los que contribuyeron a este proyecto. Únete a nuestro"
+    "message": "Gracias a todos los que contribuyeron a este proyecto. Únete a nuestro servidor de Discord para compartir comentarios, informar errores y mantenerte al día."
   },
   "settings_credits_subtitle": {
     "message": "Agradecimientos especiales a todos los que apoyaron a Purpura."
   },
+  "settings_info_welcome": { "message": "Bienvenido a Purpura" },
+  "settings_info_about": { "message": "Purpura es una suite de mejoras para Roblox llena de funciones que busca ser tu extensión todo en uno." },
+  "settings_info_navigate": { "message": "Usa la barra lateral de la izquierda para moverte entre los ajustes." },
+  "settings_info_quickActions": { "message": "Acciones rápidas" },
+  "settings_info_community": { "message": "Comunidad y apoyo" },
+  "settings_info_changelog": { "message": "Registro de cambios" },
+  "settings_info_support": { "message": "Apoyar en Ko-fi" },
+  "settings_info_discord": { "message": "Únete al Discord" },
+  "settings_info_faq": { "message": "Preguntas frecuentes" },
+  "settings_info_privacy": { "message": "Política de privacidad" },
+  "settings_info_backup": { "message": "Copia de seguridad" },
+  "settings_info_backupDesc": { "message": "Exporta tus ajustes a un archivo, restáuralos en otro dispositivo o vuelve a los valores por defecto." },
+  "settings_info_export": { "message": "Exportar ajustes" },
+  "settings_info_import": { "message": "Importar ajustes" },
+  "settings_info_reset": { "message": "Restablecer valores" },
+  "settings_info_version": { "message": "Versión" },
+  "settings_info_developer": { "message": "Desarrollador" },
   "settings_credits_title": {
     "message": "Créditos"
   },
@@ -1349,6 +1475,49 @@
   },
   "settings_shareServerLinks_label": { "message": "Compartir enlaces de servidores" },
   "settings_shareServerLinks_desc": { "message": "Añade Copiar enlace a los servidores públicos. Los enlaces cortos caducan tras 30 días; si la API no está disponible, se usa un enlace completo. Los destinatarios no necesitan Purpura. No evita las restricciones de privacidad ni los servidores llenos." },
+  "settings_playerFinder_label": { "message": "Buscador de jugadores" },
+  "settings_playerFinder_desc": { "message": "Añade una barra de búsqueda a la lista de servidores de un juego para encontrar en qué servidor está un jugador y unirte a él. Usa la presencia de Roblox y los datos de servidores públicos; los jugadores con uniones ocultas y los juegos que ocultan sus listas no se pueden encontrar." },
+  "playerFinder_placeholder": { "message": "Busca un jugador en este juego…" },
+  "playerFinder_find": { "message": "Buscar" },
+  "playerFinder_cancel": { "message": "Cancelar" },
+  "playerFinder_searching": { "message": "Buscando a {name}…" },
+  "playerFinder_scanning": { "message": "Analizando servidores… {servers} servidores · {players} jugadores comprobados" },
+  "playerFinder_checking": { "message": "Comprobando dónde está…" },
+  "playerFinder_noUserTitle": { "message": "Jugador no encontrado" },
+  "playerFinder_errorTitle": { "message": "Error en la búsqueda" },
+  "playerFinder_serverLine": { "message": "Jugando en un servidor · {count} jugadores" },
+  "playerFinder_presenceLine": { "message": "Jugando en este juego ahora mismo" },
+  "playerFinder_playersSeen": { "message": "Jugadores vistos en este servidor" },
+  "playerFinder_notFound": { "message": "Se analizaron {servers} servidores y {players} jugadores. No se encontró a {name}. Roblox solo muestra una parte de los jugadores de cada servidor." },
+  "playerFinder_noTokens": { "message": "Roblox no muestra los jugadores de los servidores de este juego, así que la búsqueda no puede ejecutarse ahora mismo." },
+  "playerFinder_elsewhere": { "message": "{name} está en otra experiencia: {location}" },
+  "playerFinder_someExperience": { "message": "otra experiencia" },
+  "playerFinder_noUser": { "message": "No se encontró ningún usuario de Roblox con ese nombre." },
+  "playerFinder_error": { "message": "No se pudo buscar ahora. Inténtalo en un momento." },
+  "playerFinder_cancelled": { "message": "Búsqueda cancelada." },
+  "playerFinder_join": { "message": "Unirse" },
+  "playerFinder_profile": { "message": "Perfil" },
+  "playerFinder_matchBadge": { "message": "Coincidencia" },
+  "settings_recentServers_label": {
+    "message": "Servidores recientes"
+  },
+  "settings_recentServers_desc": {
+    "message": "Recuerda los servidores en los que juegas y los muestra sobre la lista de servidores de un juego para que puedas volver a unirte. Los servidores que ya se cerraron no se pueden unir."
+  },
+  "recentServers_join": {
+    "message": "Unirse"
+  },
+  "recentServers_justNow": {
+    "message": "Jugado por última vez ahora mismo"
+  },
+  "recentServers_lastPlayed": {
+    "message": "Jugado por última vez $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
   "shareServer_copy": { "message": "Copiar enlace" },
   "shareServer_copied": { "message": "¡Copiado!" },
   "shareServer_retry": { "message": "Reintentar" },
@@ -1365,10 +1534,38 @@
   "settings_gameReviews_desc": {
     "message": "Lee valoraciones de la comunidad y publica reseñas con un nombre de Roblox no verificado. Las reseñas son públicas y se filtran las palabras malsonantes. Desactivar esta opción detiene las solicitudes de reseñas a la API."
   },
+  "settings_shopOffers_label": { "message": "Mostrar descuentos del juego" },
+  "settings_shopOffers_desc": { "message": "Muestra las ofertas activas de la tienda de Roblox sobre los pases de juego en la pestaña Tienda, para que veas qué compras dentro del juego tienen descuento sin entrar a la experiencia." },
+  "shopOffers_expires": { "message": "Caduca" },
+  "shopOffers_inGameOnly": { "message": "Solo se aplica a compras realizadas dentro del juego." },
   "settings_outboundProtection_label": { "message": "Protección contra intercambios inseguros" },
   "settings_outboundProtection_desc": { "message": "Cancela intercambios salientes que alcanzan el umbral de pérdida usando valores de Rolimon’s (RAP para artículos sin valor) y Robux tras la comisión. Desactivada por defecto; revisa hasta 10 intercambios recientes cada 30 segundos mientras Chrome funciona. Los datos ausentes o antiguos impiden cancelar. No garantiza proteger tu cuenta. Valores: Rolimon’s (rolimons.com)." },
   "settings_outboundProtection_threshold": { "message": "Umbral" },
   "settings_outboundProtection_thresholdDesc": { "message": "Porcentaje de pérdida, mayor que 0 y hasta 100 (50 por defecto). Un valor no válido impide cancelar. Las ofertas canceladas no se restauran automáticamente." },
+  "settings_privateServerControls_label": {
+    "message": "Controles rápidos de servidores privados"
+  },
+  "settings_privateServerControls_desc": {
+    "message": "Añade controles de enlace y de amigos a los servidores privados que te pertenecen."
+  },
+  "settings_privateServerControls_quickLink": {
+    "message": "Copia y generación rápida del enlace del servidor privado"
+  },
+  "settings_privateServerControls_quickLinkDesc": {
+    "message": "Añade botones para copiar y regenerar el enlace de tus servidores privados."
+  },
+  "settings_privateServerControls_friendsToggle": {
+    "message": "Interruptor de Amigos permitidos"
+  },
+  "settings_privateServerControls_friendsToggleDesc": {
+    "message": "Añade un interruptor de Amigos permitidos a tus servidores privados."
+  },
+  "settings_privateServerControls_autoAllow": {
+    "message": "Amigos permitidos en servidores privados nuevos"
+  },
+  "settings_privateServerControls_autoAllowDesc": {
+    "message": "Activa el interruptor en cada servidor privado nuevo."
+  },
   "settings_projectedWarnings_label": { "message": "Advertencias de valor de intercambio proyectado" },
   "settings_projectedWarnings_desc": { "message": "Muestra una advertencia con atribución en artículos del catálogo marcados como proyectados por Rolimon’s. El RAP inflado no es un valor fiable. La ausencia de advertencia no garantiza seguridad." },
   "projected_unavailable": { "message": "La comprobación de artículos proyectados no está disponible. Este artículo no se ha comprobado; no supongas que es seguro." },
@@ -1610,11 +1807,68 @@
   "settings_remainingRobux_label": {
     "message": "Robux restantes"
   },
-  "settings_reworkedSidebar_desc": {
-    "message": "Una renovación completa de la barra lateral de Roblox con un aspecto más moderno y limpio."
+  "settings_purpuraSidebar_desc": {
+    "message": "Reemplaza la barra lateral de Roblox con la barra lateral moderna y limpia de Purpura."
   },
-  "settings_reworkedSidebar_label": {
-    "message": "Barra lateral renovada"
+  "settings_purpuraSidebar_label": {
+    "message": "Barra lateral estilo Purpura"
+  },
+  "settings_sidebarTweaks_label": {
+    "message": "Ajustes de la barra lateral"
+  },
+  "settings_sidebarTweaks_desc": {
+    "message": "Añade varias mejoras y ajustes a la barra lateral de Roblox."
+  },
+  "settings_sidebarTweaks_hoverExpand_label": {
+    "message": "Modo expandir al pasar el cursor"
+  },
+  "settings_sidebarTweaks_hoverExpand_desc": {
+    "message": "Contrae la barra lateral de Roblox y la expande al pasar el cursor por encima."
+  },
+  "settings_sidebarTweaks_layout_label": {
+    "message": "Personalización del diseño"
+  },
+  "settings_sidebarTweaks_layout_desc": {
+    "message": "Añade un botón a la barra lateral que te permite reordenar y ocultar sus elementos."
+  },
+  "sidebarTweaks_button": {
+    "message": "Personalizar diseño"
+  },
+  "sidebarTweaks_overlayTitle": {
+    "message": "Diseño de barra lateral"
+  },
+  "sidebarTweaks_overlayHint": {
+    "message": "Arrastra para reordenar. Usa el ojo para mostrar u ocultar un elemento."
+  },
+  "sidebarTweaks_save": {
+    "message": "Guardar"
+  },
+  "sidebarTweaks_reset": {
+    "message": "Restablecer"
+  },
+  "sidebarTweaks_close": {
+    "message": "Cerrar"
+  },
+  "sidebarTweaks_empty": {
+    "message": "Purpura no pudo encontrar ningún botón de la barra lateral."
+  },
+  "sidebarTweaks_untitled": {
+    "message": "Sin título"
+  },
+  "sidebarTweaks_myProfile": {
+    "message": "Mi perfil"
+  },
+  "sidebarTweaks_myTransactions": {
+    "message": "Mis transacciones"
+  },
+  "sidebarTweaks_show": {
+    "message": "Mostrar"
+  },
+  "sidebarTweaks_hide": {
+    "message": "Ocultar"
+  },
+  "popup_debugSidebarTweaks": {
+    "message": "Ajustes de la barra lateral"
   },
   "settings_roThemer_desc1": {
     "message": "Personaliza el tema de Roblox con esquemas de color avanzados y opciones de diseño."
@@ -1638,10 +1892,73 @@
     "message": "Elige qué tema de edad de Roblox aplicar."
   },
   "settings_robuxConversations_desc": {
-    "message": "Añade el valor en USD del coste en Robux entre paréntesis junto a la cantidad en las páginas de artículos del catálogo."
+    "message": "Convierte las cantidades de Robux del sitio a la moneda que elijas, con tipo de tasa y color seleccionables."
   },
   "settings_robuxConversations_label": {
     "message": "Conversiones de Robux"
+  },
+  "settings_robuxConversations_rateType": {
+    "message": "Tipo de tasa"
+  },
+  "settings_robuxConversations_rateTypeDesc": {
+    "message": "Qué tasa de Robux usa la conversión."
+  },
+  "settings_robuxConversations_rate_regular": {
+    "message": "Compra (0.0125)"
+  },
+  "settings_robuxConversations_rate_devex": {
+    "message": "DevEx (tasa en vivo)"
+  },
+  "settings_robuxConversations_rate_premium": {
+    "message": "Premium (0.01136)"
+  },
+  "settings_robuxConversations_rate_custom": {
+    "message": "Personalizada"
+  },
+  "settings_robuxConversations_currency": {
+    "message": "Moneda"
+  },
+  "settings_robuxConversations_currencyDesc": {
+    "message": "La moneda a la que se convierten las cantidades."
+  },
+  "settings_robuxConversations_customRate": {
+    "message": "Tasa personalizada"
+  },
+  "settings_robuxConversations_customRateDesc": {
+    "message": "Dólares por Robux, usados cuando el tipo de tasa es Personalizada. Por ejemplo 0.0125."
+  },
+  "settings_robuxConversations_color": {
+    "message": "Color del texto"
+  },
+  "settings_robuxConversations_colorDesc": {
+    "message": "Color de la cantidad convertida."
+  },
+  "settings_robuxBalancePrecision_label": {
+    "message": "Precisión del saldo de Robux"
+  },
+  "settings_robuxBalancePrecision_desc": {
+    "message": "Cuántos dígitos muestra la barra superior para un saldo grande, por ejemplo 1.23M en vez de 1M+."
+  },
+  "settings_robuxBalancePrecision_default": {
+    "message": "Predeterminado de Roblox (1M+)"
+  },
+  "settings_robuxBalancePrecision_one": {
+    "message": "Un decimal (1.2M)"
+  },
+  "settings_robuxBalancePrecision_two": {
+    "message": "Dos decimales (1.23M)"
+  },
+  "settings_robuxBalancePrecision_three": {
+    "message": "Tres decimales (1.234M)"
+  },
+  "settings_robuxBalancePrecision_full": {
+    "message": "Número completo (1,234,567)"
+  },
+  "settings_robuxBonusItem_label": {
+    "message": "Elegir regalo de Robux"
+  },
+  "settings_robuxBonusItem_desc": {
+    "message": "Al comprar Robux, te permite elegir qué artículo o pase de juego de regalo recibes en vez del predeterminado."
   },
   "settings_saveLotsRobux_desc1": {
     "message": "Añade un botón de Ahorrar Robux en los diálogos de compra."
@@ -1757,6 +2074,84 @@
   "settings_serverInfo_label": {
     "message": "Información del servidor"
   },
+  "settings_siteFixes_label": {
+    "message": "Correcciones del sitio"
+  },
+  "settings_siteFixes_desc": {
+    "message": "Corrige varios problemas y malas decisiones de diseño del sitio de Roblox."
+  },
+  "siteFixes_verifiedBadge": {
+    "message": "Verificado"
+  },
+  "settings_usernameColorPreview_label": {
+    "message": "Ver color del nombre de usuario en el chat de Roblox"
+  },
+  "settings_usernameColorPreview_desc": {
+    "message": "Cambia el color del nombre de usuario en el perfil de un usuario al que Roblox le daría en el chat dentro del juego."
+  },
+  "settings_thumbnailBackgroundDisabler_label": {
+    "message": "Desactivar fondos de miniaturas"
+  },
+  "settings_thumbnailBackgroundDisabler_desc": {
+    "message": "Evita que los fondos de perfil aparezcan en los retratos de avatar y otras áreas."
+  },
+  "settings_avatarImageDownloader_label": {
+    "message": "Descargador de imagen de avatar"
+  },
+  "settings_avatarImageDownloader_desc": {
+    "message": "Añade un botón en los perfiles de usuario para guardar su avatar como archivo PNG."
+  },
+  "avatarDownloader_button": {
+    "message": "Descargar avatar"
+  },
+  "avatarDownloader_title": {
+    "message": "Descargar avatar"
+  },
+  "avatarDownloader_size": {
+    "message": "Resolución:"
+  },
+  "avatarDownloader_portrait": {
+    "message": "Retrato PNG"
+  },
+  "avatarDownloader_bust": {
+    "message": "Busto PNG"
+  },
+  "avatarDownloader_avatar": {
+    "message": "Avatar PNG"
+  },
+  "avatarDownloader_downloading": {
+    "message": "Descargando..."
+  },
+  "avatarDownloader_failed": {
+    "message": "No se pudo descargar el avatar. Inténtalo de nuevo más tarde."
+  },
+  "avatarDownloader_close": {
+    "message": "Cerrar"
+  },
+  "popup_debugUsernameColorPreview": {
+    "message": "Color del nombre en el chat"
+  },
+  "popup_debugThumbnailBackgroundDisabler": {
+    "message": "Fondos de miniaturas desactivados"
+  },
+  "popup_debugAvatarImageDownloader": {
+    "message": "Descargador de imagen de avatar"
+  },
+  "settings_siteFont_label": {
+    "message": "Fuente del sitio"
+  },
+  "settings_siteFont_desc": {
+    "message": "Reemplaza la fuente del sitio de Roblox por cualquier fuente de Google Fonts."
+  },
+  "settings_siteFont_fontUrl": {
+    "message": "Enlace de Google Fonts"
+  },
+  "settings_siteFont_fontUrlDesc": {
+    "message": "Pega un enlace de fonts.google.com (por ejemplo https://fonts.google.com/specimen/Comic+Neue), una URL de hoja de estilos de Google Fonts, o simplemente el nombre de la fuente."
+  },
+  "settings_siteFont_fontUrlPlaceholder": {
+    "message": "https://fonts.google.com/specimen/Comic+Neue"
+  },
   "settings_statusSpoofer_desc": {
     "message": "Simula tu estado en línea para aparecer desconectado o mostrar que estás en Studio."
   },
@@ -1773,7 +2168,7 @@
     "message": "**Nota:** Puede tardar hasta 5 minutos en actualizarse y debes mantener la pestaña abierta para que persista."
   },
   "settings_streamerMode_desc": {
-    "message": "Oculta información confidencial como tu nombre de usuario, saldo de Robux, correo y teléfono. Ideal al transmitir o grabar."
+    "message": "Oculta tu nombre, tus Robux, los datos de tu cuenta y tu estado en línea. Elige un ajuste o configura cada opción."
   },
   "settings_streamerMode_helpTitle": {
     "message": "Información oculta"
@@ -1832,6 +2227,12 @@
   "settings_theme_saveTheme": {
     "message": "Guardar tema"
   },
+  "settings_trustedCreatorStatus_desc": {
+    "message": "Muestra si Roblox identifica tu cuenta como miembro del Programa de creadores de confianza en la configuración de tu cuenta."
+  },
+  "settings_trustedCreatorStatus_label": {
+    "message": "Estado de creador de confianza"
+  },
   "settings_uncorporatify_desc": {
     "message": "Restaura el aspecto clásico de Roblox renombrando términos corporativos a nombres más amigables."
   },
@@ -1847,11 +2248,29 @@
   "settings_unpendingRobux_label": {
     "message": "Robux pendientes"
   },
+  "settings_unpendingRobux_showPending": {
+    "message": "Mostrar Robux pendientes al pasar el cursor"
+  },
+  "settings_unpendingRobux_showPendingDesc": {
+    "message": "Reemplaza tu saldo de Robux y sus conversiones con tus Robux pendientes al pasar el cursor sobre la cantidad de Robux en la barra de navegación."
+  },
   "settings_totalSpent_label": {
     "message": "Transacciones de por vida"
   },
   "settings_totalSpent_desc": {
     "message": "Añade una sección de \"transacciones de por vida\" a la página de transacciones que muestra cuánto Robux has gastado y ganado en el historial de transacciones de tu cuenta. También calcula el neto ganado o perdido."
+  },
+  "tcs_label": {
+    "message": "Creador de confianza"
+  },
+  "tcs_no": {
+    "message": "No"
+  },
+  "tcs_tooltip": {
+    "message": "Indica si Roblox considera esta cuenta como parte del Programa de creadores de confianza. La información viene directamente de Roblox y puede no ser exacta."
+  },
+  "tcs_yes": {
+    "message": "Sí"
   },
   "tse_totalSpent": {
     "message": "Total gastado"
@@ -1930,6 +2349,12 @@
   },
   "unpending_label": {
     "message": "Robux pendientes mañana"
+  },
+  "unpending_pending": {
+    "message": "Pendientes"
+  },
+  "unpending_pendingTooltip": {
+    "message": "Robux que has ganado pero que aún no se han liberado a tu saldo."
   },
   "unpending_rateLimit": {
     "message": "Cargando (Límite excedido)..."
@@ -2028,5 +2453,308 @@
   },
   "settings_enhancedSearch_focusKeyDesc": {
     "message": "Pulsa '/' para enfocar la barra de búsqueda."
+  },
+  "settings_customBackdrop_label": {
+    "message": "Fondo personalizado"
+  },
+  "settings_customBackdrop_desc": {
+    "message": "Coloca una imagen a tu elección detrás del sitio de Roblox. Pega un enlace de imagen o sube la tuya."
+  },
+  "settings_customBackdrop_image": {
+    "message": "Imagen"
+  },
+  "settings_customBackdrop_imagePlaceholder": {
+    "message": "https://ejemplo.com/fondo.png"
+  },
+  "settings_customBackdrop_upload": {
+    "message": "Subir"
+  },
+  "settings_customBackdrop_clear": {
+    "message": "Borrar"
+  },
+  "settings_customBackdrop_fit": {
+    "message": "Ajuste"
+  },
+  "settings_customBackdrop_opacity": {
+    "message": "Opacidad"
+  },
+  "settings_customBackdrop_blur": {
+    "message": "Desenfoque"
+  },
+  "settings_customBackdrop_dim": {
+    "message": "Oscurecer"
+  },
+  "settings_customBackdrop_error": {
+    "message": "Usa un enlace de imagen https:// o sube un archivo de imagen."
+  },
+  "settings_rolimonsProfile_label": {
+    "message": "Valor y RAP de Rolimons"
+  },
+  "settings_rolimonsProfile_desc": {
+    "message": "Muestra el RAP total de limitados y el valor de Rolimons de un usuario en su perfil. Haz clic en cualquiera para abrir su página de Rolimons."
+  },
+  "rvp_value": {
+    "message": "Valor de Rolimons"
+  },
+  "rvp_rap": {
+    "message": "Precio promedio reciente (RAP)"
+  },
+  "rvp_private": {
+    "message": "Privado"
+  },
+  "settings_extraOutfits_label": {
+    "message": "Trajes extra"
+  },
+  "settings_extraOutfits_desc": {
+    "message": "Te permite guardar más personajes de los que permite Roblox. Los personajes extra se guardan en este dispositivo y aparecen junto a tus personajes de Roblox en el editor de avatar."
+  },
+  "settings_adjustAccessories_label": {
+    "message": "Ajustar accesorios"
+  },
+  "settings_adjustAccessories_desc": {
+    "message": "Añade un botón de Ajustar accesorios al editor de avatares para reposicionar, rotar, escalar y reordenar los accesorios equipados."
+  },
+  "adjustAccessories_button": {
+    "message": "Ajustar accesorios"
+  },
+  "adjustAccessories_title": {
+    "message": "Ajustar accesorios"
+  },
+  "adjustAccessories_subtitle": {
+    "message": "Reposiciona, rota, escala y reordena los accesorios equipados en tu avatar."
+  },
+  "adjustAccessories_back": {
+    "message": "Atrás"
+  },
+  "adjustAccessories_close": {
+    "message": "Cerrar"
+  },
+  "adjustAccessories_scale": {
+    "message": "Escala"
+  },
+  "adjustAccessories_position": {
+    "message": "Posición"
+  },
+  "adjustAccessories_rotation": {
+    "message": "Rotación"
+  },
+  "adjustAccessories_order": {
+    "message": "Orden"
+  },
+  "adjustAccessories_orderTooltip": {
+    "message": "Controla el orden de composición para la ropa en capas. Las prendas con un orden superior aparecerán encima."
+  },
+  "adjustAccessories_resetToDefault": {
+    "message": "Restablecer valores predeterminados"
+  },
+  "adjustAccessories_noWornAssets": {
+    "message": "Actualmente no llevas ningún accesorio ajustable."
+  },
+  "adjustAccessories_loading": {
+    "message": "Cargando accesorios equipados..."
+  },
+  "adjustAccessories_fetchError": {
+    "message": "Ocurrió un error al obtener tu avatar, inténtalo de nuevo más tarde."
+  },
+  "adjustAccessories_updateError": {
+    "message": "Error al actualizar el activo, inténtalo de nuevo más tarde."
+  },
+  "adjustAccessories_removeError": {
+    "message": "Error al quitar el objeto equipado, inténtalo de nuevo más tarde."
+  },
+  "adjustAccessories_saved": {
+    "message": "Guardado"
+  },
+  "settings_streamerMode_keybind": {
+    "message": "Atajo para alternar"
+  },
+  "settings_streamerMode_keybindDesc": {
+    "message": "Haz clic en el campo y pulsa una combinación, por ejemplo Ctrl+Shift+M. Pulsa Retroceso para borrarlo."
+  },
+  "settings_streamerMode_keybindPlaceholder": {
+    "message": "Haz clic y pulsa teclas"
+  },
+  "settings_streamerMode_configure": {
+    "message": "Configurar"
+  },
+  "settings_streamerMode_modalDesc": {
+    "message": "Elige un ajuste o activa exactamente lo que quieres ocultar. Cada cambio se guarda al instante."
+  },
+  "settings_streamerMode_presetsHeading": {
+    "message": "Ajustes"
+  },
+  "settings_streamerMode_itemsHeading": {
+    "message": "Qué ocultar"
+  },
+  "settings_streamerMode_done": {
+    "message": "Listo"
+  },
+  "settings_streamerMode_preset_everything": {
+    "message": "Todo"
+  },
+  "settings_streamerMode_preset_everythingDesc": {
+    "message": "Oculta todos los elementos de abajo. Es la opción más completa."
+  },
+  "settings_streamerMode_preset_identity": {
+    "message": "Nombres y avatares"
+  },
+  "settings_streamerMode_preset_identityDesc": {
+    "message": "Oculta tu nombre, el de otros jugadores, los avatares y los juegos que juegan tus amigos."
+  },
+  "settings_streamerMode_preset_account": {
+    "message": "Datos de la cuenta"
+  },
+  "settings_streamerMode_preset_accountDesc": {
+    "message": "Oculta tu correo, teléfono, fecha de nacimiento, edad, país, sesiones y Robux."
+  },
+  "settings_streamerMode_preset_activity": {
+    "message": "Actividad"
+  },
+  "settings_streamerMode_preset_activityDesc": {
+    "message": "Oculta tu estado en línea y los juegos que juegas tú y tus amigos."
+  },
+  "settings_streamerMode_item_names": {
+    "message": "Tu nombre"
+  },
+  "settings_streamerMode_item_namesDesc": {
+    "message": "Difumina tu nombre de usuario y nombre visible allí donde aparezcan, incluidos los botones de chat."
+  },
+  "settings_streamerMode_item_others": {
+    "message": "Nombres de otros jugadores"
+  },
+  "settings_streamerMode_item_othersDesc": {
+    "message": "Difumina los nombres de usuario y nombres visibles en perfiles, tarjetas de avatar y listas de amigos."
+  },
+  "settings_streamerMode_item_avatars": {
+    "message": "Avatares y miniaturas"
+  },
+  "settings_streamerMode_item_avatarsDesc": {
+    "message": "Difumina tu avatar y las miniaturas de avatar que se muestran en el sitio."
+  },
+  "settings_streamerMode_item_robux": {
+    "message": "Saldo y cantidades de Robux"
+  },
+  "settings_streamerMode_item_robuxDesc": {
+    "message": "Difumina tu saldo de Robux y las cantidades que aparecen en la barra de navegación y los menús."
+  },
+  "settings_streamerMode_item_gameNames": {
+    "message": "Juegos que juegan tus amigos"
+  },
+  "settings_streamerMode_item_gameNamesDesc": {
+    "message": "Difumina los nombres de experiencias que aparecen en las tarjetas de amigos."
+  },
+  "settings_streamerMode_item_email": {
+    "message": "Correo y nombres anteriores"
+  },
+  "settings_streamerMode_item_emailDesc": {
+    "message": "Reemplaza tu correo, su estado de verificación y tus nombres anteriores en las respuestas de la cuenta."
+  },
+  "settings_streamerMode_item_phone": {
+    "message": "Número de teléfono"
+  },
+  "settings_streamerMode_item_phoneDesc": {
+    "message": "Reemplaza el número de teléfono vinculado a tu cuenta en las respuestas de la cuenta."
+  },
+  "settings_streamerMode_item_birthdate": {
+    "message": "Fecha de nacimiento"
+  },
+  "settings_streamerMode_item_birthdateDesc": {
+    "message": "Reemplaza el mes, día y año de nacimiento en las respuestas de la cuenta."
+  },
+  "settings_streamerMode_item_age": {
+    "message": "Edad y grupo de edad"
+  },
+  "settings_streamerMode_item_ageDesc": {
+    "message": "Reemplaza tu edad verificada y tu grupo de edad en las respuestas de la cuenta."
+  },
+  "settings_streamerMode_item_country": {
+    "message": "País y región"
+  },
+  "settings_streamerMode_item_countryDesc": {
+    "message": "Reemplaza el país y la región de tu cuenta en las respuestas de la cuenta."
+  },
+  "settings_streamerMode_item_sessions": {
+    "message": "Sesiones iniciadas"
+  },
+  "settings_streamerMode_item_sessionsDesc": {
+    "message": "Reemplaza las direcciones IP, ubicaciones y datos del dispositivo de tus sesiones."
+  },
+  "settings_streamerMode_item_presence": {
+    "message": "Estado en línea"
+  },
+  "settings_streamerMode_item_presenceDesc": {
+    "message": "Oculta si estás en línea y a qué estás jugando en las solicitudes de presencia."
+  },
+  "tour_label": {
+    "message": "Tour de Purpura"
+  },
+  "tour_take": {
+    "message": "Hacer el tour"
+  },
+  "tour_skip": {
+    "message": "Saltar el tour"
+  },
+  "tour_back": {
+    "message": "Atrás"
+  },
+  "tour_next": {
+    "message": "Siguiente"
+  },
+  "tour_done": {
+    "message": "Listo"
+  },
+  "tour_step_welcome_title": {
+    "message": "Bienvenido a Purpura"
+  },
+  "tour_step_welcome_body": {
+    "message": "Este es un recorrido rápido por lo que Purpura añade a Roblox. Siete paradas, más o menos un minuto, y puedes salir cuando quieras."
+  },
+  "tour_step_robux_title": {
+    "message": "Robux con contexto"
+  },
+  "tour_step_robux_body": {
+    "message": "Purpura convierte tu saldo a tu moneda, mantiene la barra legible con cantidades grandes y muestra tus Robux pendientes al pasar el cursor por el número."
+  },
+  "tour_step_search_title": {
+    "message": "Una búsqueda que llega más lejos"
+  },
+  "tour_step_search_body": {
+    "message": "Enhanced Search añade usuarios, juegos y amigos a las sugerencias de la barra y te da un atajo directo al cuadro."
+  },
+  "tour_step_sidebar_title": {
+    "message": "Una barra lateral que se comporta"
+  },
+  "tour_step_sidebar_body": {
+    "message": "Sidebar Tweaks colapsa la barra lateral hasta que pasas el cursor, te deja reordenar cada elemento y puede sustituirla por la navegación propia de Purpura."
+  },
+  "tour_step_settings_title": {
+    "message": "Todas las funciones están aquí"
+  },
+  "tour_step_settings_body": {
+    "message": "Estos son los ajustes de Purpura: categorías a la izquierda, un buscador arriba y cada opción documentada. El recorrido se detiene en algunos puntos destacados."
+  },
+  "tour_step_appearance_title": {
+    "message": "Hazlo a tu manera"
+  },
+  "tour_step_appearance_body": {
+    "message": "El editor de temas, las fuentes, los cursores, los títulos de pestaña y el Modo Streamer están en Apariencia. Activa lo que quieras y el sitio se actualiza al instante."
+  },
+  "tour_step_catalog_title": {
+    "message": "Herramientas del catálogo"
+  },
+  "tour_step_catalog_body": {
+    "message": "Las conversiones de Robux, la precisión del saldo, el selector de objeto extra y las herramientas de precios están en Catálogo. Cambian lo que ves en las páginas del mercado."
+  },
+  "tour_outro_title": {
+    "message": "Disfruta de Purpura"
+  },
+  "tour_outro_body": {
+    "message": "Purpura es gratis y seguirá siéndolo. Si hace que Roblox sea un poco mejor para ti, considera apoyar su desarrollo."
+  },
+  "tour_outro_settings": {
+    "message": "Ir a los ajustes"
+  },
+  "tour_outro_donate": {
+    "message": "Donar"
   }
 }

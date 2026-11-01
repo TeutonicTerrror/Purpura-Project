@@ -10,6 +10,19 @@
     let scheduled = false;
     const t = (key, fallback) => chrome.i18n.getMessage(key) || fallback;
     const label = () => t('shareServer_copy', 'Copy Link');
+    const COPY_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>';
+    const CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>';
+    const RETRY_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/></svg>';
+
+    function paint(button, icon, text) {
+        button.innerHTML = icon + '<span class="purpura-share-server-label"></span>';
+        button.querySelector('.purpura-share-server-label').textContent = text;
+    }
+
+    function setMood(button, mood) {
+        button.classList.toggle('is-copied', mood === 'copied');
+        button.classList.toggle('is-error', mood === 'error');
+    }
 
     function scan() {
         if (!enabled || !/^\/games\/\d+(?:\/|$)/.test(location.pathname)) return;
@@ -20,7 +33,8 @@
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'purpura-share-server';
-            button.textContent = label();
+            button.setAttribute('aria-live', 'polite');
+            paint(button, COPY_ICON, label());
             button.title = t('settings_shareServerLinks_label', 'Share Server Links');
             button.addEventListener('click', async event => {
                 event.preventDefault();
@@ -39,7 +53,8 @@
                     if (!enabled || generation !== configuration || !button.isConnected) return;
                     try {
                         await navigator.clipboard.writeText(result.url);
-                        button.textContent = t('shareServer_copied', 'Copied!');
+                        setMood(button, 'copied');
+                        paint(button, CHECK_ICON, t('shareServer_copied', 'Copied!'));
                     } catch (error) {
                         window.prompt(t('shareServer_manual', 'Copy this public server link:'), result.url);
                     }
@@ -47,12 +62,17 @@
                         ? t('shareServer_fallback', 'Copied a full link because short links are unavailable.')
                         : t('shareServer_expiry', 'Short links expire after 30 days. Servers can close sooner.');
                 } catch (error) {
-                    button.textContent = t('shareServer_retry', 'Try Again');
+                    setMood(button, 'error');
+                    paint(button, RETRY_ICON, t('shareServer_retry', 'Try Again'));
                     button.title = error.message;
                 } finally {
                     if (button.isConnected) {
                         button.disabled = false;
-                        setTimeout(() => { if (button.isConnected) button.textContent = label(); }, 2500);
+                        setTimeout(() => {
+                            if (!button.isConnected) return;
+                            setMood(button, '');
+                            paint(button, COPY_ICON, label());
+                        }, 2500);
                     }
                 }
             });
@@ -84,11 +104,45 @@
     window.addEventListener('hashchange', scan);
     const style = document.createElement('style');
     style.textContent = `
-        .purpura-share-server { width: 100%; margin-top: 8px; padding: 8px 12px; border: 1px solid #777383; border-radius: 8px; background: #303238; color: #f5f5f7; font: inherit; font-weight: 600; cursor: pointer; }
-        :is(.light-theme, .theme-light, [data-theme="light"]) .purpura-share-server { background: #fff; color: #202027; }
-        .purpura-share-server:hover:not(:disabled) { border-color: #a78bfa; }
-        .purpura-share-server:focus-visible { outline: 2px solid #a78bfa; outline-offset: 3px; }
-        .purpura-share-server:disabled { opacity: .6; cursor: wait; }
+        .purpura-share-server {
+            --psl-accent: var(--purpura-playButton, var(--color-action-emphasis-background, #335fff));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            max-width: 100%;
+            height: 28px;
+            margin-top: 4px;
+            padding: 0 12px;
+            align-self: stretch;
+            border: 1px solid var(--color-border-default, rgba(255, 255, 255, 0.14));
+            border-radius: 6px;
+            background: transparent;
+            color: var(--color-content-muted, #a3a3ad);
+            font: inherit;
+            font-size: 12.5px;
+            font-weight: 500;
+            line-height: 1;
+            cursor: pointer;
+            transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+        }
+        .purpura-share-server svg { width: 13px; height: 13px; flex: 0 0 auto; }
+        .purpura-share-server-label { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .purpura-share-server:hover:not(:disabled) {
+            color: var(--color-content-default, #f2f2f7);
+            border-color: var(--psl-accent);
+            background: var(--color-surface-300, rgba(255, 255, 255, 0.08));
+        }
+        .purpura-share-server:focus-visible { outline: 2px solid var(--psl-accent); outline-offset: 2px; }
+        .purpura-share-server:disabled { opacity: 0.7; cursor: progress; }
+        :is(.light-theme, .theme-light, [data-theme="light"]) .purpura-share-server {
+            color: var(--color-content-muted, #5b5f66);
+            border-color: var(--color-border-default, rgba(0, 0, 0, 0.14));
+        }
+        .purpura-share-server.is-copied { color: var(--psl-accent); border-color: var(--psl-accent); }
+        .purpura-share-server.is-error { color: #ff8f8f; border-color: currentColor; }
+        :is(.light-theme, .theme-light, [data-theme="light"]) .purpura-share-server.is-error { color: #b42318; }
     `;
     document.head.appendChild(style);
     configure().catch(() => {});

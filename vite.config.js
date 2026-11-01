@@ -4,10 +4,6 @@
  * Licensed under the GNU General Public License v3.0.
  */
 
-/*
- * Usage: npm run build
-*/
-
 const path = require('node:path');
 const fs = require('node:fs');
 const crypto = require('node:crypto');
@@ -210,7 +206,7 @@ async function terserProcessFile(srcPath, destPath) {
 
 const SKIP_DIRS = new Set([
     'node_modules', 'build', '.git', 'backup', '_metadata',
-    'keys',
+    'keys', 'rovalra', 'roseal',
 ]);
 const SKIP_FILES = new Set([
     'build.js',
@@ -245,11 +241,14 @@ const ISO_START_ORDER = [
     'content/feat/cat/nr.js',
     'content/api/api.js',
     'content/core/settings.js',
+    'content/core/fx.js',
     'content/core/sk-migrate.js',
     'content/core/ld.js',
     'content/core/spc.js',
+    'content/feat/cust/tbd.js',
     'content/feat/cust/stm.js',
     'content/feat/cust/thm.js',
+    'content/feat/cust/sfix.js',
     'content/core/bat.js',
     'content/feat/cust/frpt.js',
     'content/feat/cust/ia.js',
@@ -269,6 +268,8 @@ const ISO_IDLE_ORDER = [
     'content/core/smi.js',
     'content/feat/cust/unc.js',
     'content/feat/cat/rconv.js',
+    'content/feat/cat/rbp.js',
+    'content/feat/cat/rbon.js',
     'content/feat/cat/biv.js',
     'content/feat/cat/slr.js',
     'content/feat/cat/rr.js',
@@ -281,18 +282,24 @@ const ISO_IDLE_ORDER = [
     'content/feat/serv/crowd.js',
     'content/feat/serv/si.js',
     'content/feat/serv/share.js',
+    'content/feat/serv/pf.js',
     'content/misc/rp.js',
     'content/feat/cust/bwr.js',
     'content/feat/cust/hdb.js',
+    'content/feat/cust/sft.js',
+    'content/feat/cust/cbg.js',
     'content/feat/misc/up.js',
     'content/feat/misc/tse.js',
+    'content/feat/misc/tcs.js',
     'content/feat/cust/pb.js',
     'content/feat/cust/pcr.js',
     'content/feat/soc/lo.js',
+    'content/feat/soc/rvp.js',
     'content/feat/cust/bc.js',
     'content/feat/cust/sap.js',
     'content/feat/priv/lb.js',
     'content/feat/priv/bsn.js',
+    'content/feat/priv/psc.js',
     'content/feat/cat/projected.js',
     'content/feat/misc/es.js',
     'content/feat/game/pt.js',
@@ -301,6 +308,8 @@ const ISO_IDLE_ORDER = [
     'content/feat/cat/explr.js',
     'content/feat/cust/r6w.js',
     'content/feat/cust/ac.js',
+    'content/feat/cust/aa.js',
+    'content/feat/cust/eo.js',
     'content/feat/soc/cb.js',
     'content/feat/soc/ce.js',
     'content/feat/soc/fo.js',
@@ -310,13 +319,19 @@ const ISO_IDLE_ORDER = [
     'content/feat/serv/bd.js',
     'content/feat/game/go.js',
     'content/feat/game/reviews.js',
+    'content/feat/game/sho.js',
     'content/feat/game/lc.js',
     'content/feat/game/qp.js',
+    'content/feat/game/pgr.js',
+    'content/feat/game/rs.js',
+    'content/feat/misc/tour.js',
     'content/core/ob.js',
     'content/feat/game/ps.js',
     'content/feat/cust/lts.js',
     'content/feat/cust/rat.js',
-    'content/feat/onb/ob.js',
+    'content/feat/cust/ucp.js',
+    'content/feat/cust/dav.js',
+    'content/feat/cust/sbt.js',
 ];
 const MAIN_ORDER = [
     'content/core/pcb.js',
@@ -324,7 +339,10 @@ const MAIN_ORDER = [
     'content/core/frpt-main.js',
     'content/core/bc-main.js',
     'content/core/ia-main.js',
+    'content/core/eo-main.js',
     'content/core/hpt-main.js',
+    'content/core/psc-main.js',
+    'content/core/tbd-main.js',
 ];
 function buildBundle(order) {
     const parts = [];
@@ -373,6 +391,7 @@ function buildFlatExtension() {
 
     copyDir(path.join(SRC_DIR, 'css'), path.join(FLAT_DIR, 'css'));
     copyDir(path.join(ROOT, 'assets', 'images'), path.join(FLAT_DIR, 'images'));
+    copyDir(path.join(ROOT, 'assets', 'fonts'), path.join(FLAT_DIR, 'fonts'));
     copyDir(path.join(ROOT, 'assets', '_locales'), path.join(FLAT_DIR, '_locales'));
     copyDir(path.join(SRC_DIR, 'data'), path.join(FLAT_DIR, 'data'));
 
@@ -388,7 +407,7 @@ function buildFlatExtension() {
 
 const PUBLIC_ROOT_FILES = [
     'manifest.json', 'vite.config.js', 'package.json', 'package-lock.json',
-    'License.md', 'README.md', 'CONTRIBUTING.md', '.editorconfig',
+    'License.md', 'README.md', 'CONTRIBUTING.md', '.editorconfig', '.gitattributes',
 ];
 const PUBLIC_SOURCE_DIRS = ['src', 'assets', '.vscode', '.agents'];
 const PRIVATE_PATHS = ['.teutonicterror', 'node_modules'];
@@ -463,6 +482,7 @@ function rewriteHtmlForZip(srcText) {
     s = s.replace(/\bhref="css\//g, 'href="css/');
     s = s.replace(/\bsrc="js\//g, 'src="scripts/js/');
     s = s.replace(/\bsrc="images\//g, 'src="assets/images/');
+    s = s.replace(/url\((['"])fonts\//g, 'url($1assets/fonts/');
     return s;
 }
 
@@ -509,6 +529,7 @@ function buildZipStageFromFlat() {
             continue;
         }
         if (rel.startsWith('images/')) destRel = 'assets/' + rel;
+        else if (rel.startsWith('fonts/')) destRel = 'assets/' + rel;
         else if (rel === 'background.js') destRel = 'scripts/background.js';
         else if (rel.startsWith('js/')) destRel = 'scripts/' + rel;
         else if (rel.startsWith('content/')) destRel = 'scripts/' + rel;
@@ -530,7 +551,6 @@ function buildZipStageFromFlat() {
     return stageFiles;
 }
 
-// Deterministic zip: fixed entry order (sorted), fixed timestamps, no fs stats read.
 function addEntriesTo(archive, files, baseDir) {
     const sorted = [...files].sort();
     for (const abs of sorted) {
@@ -655,6 +675,7 @@ module.exports = () => {
                         const extraFiles = [
                             ['src/background/background.js', 'background.js'],
                             ['src/background/trading.js', 'js/trading.js'],
+                            ['src/background/rs.js', 'js/rs.js'],
                             ['src/popup/home.js', 'js/home.js'],
                             ['src/popup/new.js', 'js/new.js'],
                             ['src/popup/changes.js', 'js/changes.js'],

@@ -46,22 +46,26 @@
 
             const accessCode = candidate.accessCode || candidate.accesscode || null;
             const privateServerId = candidate.vipServerId || candidate.privateServerId || candidate.vipserverid || null;
+            const isOwner = typeof candidate.isOwner === 'boolean' ? candidate.isOwner : null;
 
-            if (serverId || accessCode || privateServerId) {
-                return { serverId, accessCode, privateServerId };
+            if (serverId || accessCode || privateServerId || isOwner !== null) {
+                return { serverId, accessCode, privateServerId, isOwner };
             }
         }
 
         return null;
     }
 
-    function extractFromFiberNode(fiberNode) {
+    function extractFromFiberNode(fiberNode, scope) {
         if (!fiberNode) return null;
+
+        const ancestorsOnly = scope === 'ancestors';
 
         const visited = new Set();
         const queue = [fiberNode];
         let accessCode = null;
         let privateServerId = null;
+        let isOwner = null;
         let safety = 0;
 
         while (queue.length && safety < 120) {
@@ -77,20 +81,23 @@
 
                 if (!accessCode && result.accessCode) accessCode = result.accessCode;
                 if (!privateServerId && result.privateServerId) privateServerId = result.privateServerId;
+                if (isOwner === null && typeof result.isOwner === 'boolean') isOwner = result.isOwner;
 
                 if (result.serverId) {
-                    return { serverId: result.serverId, accessCode, privateServerId };
+                    return { serverId: result.serverId, accessCode, privateServerId, isOwner };
                 }
             }
 
             if (node.return) queue.push(node.return);
-            if (node.child) queue.push(node.child);
-            if (node.sibling) queue.push(node.sibling);
-            if (node.alternate) queue.push(node.alternate);
+            if (!ancestorsOnly) {
+                if (node.child) queue.push(node.child);
+                if (node.sibling) queue.push(node.sibling);
+                if (node.alternate) queue.push(node.alternate);
+            }
         }
 
-        if (accessCode || privateServerId) {
-            return { serverId: null, accessCode, privateServerId };
+        if (accessCode || privateServerId || isOwner !== null) {
+            return { serverId: null, accessCode, privateServerId, isOwner };
         }
 
         return null;
@@ -136,14 +143,15 @@
             }
 
             const fiber = getReactFiberFromElement(element);
-            const extracted = extractFromFiberNode(fiber);
+            const extracted = extractFromFiberNode(fiber, event.detail && event.detail.scope);
 
             window.dispatchEvent(new CustomEvent('purpura-serverid-extracted', {
                 detail: {
                     extractionId,
                     serverId: extracted && extracted.serverId ? extracted.serverId : null,
                     accessCode: extracted && extracted.accessCode ? extracted.accessCode : null,
-                    privateServerId: extracted && extracted.privateServerId ? extracted.privateServerId : null
+                    privateServerId: extracted && extracted.privateServerId ? extracted.privateServerId : null,
+                    isOwner: extracted && typeof extracted.isOwner === 'boolean' ? extracted.isOwner : null
                 }
             }));
         } catch (error) {

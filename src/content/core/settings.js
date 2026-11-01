@@ -24,9 +24,12 @@
         qs: 'sync',
         explr: 'sync',
         pg: 'sync',
+        pgr: 'sync',
         go: 'sync',
         grev: 'sync',
+        sho: 'sync',
         ssl: 'sync',
+        rs: 'sync',
         lc: 'sync',
         otp: 'sync',
         pwi: 'sync',
@@ -39,6 +42,8 @@
         ac: 'sync',
         nr: 'sync',
         rconv: 'sync',
+        rbp: 'sync',
+        rbon: 'sync',
         biv: 'sync',
         up: 'sync',
         tse: 'sync',
@@ -64,11 +69,19 @@
         pcr: 'local',
         pt: 'local',
         sdbr: 'local',
+        sbt: 'local',
         bwr: 'local',
+        sfix: 'local',
+        ucp: 'local',
+        tbd: 'local',
+        dav: 'local',
+        sft: 'local',
+        cbg: 'local',
         rat: 'local',
         stm: 'local',
         lb: 'local',
         bsn: 'sync',
+        psc: 'sync',
         es: 'sync',
         qse: 'sync',
         dva: 'sync',
@@ -81,12 +94,14 @@
         recentGames: 'local',
         widgetSortMode: 'local',
         r6w: 'sync',
+        aa: 'sync',
+        eo: 'sync',
+        rvp: 'sync',
         pfl: 'sync',
         oilp: 'sync',
     };
     const CACHE = {};
     let READY = false;
-    /** Fetch the canonical defaults JSON shipped with the extension. */
     async function loadDefaults() {
         try {
             var url = chrome.runtime.getURL('data/default_settings.json');
@@ -142,6 +157,27 @@
                 }
             }
         });
+        if (typeof syncData.up === 'boolean') {
+            syncData.up = { enabled: syncData.up, showPending: true };
+            CACHE['up'] = syncData.up;
+            syncWrites.up = syncData.up;
+        }
+        if (typeof syncData.rconv === 'boolean') {
+            syncData.rconv = {
+                enabled: syncData.rconv,
+                rateType: 'Regular',
+                currency: 'USD',
+                customRate: '',
+                color: '#ffffff'
+            };
+            CACHE['rconv'] = syncData.rconv;
+            syncWrites.rconv = syncData.rconv;
+        }
+        if (syncData.rconv && typeof syncData.rconv === 'object' && syncData.rconv.color === '#00a2ff') {
+            syncData.rconv = Object.assign({}, syncData.rconv, { color: '#ffffff' });
+            CACHE['rconv'] = syncData.rconv;
+            syncWrites.rconv = syncData.rconv;
+        }
         if (CACHE['es'] === undefined && CACHE['qse'] !== undefined) {
             CACHE['es'] = CACHE['qse'];
             if (STORAGE_MAP['es'] === 'sync') syncWrites['es'] = CACHE['qse'];
@@ -151,31 +187,21 @@
             CACHE['rae'] = false;
             syncWrites['rae'] = false;
         }
+        if (CACHE['fm'] === true) {
+            CACHE['fm'] = false;
+            syncWrites['fm'] = false;
+        }
         if (Object.keys(syncWrites).length) chrome.storage.sync.set(syncWrites);
         if (Object.keys(localWrites).length) chrome.storage.local.set(localWrites);
         READY = true;
         _readyResolve();
     }
-    /**
-     * Synchronously return the cached value for `key`.
-     *
-     * Use `getRaw()` if you specifically need to bypass
-     * any future processing (currently an alias).
-     */
     function get(key) {
         return CACHE[key];
     }
-    /**
-     * Return the raw cached value for `key` -- never unwrap `.enabled`.
-     * Use this when you need the full configuration object.
-     */
     function getRaw(key) {
         return CACHE[key];
     }
-    /**
-     * Write `value` to both the in-memory cache and the correct storage area.
-     * Returns a Promise that resolves after persistence completes.
-     */
     function set(key, value) {
         CACHE[key] = value;
         var storage = storageFor(key);

@@ -101,7 +101,6 @@ if (!window.purpuraBundleItemViewerInitialized) {
         if (currentItemId !== itemId) return;
         if (!bundles || !bundles.length) return;
 
-        // Remove any existing banner
         document.querySelectorAll('.purpura-bundle-banner').forEach(el => el.remove());
 
         const target = document.querySelector('.item-details-container, .catalog-page-content, .container-main');
@@ -186,7 +185,6 @@ if (!window.purpuraBundleItemViewerInitialized) {
     }
 
     function startContainerObserver(itemId) {
-        // Clear any previous observer
         if (containerPollInterval) {
             clearInterval(containerPollInterval);
             containerPollInterval = null;
@@ -226,13 +224,11 @@ if (!window.purpuraBundleItemViewerInitialized) {
             return;
         }
 
-        // Don't re-fetch if we already have data for this item
         if (currentItemId === itemId && currentBundles) {
             showBundleInfo(currentBundles, itemId);
             return;
         }
 
-        // Don't start a new fetch if one is already in-flight for this item
         if (currentItemId === itemId && fetchInFlight) {
             startContainerObserver(itemId);
             return;
@@ -242,7 +238,6 @@ if (!window.purpuraBundleItemViewerInitialized) {
         currentBundles = null;
         fetchInFlight = true;
 
-        // Fetch data first, then watch for container to appear (handles React async render)
         fetchBundles(itemId).then(function() {
             if (currentItemId !== itemId) return;
             fetchInFlight = false;
@@ -260,7 +255,6 @@ if (!window.purpuraBundleItemViewerInitialized) {
         if (enabled) init();
     }
 
-    // Use polling to detect URL changes (more reliable than pushState hooks with React SPA)
     function startUrlPolling() {
         if (urlPollInterval) return;
         urlPollInterval = setInterval(onUrlChange, 600);

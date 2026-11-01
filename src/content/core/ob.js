@@ -4,7 +4,11 @@
  * Licensed under the GNU General Public License v3.0.
  */
 (function() {
+    if (window.__purpuraOnboardingLoaded) return;
+    window.__purpuraOnboardingLoaded = true;
+
     const STORAGE_KEY = 'ob';
+    let showing = false;
 
     function isHomePage() {
         return location.pathname === '/home' || location.pathname.startsWith('/home/');
@@ -99,6 +103,11 @@
         screenshot.alt = 'Purpura settings button guide';
         screenshot.style.cssText = 'max-width: 100%; max-height: 220px; width: auto; height: auto; display: block; margin: 12px auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15);';
 
+        const tourHint = document.createElement('p');
+        tourHint.textContent = 'Would you rather be shown around? The tour walks through the site and the settings with you, and you can leave it at any time.';
+        tourHint.style.margin = '12px 0 0 0';
+        tourHint.style.opacity = '0.85';
+
         const closing = document.createElement('p');
         closing.textContent = 'Enjoy using Purpura!';
         closing.style.margin = '12px 0 0 0';
@@ -110,6 +119,7 @@
         body.appendChild(description);
         body.appendChild(instructions);
         body.appendChild(screenshot);
+        body.appendChild(tourHint);
         body.appendChild(closing);
 
         const footer = document.createElement('div');
@@ -136,6 +146,29 @@
         closeBtn.addEventListener('click', () => {
             chrome.storage.local.set({ [STORAGE_KEY]: true }, () => {
                 overlay.remove();
+            });
+        });
+
+        const tourBtn = document.createElement('button');
+        tourBtn.type = 'button';
+        tourBtn.textContent = chrome.i18n.getMessage('tour_take') || 'Take the tour';
+        tourBtn.style.cssText = `
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(155,109,255,0.55);
+            background: linear-gradient(135deg, #8b5cf6 0%, #6f3fd0 100%);
+            color: #ffffff;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 6px 18px rgba(122,68,192,0.35);
+        `;
+
+        tourBtn.addEventListener('click', () => {
+            chrome.storage.local.set({ [STORAGE_KEY]: true }, () => {
+                overlay.remove();
+                setTimeout(() => {
+                    if (window.__PurpuraTour) window.__PurpuraTour.start();
+                }, 60);
             });
         });
 
@@ -166,6 +199,7 @@
         dialog.appendChild(body);
         dialog.appendChild(footer);
         dialog.appendChild(closeIcon);
+        footer.appendChild(tourBtn);
         footer.appendChild(closeBtn);
 
         overlay.appendChild(dialog);
@@ -173,13 +207,38 @@
         return overlay;
     }
 
+    function tourActive() {
+        return !!(window.__PurpuraTour && window.__PurpuraTour.isActive());
+    }
+
+    function tourRequested() {
+        return new Promise(function(resolve) {
+            try {
+                chrome.storage.local.get(['purpuraTourRequest'], function(stored) {
+                    resolve(!!(stored && stored.purpuraTourRequest));
+                });
+            } catch (error) {
+                resolve(false);
+            }
+        });
+    }
+
     async function init() {
         if (!isHomePage()) return;
+        if (showing || document.getElementById('purpura-onboarding-overlay')) return;
 
         window.__PurpuraSettings.ready.then(async function() {
+            if (!isHomePage()) return;
+            if (showing || document.getElementById('purpura-onboarding-overlay')) return;
             if (window.__PurpuraSettings.get(STORAGE_KEY)) return;
+            if (tourActive() || await tourRequested()) return;
 
+            showing = true;
             const displayName = await getDisplayName();
+            if (!isHomePage() || document.getElementById('purpura-onboarding-overlay') || window.__PurpuraSettings.get(STORAGE_KEY)) {
+                showing = false;
+                return;
+            }
             const overlay = createOverlay(displayName);
             document.documentElement.appendChild(overlay);
         });

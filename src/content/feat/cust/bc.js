@@ -118,7 +118,6 @@
                 const match = url.pathname.match(/\/games\/(\d+)/i);
                 if (match) addId(match[1]);
             } catch (_) {
-                /* Ignore malformed links. */
             }
         });
         return ids;
@@ -460,7 +459,6 @@
             });
             scheduleDomSync(games, []);
         } catch (_) {
-            /* Ignore transient Roblox API or DOM failures. */
         }
     }
 })();

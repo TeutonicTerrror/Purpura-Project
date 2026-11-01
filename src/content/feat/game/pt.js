@@ -7,9 +7,6 @@
 'use strict';
 
 
-// Roblox's navbar markup changes without notice and the icon group no longer
-// always carries the legacy `nav` class, so match the group rather than one
-// exact class list. This mirrors RoValra's navbar button injection.
 var ICON_GROUP_SELECTORS = [
     'ul.navbar-right.rbx-navbar-icon-group',
     '.navbar-right.rbx-navbar-icon-group',

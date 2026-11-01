@@ -22,23 +22,73 @@
     const NOTICE_TEXT = t('frpt_notice');
     const LOGO_URL = chrome.runtime.getURL('images/icons/default/Purpura_Default_Logo_128.png');
     const TOKEN_HEADER_NAME = 'x-bound-auth-token';
+    const MODE_THEME_CLASSES = ['dark-theme', 'light-theme'];
+    const PICK_ADOPT_WINDOW_MS = 5000;
+    const ACCOUNT_PAGE_PATTERN = /\/my\/account(\?|#|$)/;
+
+    const ROBLOX_THEME_PRESETS = [
+        { setting: 'Classic', value: 'classic' },
+        { setting: 'CircuitRush', value: 'circuit-rush' },
+        { setting: 'CosmicDust', value: 'cosmic-dust' },
+        { setting: 'ElectricLime', value: 'electric-lime' },
+        { setting: 'HyperPlum', value: 'hyper-plum' },
+        { setting: 'InfernoBlast', value: 'inferno-blast' },
+        { setting: 'KineticEnergy', value: 'kinetic-energy' },
+        { setting: 'LavaGlow', value: 'lava-glow' },
+        { setting: 'NebulaDrift', value: 'nebula-drift' },
+        { setting: 'NitroFrost', value: 'nitro-frost' },
+        { setting: 'PixelPop', value: 'pixel-pop' },
+        { setting: 'PolarFreeze', value: 'polar-freeze' },
+        { setting: 'QuantumPulse', value: 'quantum-pulse' },
+        { setting: 'StarBurst', value: 'star-burst' },
+        { setting: 'SuperCharge', value: 'super-charge' }
+    ];
+
+    const PRESET_VALUES = new Set(ROBLOX_THEME_PRESETS.map(p => p.value));
+
+    function getPresetClasses(preset) {
+        return PRESET_VALUES.has(preset) ? [`theme-${preset}`, `${preset}-theme`] : [];
+    }
+
+    const ALL_PRESET_CLASSES = ROBLOX_THEME_PRESETS.flatMap(p => getPresetClasses(p.value));
 
     const state = {
         enabled: false,
-        injectedThemeClass: null,
+        appliedPresetClasses: [],
+        bodyClassObserver: null,
         themeSectionObserver: null,
-        sectionFinder: null,
         accountThemeRequest: null,
         cacheKey: CACHE_KEY_PREFIX + 'anonymous',
-        pickedTheme: null
+        pickedTheme: null,
+        pickRequestedAt: 0,
+        restoreTimer: null
     };
 
     const hbaClient = new window.PurpuraHBAClient({ onSite: true });
 
+    function toKebabTheme(accountTheme) {
+        if (typeof accountTheme !== 'string' || !accountTheme.trim()) return null;
+        const trimmed = accountTheme.trim();
+        if (trimmed === 'Default' || trimmed === 'None') return null;
+        if (/^[a-z0-9-]+$/.test(trimmed) && PRESET_VALUES.has(trimmed)) {
+            return trimmed;
+        }
+        if (!/^[A-Za-z0-9]+$/.test(trimmed)) return null;
+        const kebab = trimmed.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+        if (MODE_THEME_CLASSES.indexOf(`${kebab}-theme`) !== -1) return null;
+        return kebab;
+    }
+
+    function getThemeClasses(accountTheme) {
+        const kebab = toKebabTheme(accountTheme);
+        if (!kebab) return [];
+        if (PRESET_VALUES.has(kebab)) return getPresetClasses(kebab);
+        return [`theme-${kebab}`, `${kebab}-theme`];
+    }
+
     function getThemeClass(accountTheme) {
-        return typeof accountTheme !== 'string' || !/^[A-Za-z0-9]+$/.test(accountTheme)
-            ? null
-            : `${accountTheme.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()}-theme`;
+        const kebab = toKebabTheme(accountTheme);
+        return kebab ? `${kebab}-theme` : null;
     }
 
     function waitForBody() {
@@ -54,39 +104,150 @@
         });
     }
 
-    function removeInjectedThemeClass() {
-        if (state.injectedThemeClass && document.body) {
-            document.body.classList.remove(state.injectedThemeClass);
-        }
-        state.injectedThemeClass = null;
+    function isOurPresetClass(className) {
+        return state.appliedPresetClasses.indexOf(className) !== -1;
     }
 
-    const MODE_THEME_CLASSES = ['dark-theme', 'light-theme'];
+    function hasCompetingPresetClasses() {
+        const body = document.body;
+        if (!body) return false;
+        return ALL_PRESET_CLASSES.some(
+            className => !isOurPresetClass(className) && body.classList.contains(className)
+        );
+    }
 
-    function appThemeClasses() {
-        if (!document.body) return [];
-        return Array.from(document.body.classList).filter(name => name.endsWith('-theme') && MODE_THEME_CLASSES.indexOf(name) === -1);
+    function presetOnBody() {
+        const body = document.body;
+        if (!body) return null;
+        const classNames = typeof body.className === 'string' ? body.className : '';
+        let winner = null;
+        let winnerAt = -1;
+        for (let i = 0; i < ROBLOX_THEME_PRESETS.length; i++) {
+            const preset = ROBLOX_THEME_PRESETS[i];
+            const presetClasses = getPresetClasses(preset.value);
+            for (let j = 0; j < presetClasses.length; j++) {
+                if (!body.classList.contains(presetClasses[j])) continue;
+                const at = classNames.indexOf(presetClasses[j]);
+                if (at > winnerAt) {
+                    winnerAt = at;
+                    winner = preset;
+                }
+            }
+        }
+        return winner;
+    }
+
+    function adoptThemeOnBody() {
+        const preset = presetOnBody();
+        if (!preset) return false;
+
+        const classes = getPresetClasses(preset.value);
+        const previous = state.appliedPresetClasses;
+        const changed = classes.join(' ') !== previous.join(' ');
+        if (changed && document.body) {
+            const stale = previous.filter(className => classes.indexOf(className) === -1);
+            if (stale.length) document.body.classList.remove(...stale);
+        }
+        state.appliedPresetClasses = classes;
+        if (changed && state.pickedTheme !== preset.setting) savePickedTheme(preset.setting);
+        return changed;
+    }
+
+    function restorePresetClasses() {
+        const body = document.body;
+        if (!body || !state.enabled || !state.appliedPresetClasses.length) return;
+        for (let i = 0; i < state.appliedPresetClasses.length; i++) {
+            const cls = state.appliedPresetClasses[i];
+            if (!body.classList.contains(cls)) body.classList.add(cls);
+        }
+    }
+
+    function schedulePresetRestore() {
+        if (state.restoreTimer) return;
+        state.restoreTimer = setTimeout(() => {
+            state.restoreTimer = null;
+            if (!state.enabled || !state.appliedPresetClasses.length) return;
+            if (Date.now() - state.pickRequestedAt < PICK_ADOPT_WINDOW_MS && hasCompetingPresetClasses()) {
+                adoptThemeOnBody();
+                return;
+            }
+            restorePresetClasses();
+        }, 30);
+    }
+
+    function syncPresetClassesOnBody() {
+        if (!state.enabled || !state.appliedPresetClasses.length) return;
+
+        const pickIsFresh = Date.now() - state.pickRequestedAt < PICK_ADOPT_WINDOW_MS;
+        if (pickIsFresh && hasCompetingPresetClasses()) {
+            adoptThemeOnBody();
+            return;
+        }
+
+        const body = document.body;
+        if (!body) return;
+        for (let i = 0; i < state.appliedPresetClasses.length; i++) {
+            if (!body.classList.contains(state.appliedPresetClasses[i])) {
+                schedulePresetRestore();
+                return;
+            }
+        }
+    }
+
+    function observeBodyClasses() {
+        if (state.bodyClassObserver || !document.body) return;
+        state.bodyClassObserver = new MutationObserver(syncPresetClassesOnBody);
+        state.bodyClassObserver.observe(document.body, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    }
+
+    function removeInjectedThemeClass() {
+        if (state.restoreTimer) {
+            clearTimeout(state.restoreTimer);
+            state.restoreTimer = null;
+        }
+        if (state.bodyClassObserver) {
+            state.bodyClassObserver.disconnect();
+            state.bodyClassObserver = null;
+        }
+        const body = document.body;
+        if (body && state.appliedPresetClasses.length) {
+            body.classList.remove(...state.appliedPresetClasses);
+        }
+        state.appliedPresetClasses = [];
     }
 
     function applyAccountTheme(accountTheme) {
         if (!document.body) return;
-        const themeClass = getThemeClass(accountTheme);
-        appThemeClasses().forEach(name => {
-            if (name !== themeClass) document.body.classList.remove(name);
-        });
-        state.injectedThemeClass = null;
-        if (!themeClass) return;
-        if (!document.body.classList.contains(themeClass)) document.body.classList.add(themeClass);
-        state.injectedThemeClass = themeClass;
-    }
+        const classes = getThemeClasses(accountTheme);
+        if (!classes.length) {
+            removeInjectedThemeClass();
+            return;
+        }
 
-    function releaseAllThemeClasses() {
-        if (!document.body) return;
-        appThemeClasses().forEach(name => document.body.classList.remove(name));
-        state.injectedThemeClass = null;
+        if (classes.join(' ') === state.appliedPresetClasses.join(' ')) {
+            observeBodyClasses();
+            restorePresetClasses();
+            return;
+        }
+
+        if (state.bodyClassObserver) {
+            state.bodyClassObserver.disconnect();
+            state.bodyClassObserver = null;
+        }
+        if (state.appliedPresetClasses.length) {
+            document.body.classList.remove(...state.appliedPresetClasses);
+        }
+
+        state.appliedPresetClasses = classes;
+        observeBodyClasses();
+        restorePresetClasses();
     }
 
     function addThemeNotice(themeSection) {
+        if (!state.enabled) return;
         if (!(themeSection instanceof Element) || themeSection.querySelector(`#${NOTICE_ID}`)) return;
 
         const notice = document.createElement('p');
@@ -109,32 +270,33 @@
         (themeSection.querySelector('[role="group"]') || themeSection).before(notice);
     }
 
-    function observeThemeSection(themeSection) {
-        if (state.themeSectionObserver) state.themeSectionObserver.disconnect();
-        const ensureNotice = () => addThemeNotice(themeSection);
-        ensureNotice();
-        state.themeSectionObserver = new MutationObserver(ensureNotice);
-        state.themeSectionObserver.observe(themeSection, { childList: true, subtree: true });
+    function ensureThemeNotices() {
+        if (!state.enabled) return;
+        const sections = document.querySelectorAll(THEME_SECTION_SELECTOR);
+        for (let i = 0; i < sections.length; i++) addThemeNotice(sections[i]);
+    }
+
+    function removeThemeNotices() {
+        document.querySelectorAll(`#${NOTICE_ID}`).forEach(notice => notice.remove());
+    }
+
+    let noticeFlushScheduled = false;
+
+    function scheduleThemeNoticeFlush() {
+        if (noticeFlushScheduled) return;
+        noticeFlushScheduled = true;
+        setTimeout(() => {
+            noticeFlushScheduled = false;
+            ensureThemeNotices();
+        }, 0);
     }
 
     function watchThemeSection() {
-        if (!/\/my\/account(\?|#|$)/.test(location.href)) return;
-        const findSection = () => document.querySelector(THEME_SECTION_SELECTOR);
-        const section = findSection();
-        if (section) {
-            observeThemeSection(section);
-            return;
-        }
-        if (state.sectionFinder) return;
-        state.sectionFinder = new MutationObserver(() => {
-            const found = findSection();
-            if (found) {
-                observeThemeSection(found);
-                state.sectionFinder.disconnect();
-                state.sectionFinder = null;
-            }
-        });
-        state.sectionFinder.observe(document.documentElement, { childList: true, subtree: true });
+        if (!ACCOUNT_PAGE_PATTERN.test(location.href)) return;
+        ensureThemeNotices();
+        if (state.themeSectionObserver) return;
+        state.themeSectionObserver = new MutationObserver(scheduleThemeNoticeFlush);
+        state.themeSectionObserver.observe(document.documentElement, { childList: true, subtree: true });
     }
 
     function stopSectionObservers() {
@@ -142,10 +304,7 @@
             state.themeSectionObserver.disconnect();
             state.themeSectionObserver = null;
         }
-        if (state.sectionFinder) {
-            state.sectionFinder.disconnect();
-            state.sectionFinder = null;
-        }
+        noticeFlushScheduled = false;
     }
 
     function resolveCacheKey() {
@@ -166,18 +325,19 @@
             chrome.storage.local.get(pickedThemeKey(), data => {
                 const stored = data && data[pickedThemeKey()];
                 state.pickedTheme = typeof stored === 'string' && stored ? stored : null;
-                if (state.pickedTheme) announceKnownTheme(state.pickedTheme);
+                announceKnownTheme(state.pickedTheme || '');
                 resolve(state.pickedTheme);
             });
         });
     }
 
     function savePickedTheme(theme) {
-        const value = typeof theme === 'string' ? theme : '';
-        state.pickedTheme = value || null;
-        announceKnownTheme(value);
+        const raw = typeof theme === 'string' ? theme.trim() : '';
+        const cleared = !raw || raw === 'Default' || raw === 'None' || !getThemeClass(raw);
+        state.pickedTheme = cleared ? null : raw;
+        announceKnownTheme(state.pickedTheme || '');
         return new Promise(resolve => {
-            chrome.storage.local.set({ [pickedThemeKey()]: value }, resolve);
+            chrome.storage.local.set({ [pickedThemeKey()]: state.pickedTheme || '' }, resolve);
         });
     }
 
@@ -244,7 +404,7 @@
         const headers = new Headers();
         headers.set('Accept', 'application/json');
 
-        const authenticatedUserId = await getAuthenticatedUserId();
+        const authenticatedUserId = getAuthenticatedUserId();
         try {
             const batHeaders = await hbaClient.generateBaseHeaders(fullUrl, method, !!authenticatedUserId, undefined);
             if (batHeaders[TOKEN_HEADER_NAME]) headers.set(TOKEN_HEADER_NAME, batHeaders[TOKEN_HEADER_NAME]);
@@ -262,39 +422,44 @@
     async function handleUserSettingsResponse(settingsData) {
         if (!settingsData || typeof settingsData !== 'object') return;
 
-        if (state.pickedTheme && settingsData.accountTheme !== state.pickedTheme) {
-            if (state.enabled) applyAccountTheme(state.pickedTheme);
-            return;
+        const serverTheme = typeof settingsData.accountTheme === 'string' ? settingsData.accountTheme : '';
+        const serverHasPlusTheme = !!getThemeClass(serverTheme) && serverTheme !== 'Classic';
+
+        if (serverHasPlusTheme && state.pickedTheme && state.pickedTheme !== serverTheme) {
+            await savePickedTheme(serverTheme);
         }
+
+        const effectiveTheme = state.pickedTheme || serverTheme;
 
         const cached = await getCachedSettings();
         const accountThemeChanged = !cached || cached.settings.accountTheme !== settingsData.accountTheme;
         const cacheExpired = !cached || cached.expiresAt <= Date.now();
-        if (!accountThemeChanged && !cacheExpired) return;
+        if (accountThemeChanged || cacheExpired) {
+            await setCachedSettings(settingsData);
+        }
 
-        await setCachedSettings(settingsData);
-        if (state.enabled) applyAccountTheme(settingsData.accountTheme);
+        if (state.enabled) applyAccountTheme(effectiveTheme);
     }
 
     async function loadCachedAccountTheme() {
         const cached = await getCachedSettings();
         if (!cached || typeof cached.settings.accountTheme !== 'string') return false;
-        applyAccountTheme(cached.settings.accountTheme);
+        applyAccountTheme(state.pickedTheme || cached.settings.accountTheme);
         return true;
     }
 
     async function requestAccountTheme() {
         if (state.accountThemeRequest) return state.accountThemeRequest;
         state.accountThemeRequest = (async () => {
-            const settingsData = await proxiedFetch(`${USER_SETTINGS_ENDPOINT}?_PurpuraRequest=${Date.now()}`);
-            if (settingsData) {
-                await handleUserSettingsResponse(settingsData);
+            const proxied = await proxiedFetch(`${USER_SETTINGS_ENDPOINT}?_PurpuraRequest=${Date.now()}`);
+            if (proxied) {
+                await handleUserSettingsResponse(proxied);
                 return;
             }
 
             try {
                 const response = await fetchUserSettings();
-                if (response.ok) await handleUserSettingsResponse(await response.json());
+                if (response && response.ok) await handleUserSettingsResponse(await response.json());
             } catch {}
         })().finally(() => {
             state.accountThemeRequest = null;
@@ -308,9 +473,10 @@
         await loadPickedTheme();
         if (state.pickedTheme) {
             applyAccountTheme(state.pickedTheme);
-            return;
+        } else {
+            await loadCachedAccountTheme();
         }
-        if (!(await loadCachedAccountTheme())) await requestAccountTheme();
+        await requestAccountTheme();
     }
 
     function isThemeEditorActive() {
@@ -327,15 +493,17 @@
 
         if (state.enabled && isThemeEditorActive()) {
             removeInjectedThemeClass();
+            removeThemeNotices();
             stopSectionObservers();
             return;
         }
 
         if (state.enabled) {
-            loadAccountTheme().catch(() => {});
             watchThemeSection();
+            loadAccountTheme().catch(() => {});
         } else {
             removeInjectedThemeClass();
+            removeThemeNotices();
             stopSectionObservers();
         }
     }
@@ -353,9 +521,11 @@
     document.addEventListener('purpura:frpt-theme-picked', (event) => {
         const theme = event.detail && typeof event.detail.theme === 'string' ? event.detail.theme : null;
         if (!state.enabled || theme === null) return;
+        state.pickRequestedAt = Date.now();
+        resolveCacheKey();
         savePickedTheme(theme).then(() => {
-            if (theme) applyAccountTheme(theme);
-            else releaseAllThemeClasses();
+            if (state.pickedTheme) applyAccountTheme(state.pickedTheme);
+            else removeInjectedThemeClass();
         });
     });
 

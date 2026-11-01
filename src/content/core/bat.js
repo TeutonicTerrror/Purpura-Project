@@ -294,7 +294,7 @@
             if (this.onSite && this.urls.currentUrl) {
                 try {
                     if (!new URL(url, this.urls.currentUrl).href.includes(this.urls.matchRobloxBaseUrl)) return false;
-                } catch (error) { /* ignore */ }
+                } catch (error) { }
             }
             if (this.urls.forceBATUrls.some(url2 => url.includes(url2))) return true;
             const metadata = await this.getTokenMetadata();

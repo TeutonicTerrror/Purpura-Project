@@ -4,6 +4,7 @@
  * Licensed under the GNU General Public License v3.0.
  */
 importScripts(chrome.runtime.getURL('js/trading.js'));
+importScripts(chrome.runtime.getURL('js/rs.js'));
 const SESSION_TTL_DEFAULT_MS = 14 * 24 * 60 * 60 * 1000;
 const STUDIO_API_KEY_STORAGE_KEY = 'purpura_studio_api_keys';
 const STUDIO_API_KEY_LEGACY_STORAGE_KEY = 'purpura_ghost_api_keys';
@@ -683,6 +684,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             sendResponse(result);
         }).catch(error => {
             sendResponse({ region: "??", regionName: "Unknown", location: null, error: error.message });
+        });
+        return true;
+    } else if (request.action === "getServerRegions") {
+        getServerRegionsBatch(request.placeId, request.serverIds, sender && sender.tab ? sender.tab.id : null).then(result => {
+            sendResponse(result);
+        }).catch(() => {
+            sendResponse({ servers: [] });
         });
         return true;
     } else if (request.action === "getAllServerRegions") {
@@ -1491,6 +1499,89 @@ async function getSimpleServerRegion(serverId, placeId) {
     } catch (error) {
         const result = { region: "??", regionName: "Unknown", location: null, error: error.message };
         return result;
+    }
+}
+
+const MAX_BATCH_REGION_SERVERS = 40;
+
+async function getServerRegionsBatch(placeId, serverIds, tabId) {
+    const ids = Array.isArray(serverIds)
+        ? serverIds.filter(function (id) { return typeof id === 'string' && id.length > 0 && id.length <= 64; }).slice(0, MAX_BATCH_REGION_SERVERS)
+        : [];
+    const numericPlaceId = parseInt(placeId, 10);
+    if (!ids.length || !numericPlaceId) return { servers: [] };
+
+    if (!serverIpMap) await loadServerListData();
+
+    try {
+        let targetTabId = tabId;
+        if (!targetTabId) {
+            const tabs = await chrome.tabs.query({url: "*://*.roblox.com/*"});
+            if (tabs.length === 0) return { servers: [] };
+            targetTabId = tabs[0].id;
+        }
+
+        const result = await chrome.scripting.executeScript({
+            target: {tabId: targetTabId},
+            world: 'MAIN',
+            func: async (placeId, ids) => {
+                try {
+                    const csrfResponse = await fetch('https://auth.roblox.com/v2/logout', {
+                        method: 'POST',
+                        credentials: 'include'
+                    });
+                    const csrfToken = csrfResponse.headers.get('x-csrf-token');
+                    if (!csrfToken) return [];
+
+                    const output = [];
+                    for (let index = 0; index < ids.length; index += 8) {
+                        const batch = ids.slice(index, index + 8);
+                        const settled = await Promise.all(batch.map(async (serverId) => {
+                            try {
+                                const response = await fetch('https://gamejoin.roblox.com/v1/join-game-instance', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json',
+                                        'X-Csrf-Token': csrfToken
+                                    },
+                                    body: JSON.stringify({
+                                        placeId: placeId,
+                                        isTeleport: false,
+                                        gameId: serverId,
+                                        gameJoinAttemptId: crypto.randomUUID(),
+                                        isPlayTogetherGame: false
+                                    }),
+                                    credentials: 'include'
+                                });
+                                if (!response.ok) return null;
+                                const data = await response.json();
+                                const dataCenterId = data && data.joinScript && data.joinScript.DataCenterId;
+                                return dataCenterId ? { serverId, dataCenterId } : null;
+                            } catch (_) {
+                                return null;
+                            }
+                        }));
+                        settled.forEach((entry) => { if (entry) output.push(entry); });
+                    }
+                    return output;
+                } catch (_) {
+                    return [];
+                }
+            },
+            args: [numericPlaceId, ids]
+        });
+
+        const resolved = Array.isArray(result?.[0]?.result) ? result[0].result : [];
+        const servers = [];
+        resolved.forEach((entry) => {
+            const datacenter = findDatacenter(entry.dataCenterId);
+            if (!datacenter || !datacenter.location) return;
+            servers.push({ serverId: entry.serverId, dataCenterId: entry.dataCenterId, location: datacenter.location });
+        });
+        return { servers };
+    } catch (error) {
+        return { servers: [] };
     }
 }
 
@@ -2412,7 +2503,9 @@ chrome.runtime.onInstalled.addListener(() => {
             const LOCAL_KEYS = new Set([
                 'ghos', 'hpt', 'unc', 'uncConfig', 'pcr', 'pt',
                 'thm', 'thmEnabled', 'rat', 'lts',
-                'sdbr', 'bwr', 'stm', 'lb', 'rae',
+                'sdbr', 'sbt', 'bwr', 'sft', 'sfix', 'stm', 'lb', 'rae',
+                'ucp', 'tbd', 'dav',
+                'tcs',
                 'ob', 'gr', 'sap',
             ]);
 

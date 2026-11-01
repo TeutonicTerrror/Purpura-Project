@@ -9,351 +9,571 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>What's New in Purpura</title>
-    <link href='https://fonts.googleapis.com/css?family=Quicksand:400,700' rel='stylesheet' type='text/css'>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Quicksand:wght@700&display=swap" rel="stylesheet">
     <style>
+        @font-face {
+            font-family: 'OpenDyslexic';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url('fonts/OpenDyslexic-Regular.woff') format('woff');
+        }
+        @font-face {
+            font-family: 'OpenDyslexic';
+            font-style: normal;
+            font-weight: 700;
+            font-display: swap;
+            src: url('fonts/OpenDyslexic-Bold.woff') format('woff');
+        }
+        :root {
+            --c-bg: #0b0c10;
+            --c-surface: #111219;
+            --c-card: #161720;
+            --c-text: #f0eeff;
+            --c-text-2: #a89ec4;
+            --c-text-3: #6d6487;
+            --c-accent: #9b6dff;
+            --c-accent-dim: #6b44c7;
+            --c-border: rgba(255, 255, 255, 0.07);
+            --c-border-2: rgba(255, 255, 255, 0.12);
+            --c-radius: 10px;
+            --c-radius-lg: 14px;
+            --c-font: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: linear-gradient(160deg, #0f0a1a 0%, #1a0d2e 50%, #0d0618 100%);
-            color: rgba(255, 255, 255, 0.85);
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--c-bg);
+            color: var(--c-text);
+            font-family: var(--c-font);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 48px 20px 32px;
+            padding: 28px 20px;
         }
         .page {
             width: 100%;
-            max-width: 640px;
+            max-width: 620px;
             display: flex;
             flex-direction: column;
             flex: 1;
         }
-        .header {
+        .topbar {
             display: flex;
             align-items: center;
-            gap: 16px;
-            margin-bottom: 36px;
+            gap: 12px;
+            padding: 0 2px;
+            margin-bottom: 20px;
         }
-        .header-logo {
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
+        .topbar-logo {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--c-radius);
             flex-shrink: 0;
         }
-        .header-text h1 {
-            font-size: 22px;
+        .topbar-text { min-width: 0; }
+        .topbar-text h1 {
+            font-size: 20px;
             font-weight: 700;
-            color: #f0eeff;
             letter-spacing: -0.3px;
-            margin-bottom: 2px;
+            background: linear-gradient(135deg, #c4a7ff 0%, #9b6dff 52%, #7c4dff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.25;
         }
-        .header-text span {
+        .topbar-text span {
+            display: block;
             font-size: 12px;
-            color: rgba(255, 255, 255, 0.35);
-            font-weight: 500;
+            color: var(--c-text-3);
         }
         .close-btn {
-            margin-left: auto;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 18px;
-            cursor: pointer;
-            width: 36px;
-            height: 36px;
+            margin-left: 0;
+            width: 30px;
+            height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
-            flex-shrink: 0;
-            transition: all 0.2s;
+            border: 1px solid var(--c-border);
+            border-radius: 8px;
+            background: var(--c-surface);
+            color: var(--c-text-3);
+            font-size: 17px;
+            line-height: 1;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
         }
         .close-btn:hover {
-            background: rgba(255, 255, 255, 0.12);
-            color: #fff;
+            background: #1c1d28;
+            border-color: var(--c-border-2);
+            color: var(--c-text);
         }
         .changelog-card {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.06), rgba(109, 40, 217, 0.03));
-            border: 1px solid rgba(139, 92, 246, 0.15);
-            border-radius: 16px;
-            padding: 28px;
-            margin-bottom: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        .changelog-card h2 {
-            font-size: 20px;
+        .card {
+            background: var(--c-card);
+            border: 1px solid var(--c-border);
+            border-radius: var(--c-radius-lg);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+        .release {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 15px 18px;
+        }
+        .release-title {
+            font-size: 16px;
             font-weight: 700;
-            color: #f0eeff;
-            margin-bottom: 10px;
+            letter-spacing: -0.2px;
         }
-        .changelog-card .date {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.35);
-            margin-bottom: 18px;
+        .release-date {
+            margin-top: 2px;
+            font-size: 12.5px;
+            color: var(--c-text-3);
         }
-        .changelog-card .changes-body {
-            color: rgba(255, 255, 255, 0.65);
-            font-size: 14px;
-            line-height: 1.7;
-        }
-        .changelog-card .changes-h1,
-        .changelog-card .changes-h2 {
-            font-size: 13px;
+        .chg-pill {
+            flex-shrink: 0;
+            padding: 4px 10px;
+            border-radius: 99px;
+            border: 1px solid rgba(155, 109, 255, 0.35);
+            background: rgba(155, 109, 255, 0.14);
+            color: #c9b6ff;
+            font-size: 10.5px;
             font-weight: 700;
-            color: #c4b5fd;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
-            letter-spacing: 0.6px;
-            margin: 24px 0 12px;
         }
-        .changelog-card .changes-h1:first-child,
-        .changelog-card .changes-h2:first-child {
-            margin-top: 0;
+        .chg-section {
+            padding: 14px 18px 6px;
         }
-        .changelog-card .changes-list {
-            list-style: none;
+        .chg-head {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 4px;
+            padding-bottom: 11px;
+            border-bottom: 1px solid var(--c-border);
+            cursor: pointer;
+            transition: border-color 0.15s ease;
+        }
+        .chg-toggle {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
             padding: 0;
-            margin: 0;
+            border: 0;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--c-text-3);
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease, transform 0.18s ease;
         }
-        .changelog-card .changes-list > li {
-            position: relative;
-            padding-left: 22px;
-            margin-bottom: 8px;
+        .chg-head:hover .chg-toggle {
+            background: var(--c-surface);
+            color: var(--c-text-2);
         }
-        .changelog-card .changes-list > li:last-child {
+        .chg-section.is-collapsed .chg-toggle { transform: rotate(-90deg); }
+        .chg-section.is-collapsed { padding-bottom: 8px; }
+        .chg-section.is-collapsed .chg-head {
             margin-bottom: 0;
+            padding-bottom: 2px;
+            border-bottom-color: transparent;
         }
-        .changelog-card .changes-list > li::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 8px;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: rgba(139, 92, 246, 0.5);
+        .chg-icon {
+            width: 26px;
+            height: 26px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            border-radius: 7px;
+            background: rgba(155, 109, 255, 0.12);
         }
-        .changelog-card .changes-sublist {
-            list-style: none;
-            padding: 0;
-            margin: 6px 0 6px 8px;
+        .chg-icon img {
+            width: 15px;
+            height: 15px;
+            display: block;
         }
-        .changelog-card .changes-sublist > li {
-            position: relative;
-            padding-left: 18px;
-            margin-bottom: 6px;
+        .chg-title {
+            font-size: 13.5px;
+            font-weight: 600;
+            letter-spacing: -0.1px;
+            color: var(--c-text);
+        }
+        .chg-item {
+            padding: 10px 0;
+        }
+        .chg-item + .chg-item {
+            border-top: 1px solid var(--c-border);
+        }
+        .chg-text {
             font-size: 13px;
-            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.6;
+            color: var(--c-text-2);
         }
-        .changelog-card .changes-sublist > li:last-child {
-            margin-bottom: 0;
-        }
-        .changelog-card .changes-sublist > li::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 8px;
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: rgba(139, 92, 246, 0.25);
-        }
-        .changelog-card .changes-p {
-            margin: 0 0 10px;
-        }
-        .changelog-card .changes-p:last-child {
-            margin-bottom: 0;
-        }
-        .changelog-card strong {
-            color: #c4b5fd;
+        .chg-text strong {
+            color: var(--c-text);
             font-weight: 600;
         }
+        .chg-tag {
+            display: inline-block;
+            margin-right: 6px;
+            padding: 2px 6px;
+            border-radius: 5px;
+            background: rgba(155, 109, 255, 0.12);
+            color: #c1a9ff;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            vertical-align: 1px;
+        }
+        .chg-tag[data-kind="new"] { background: rgba(155, 109, 255, 0.18); color: #cdb8ff; }
+        .chg-tag[data-kind="addition"] { background: rgba(99, 102, 241, 0.18); color: #b3bcff; }
+        .chg-tag[data-kind="reworked"] { background: rgba(34, 211, 238, 0.14); color: #8bdce5; }
+        .chg-tag[data-kind="optimized"] { background: rgba(56, 152, 236, 0.17); color: #96cbfb; }
+        .chg-tag[data-kind="improved"] { background: rgba(45, 212, 191, 0.14); color: #93e6cb; }
+        .chg-tag[data-kind="adjusted"] { background: rgba(148, 163, 184, 0.16); color: #c6cedd; }
+        .chg-tag[data-kind="fix"] { background: rgba(74, 222, 128, 0.15); color: #96e6b4; }
+        .chg-tag[data-kind="potential"] { background: rgba(234, 179, 8, 0.15); color: #ecca7c; }
+        .chg-tag[data-kind="removed"] { background: rgba(248, 113, 113, 0.15); color: #f6aeae; }
+        .chg-tag[data-kind="renamed"] { background: rgba(236, 72, 153, 0.15); color: #f4b1e0; }
+        .chg-tag[data-kind="toggle"] {
+            background: rgba(155, 109, 255, 0.08);
+            color: #d4c4ff;
+            box-shadow: inset 0 0 0 1px rgba(167, 139, 250, 0.35);
+        }
+        .chg-tag[data-kind="beta"] { background: rgba(59, 130, 246, 0.22); color: #b0d0ff; }
+        .chg-tag[data-kind="experimental"] { background: rgba(245, 158, 11, 0.17); color: #f4bd88; }
+        .chg-subs {
+            margin-top: 6px;
+            padding-left: 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .chg-subs .chg-subs {
+            margin-top: 4px;
+            padding-left: 15px;
+        }
+        .chg-subs .chg-subs .chg-sub { color: var(--c-text-3); opacity: 0.85; }
+        .chg-sub {
+            position: relative;
+            padding-left: 12px;
+            font-size: 12.5px;
+            line-height: 1.55;
+            color: var(--c-text-3);
+        }
+        .chg-sub::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: var(--c-accent-dim);
+        }
+        .chg-sub strong {
+            color: var(--c-text-2);
+            font-weight: 600;
+        }
+        .changes-p {
+            padding: 10px 0;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--c-text-2);
+        }
+        .changes-p strong { color: var(--c-text); font-weight: 600; }
         .changelog-card a {
-            color: #c4b5fd;
+            color: #bda6ff;
             text-decoration: underline;
             text-underline-offset: 2px;
-            transition: color 0.15s;
         }
-        .changelog-card a:hover {
-            color: #ddd1ff;
-        }
+        .changelog-card a:hover { color: #d8caff; }
         .purpura-emoji {
-            height: 1.2em;
-            width: 1.2em;
+            height: 1.15em;
+            width: 1.15em;
             vertical-align: -0.2em;
             display: inline;
             pointer-events: none;
         }
         .changelog-empty {
+            padding: 34px 18px;
             text-align: center;
-            padding: 60px 20px;
-            color: rgba(255, 255, 255, 0.25);
-            font-size: 14px;
+            color: var(--c-text-3);
+            font-size: 13px;
         }
         .footer {
-            margin-top: 32px;
+            margin-top: 20px;
+            padding: 16px 18px;
+            background: var(--c-surface);
+            border: 1px solid var(--c-border);
+            border-radius: var(--c-radius-lg);
             text-align: center;
         }
-        .footer-divider {
-            width: 100%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.3), transparent);
-            border: none;
-            margin-bottom: 24px;
-        }
         .footer-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #f0eeff;
-            margin-bottom: 6px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--c-text);
         }
         .footer-sub {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.4);
-            margin-bottom: 18px;
+            margin: 3px 0 12px;
+            font-size: 12.5px;
             line-height: 1.5;
-        }
-        .footer-badge {
-            display: inline-block;
-            margin-bottom: 20px;
-            opacity: 0.95;
-            transition: transform 0.2s, opacity 0.2s;
-        }
-        .footer-badge:hover {
-            transform: translateY(-2px);
-            opacity: 1;
-        }
-        .footer-badge img {
-            height: 58px;
-            display: block;
-            border-radius: 9px;
+            color: var(--c-text-3);
         }
         .footer-links {
             display: flex;
+            align-items: center;
             justify-content: center;
             gap: 12px;
             flex-wrap: wrap;
         }
-        .footer-btn-discord {
+        .footer-badge {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 18px;
-            background: #5865F2;
-            border: none;
+            height: 44px;
             border-radius: 8px;
-            color: #fff;
-            font-size: 14px;
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
             text-decoration: none;
-            transition: all 0.2s;
+            transition: opacity 0.15s ease, transform 0.15s ease;
         }
-        .footer-btn-discord:hover {
-            background: #4752C4;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.4);
-        }
-        .footer-btn-discord svg {
-            width: 20px;
-            height: 20px;
-            flex-shrink: 0;
-        }
-        .footer-btn-roblox {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 18px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 8px;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 14px;
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-        .footer-btn-roblox:hover {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.2);
-            color: #fff;
-            transform: translateY(-1px);
-        }
-        .footer-btn-roblox svg {
-            width: 20px;
-            height: 20px;
-            flex-shrink: 0;
-        }
-        .footer-btn-kofi {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            padding: 10px 18px;
-            background: #000;
-            border: none;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 14px;
-            font-weight: 600;
-            font-family: 'Quicksand', Helvetica, 'Century Gothic', sans-serif;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-        .footer-btn-kofi:hover {
-            background: #222;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-        }
-        .footer-btn-kofi img {
-            height: 18px;
+        .footer-badge:hover { opacity: 0.9; transform: translateY(-1px); }
+        .footer-badge img {
+            display: block;
+            height: 44px;
             width: auto;
-            display: inline-block;
-            vertical-align: middle;
-            border: none;
+            border-radius: 8px;
         }
+        .kofi-button {
+            display: inline-flex;
+            align-items: center;
+            height: 44px;
+            padding: 0 16px;
+            border-radius: 8px;
+            background: #000;
+            color: #fff;
+            text-decoration: none;
+            transition: background 0.15s ease, transform 0.15s ease;
+        }
+        .kofi-button:hover { background: #222; transform: translateY(-1px); }
+        .kofitext {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Quicksand', var(--c-font);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+        .kofiimg {
+            display: block;
+            height: 16px;
+            width: auto;
+        }
+        .a11y-btn {
+            margin-left: auto;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--c-border);
+            border-radius: 8px;
+            background: var(--c-surface);
+            color: var(--c-text-3);
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+        .a11y-btn:hover,
+        .a11y-btn[aria-expanded="true"] {
+            background: #1c1d28;
+            border-color: rgba(155, 109, 255, 0.35);
+            color: var(--c-text);
+        }
+        .a11y-btn svg { display: block; }
+        .a11y-panel {
+            position: fixed;
+            top: 74px;
+            right: 20px;
+            z-index: 30;
+            width: 250px;
+            padding: 10px;
+            background: var(--c-card);
+            border: 1px solid var(--c-border-2);
+            border-radius: 12px;
+            box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+        }
+        .a11y-title {
+            padding: 2px 8px 8px;
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+            color: var(--c-text-3);
+        }
+        .a11y-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 7px 8px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+        .a11y-row:hover { background: var(--c-surface); }
+        .a11y-label { font-size: 12.5px; color: var(--c-text-2); }
+        .a11y-row input { position: absolute; opacity: 0; width: 0; height: 0; }
+        .a11y-switch {
+            position: relative;
+            flex: 0 0 auto;
+            width: 32px;
+            height: 18px;
+            border-radius: 99px;
+            background: #2b2c38;
+            transition: background 0.15s ease;
+        }
+        .a11y-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #fff;
+            transition: transform 0.15s ease;
+        }
+        .a11y-row input:checked + .a11y-switch { background: var(--c-accent); }
+        .a11y-row input:checked + .a11y-switch::after { transform: translateX(14px); }
+        .a11y-row input:focus-visible + .a11y-switch { box-shadow: 0 0 0 2px rgba(155, 109, 255, 0.45); }
+        html.a11y-dyslexia body,
+        html.a11y-dyslexia button,
+        html.a11y-dyslexia input {
+            font-family: 'OpenDyslexic', Verdana, Tahoma, sans-serif;
+        }
+        html.a11y-dyslexia .chg-text,
+        html.a11y-dyslexia .chg-sub,
+        html.a11y-dyslexia .changes-p,
+        html.a11y-dyslexia .release-title {
+            line-height: 1.8;
+            letter-spacing: 0.015em;
+            word-spacing: 0.06em;
+        }
+        html.a11y-dyslexia .chg-tag,
+        html.a11y-dyslexia .release-date,
+        html.a11y-dyslexia .kofitext {
+            font-family: 'OpenDyslexic', Verdana, Tahoma, sans-serif;
+        }
+        html.a11y-dyslexia h1,
+        html.a11y-dyslexia .topbar-text h1 {
+            -webkit-text-fill-color: currentColor;
+            background: none;
+            color: #c4a7ff;
+        }
+        html.a11y-large .chg-text,
+        html.a11y-large .changes-p { font-size: 14.5px; }
+        html.a11y-large .chg-sub { font-size: 13.5px; }
+        html.a11y-large .chg-title { font-size: 15px; }
+        html.a11y-large .release-title { font-size: 17px; }
+        html.a11y-contrast {
+            --c-text-2: #ded9ec;
+            --c-text-3: #b6adc8;
+            --c-border: rgba(255, 255, 255, 0.18);
+            --c-border-2: rgba(255, 255, 255, 0.3);
+        }
+        html.a11y-contrast .chg-tag { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3); }
+        html[data-a11y-colorblind="on"] .chg-tag {
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: inset 0 0 0 1px currentColor;
+        }
+        html[data-a11y-colorblind="on"] .chg-tag[data-kind="new"],
+        html[data-a11y-colorblind="on"] .chg-tag[data-kind="renamed"] { color: #dd95c0; }
+        html[data-a11y-colorblind="on"] .chg-tag[data-kind="addition"],
+        html[data-a11y-colorblind="on"] .chg-tag[data-kind="reworked"],
+        html[data-a11y-colorblind="on"] .chg-tag[data-kind="beta"] { color: #67c2f0; }
+        html[data-a11y-colorblind="on"] .chg-tag[data-kind="optimized"],
+        html[data-a11y-colorblind="on"] .chg-tag[data-kind="improved"],
+        html[data-a11y-colorblind="on"] .chg-tag[data-kind="fix"] { color: #5ed6a4; }
+        html[data-a11y-colorblind="on"] .chg-tag[data-kind="potential"],
+        html[data-a11y-colorblind="on"] .chg-tag[data-kind="experimental"] { color: #eeb44e; }
+        html[data-a11y-colorblind="on"] .chg-tag[data-kind="removed"] { color: #ff9263; }
+        html[data-a11y-colorblind="on"] .chg-tag[data-kind="adjusted"],
+        html[data-a11y-colorblind="on"] .chg-tag[data-kind="toggle"] { color: #c3c3c3; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.15); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: rgba(155, 109, 255, 0.25); border-radius: 3px; }
     </style>
 </head>
 <body>
     <div class="page">
-        <div class="header">
-            <img class="header-logo" src="images/icons/default/Purpura_Default_Logo_128.png" alt="Purpura">
-            <div class="header-text">
+        <header class="topbar">
+            <img class="topbar-logo" src="images/icons/default/Purpura_Default_Logo_128.png" alt="Purpura">
+            <div class="topbar-text">
                 <h1>What's New</h1>
                 <span>Purpura Extension</span>
             </div>
+            <button class="a11y-btn" id="a11yBtn" type="button" title="Accessibility options" aria-label="Accessibility options" aria-expanded="false" aria-controls="a11yPanel">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"/>
+                    <circle cx="12" cy="7.7" r="1.2" fill="currentColor" stroke="none"/>
+                    <path d="M6.9 10.2c3.4.9 6.8 1 10.2 0"/>
+                    <path d="M12 10.6v4.1"/>
+                    <path d="M12 14.7 9.5 18.3M12 14.7l2.5 3.6"/>
+                </svg>
+            </button>
             <button class="close-btn" id="closeBtn" title="Close">&times;</button>
+        </header>
+        <div class="a11y-panel" id="a11yPanel" hidden>
+            <p class="a11y-title">Accessibility</p>
+            <label class="a11y-row">
+                <span class="a11y-label">Colorblind-friendly tags</span>
+                <input type="checkbox" data-a11y="colorblind">
+                <span class="a11y-switch"></span>
+            </label>
+            <label class="a11y-row">
+                <span class="a11y-label">Dyslexia-friendly font (OpenDyslexic)</span>
+                <input type="checkbox" data-a11y="dyslexia">
+                <span class="a11y-switch"></span>
+            </label>
+            <label class="a11y-row">
+                <span class="a11y-label">Larger text</span>
+                <input type="checkbox" data-a11y="large">
+                <span class="a11y-switch"></span>
+            </label>
+            <label class="a11y-row">
+                <span class="a11y-label">Higher contrast</span>
+                <input type="checkbox" data-a11y="contrast">
+                <span class="a11y-switch"></span>
+            </label>
         </div>
-        <div class="changelog-card" id="changelogCard">
-            <div class="changelog-empty">Nothing new to show yet.</div>
-        </div>
-        <div class="footer">
-            <div class="footer-divider"></div>
-            <p class="footer-title">&#x1F49C; Enjoying Purpura?</p>
+        <main class="changelog-card" id="changelogCard">
+            <div class="card changelog-empty">Nothing new to show yet.</div>
+        </main>
+        <footer class="footer">
+            <p class="footer-title">Enjoying Purpura?</p>
             <p class="footer-sub">Leave a review to help more Roblox players discover Purpura.</p>
-            <a class="footer-badge" id="cwsReviewLink" href="https://chromewebstore.google.com/detail/purpura/lpneoiebggmkhlldeongbcipekohjepc" target="_blank">
-                <img src="images/chrome.png" alt="Available in the Chrome Web Store">
-            </a>
             <div class="footer-links">
-                <a class="footer-btn-discord" id="discordLink" href="https://discord.gg/TT4sgtEkNV" target="_blank">
-                    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.37a19.79 19.79 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.865-.608 1.25-1.845-.277-3.68-.277-5.487 0-.163-.394-.406-.875-.618-1.25a.077.077 0 00-.078-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.028C.533 9.046-.319 13.58.099 18.058a.082.082 0 00.031.056c2.053 1.508 4.041 2.423 5.993 3.03a.078.078 0 00.084-.028c.462-.63.873-1.295 1.226-1.994a.076.076 0 00-.042-.106c-.653-.247-1.274-.55-1.872-.892a.077.077 0 01-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 01.078-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 01.078.01c.12.099.246.197.373.29a.077.077 0 01-.007.128c-.598.341-1.22.645-1.873.892a.077.077 0 00-.04.107c.353.699.763 1.364 1.225 1.993a.076.076 0 00.084.029c1.96-.607 3.95-1.522 6.002-3.03a.077.077 0 00.031-.055c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.419-.019 1.333-.955 2.419-2.157 2.419zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.419 0 1.333-.946 2.419-2.157 2.419z"/></svg>
-                    Discord
+                <a class="footer-badge" id="cwsReviewLink" href="https://chromewebstore.google.com/detail/purpura/lpneoiebggmkhlldeongbcipekohjepc" target="_blank" rel="noopener noreferrer">
+                    <img src="images/chrome.png" alt="Available in the Chrome Web Store">
                 </a>
-                <a class="footer-btn-roblox" id="robloxLink" href="https://www.roblox.com/communities/35582394/Purpura-Extension#!/about" target="_blank">
-                    <svg fill="currentColor" viewBox="0 0 30 30"><path d="M6.269 2.936l-4.766 18.357c-.278 1.069.364 2.161 1.433 2.438l18.357 4.766c1.069.278 2.161-.364 2.438-1.433l4.766-18.357c.278-1.069-.364-2.161-1.433-2.438L8.707 1.503c-1.069-.278-2.161.364-2.438 1.433zm7.142 9.36l4.293 1.115-1.115 4.293-4.293-1.115z"/></svg>
-                    Roblox Group
-                </a>
-                <a class="footer-btn-kofi" id="kofiLink" href="https://ko-fi.com/N0Q220I61C" target="_blank">
-                    <img src="https://storage.ko-fi.com/cdn/cup-border.png" alt="Ko-fi">
-                    Support Purpura
+                <a class="kofi-button" id="kofiLink" href="https://ko-fi.com/N0Q220I61C" target="_blank" rel="noopener noreferrer" title="Support me on ko-fi.com">
+                    <span class="kofitext">
+                        <img class="kofiimg" src="https://storage.ko-fi.com/cdn/cup-border.png" alt="Ko-fi donations">
+                        Support Purpura
+                    </span>
                 </a>
             </div>
-        </div>
+        </footer>
     </div>
     <script src="js/changes.js"></script>
     <script src="js/new.js"></script>

@@ -31,7 +31,7 @@ A new toggle touches three places:
 
 **File:** `src/content/ui/psp.js`
 
-Settings are grouped by category (`Friends`, `Catalog`, `Profiles`, `Avatar`, `Games`, `Appearance`, `Privacy`, `Experimental`, `Miscellanious`, etc.).
+Settings are grouped by category (`Friends`, `Catalog`, `Profiles`, `Avatar`, `Games`, `Appearance`, `Privacy`, `Experimental`, `Miscellaneous`, etc.).
 
 ### Setting Template
 

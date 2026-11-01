@@ -8,7 +8,7 @@
     function t(key, substitutions) { return chrome.i18n.getMessage(key, substitutions) || key; }
 
     let isServerInfoEnabled = true;
-    let infoConfig = { region: true, ping: true, fps: true };
+    let infoConfig = { region: true, ping: true, fps: true, uptime: true, language: true };
     let periodicCheckInterval = null;
     let lastLogTime = 0;
     let lastUpdateTime = 0;
@@ -16,6 +16,12 @@
     const UPDATE_THROTTLE_MS = 1000; 
     const SERVER_ID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const SERVER_ID_EXTRACTOR_SCRIPT_ID = 'purpura-serverid-extractor-script';
+    const RECENT_SECTION_ID = 'purpura-recent-servers';
+    const RECENT_CARD_SELECTOR = '#' + RECENT_SECTION_ID + ' .rbx-game-server-item, #' + RECENT_SECTION_ID + ' .server-instance';
+    const SERVER_CARD_SELECTOR = '.rbx-public-game-server-item, li.rbx-public-game-server-item, ' + RECENT_CARD_SELECTOR;
+    function isRecentCard(element) {
+        return !!(element && element.closest && element.closest('#' + RECENT_SECTION_ID));
+    }
     const PERIODIC_CHECK_MS = 5000;
     const FAST_SCAN_DELAYS_MS = [0, 180, 500, 1000, 1800, 3000];
     let periodicBootstrapTimeout = null;
@@ -79,7 +85,7 @@
 
     function parseServerInfoData(data) {
         if (typeof data === 'boolean') {
-            return { enabled: data, info: { region: true, ping: true, fps: true, serverVersion: true, serverId: true } };
+            return { enabled: data, info: { region: true, ping: true, fps: true, serverVersion: true, serverId: true, uptime: true, language: true } };
         } else if (typeof data === 'object' && data !== null) {
             return { 
                 enabled: data.enabled !== false, 
@@ -88,11 +94,13 @@
                     ping: data.info?.ping !== false,
                     fps: data.info?.fps !== false,
                     serverVersion: data.info?.serverVersion !== false,
-                    serverId: data.info?.serverId !== false
+                    serverId: data.info?.serverId !== false,
+                    uptime: data.info?.uptime !== false,
+                    language: data.info?.language !== false
                 }
             };
         }
-        return { enabled: true, info: { region: true, ping: true, fps: true, serverVersion: true, serverId: true } };
+        return { enabled: true, info: { region: true, ping: true, fps: true, serverVersion: true, serverId: true, uptime: true, language: true } };
     }
 
     chrome.storage.sync.get(['si'], (result) => {
@@ -155,10 +163,18 @@
         scheduleFastServerScan();
     }
 
+    function stopUptimeTicker() {
+        if (uptimeTicker) {
+            clearInterval(uptimeTicker);
+            uptimeTicker = null;
+        }
+    }
+
     function removeServerInfo() {
         const regionElements = document.querySelectorAll('.purpura-server-region');
         regionElements.forEach(element => element.remove());
         
+        stopUptimeTicker();
         clearFastServerScans();
     }
     
@@ -194,14 +210,21 @@
         }
         lastUpdateTime = now;
 
-        const serverElements = document.querySelectorAll(
-            '.rbx-public-game-server-item, li.rbx-public-game-server-item'
-        );
+        const serverElements = document.querySelectorAll(SERVER_CARD_SELECTOR);
         
         let newElementsAdded = false;
         
         serverElements.forEach((serverElement, index) => {
             if (serverElement.querySelector('.purpura-server-region')) {
+                return;
+            }
+
+            if (isRecentCard(serverElement)) {
+                const lastPlayed = serverElement.querySelector('.purpura-rs-when');
+                if (lastPlayed) {
+                    addRegionInfo(serverElement, lastPlayed);
+                    newElementsAdded = true;
+                }
                 return;
             }
 
@@ -349,7 +372,7 @@
     }
 
     function queueVisibleServersForVersionRefresh() {
-        const cards = document.querySelectorAll('.rbx-public-game-server-item, li.rbx-public-game-server-item');
+        const cards = document.querySelectorAll(SERVER_CARD_SELECTOR);
         let markedAny = false;
 
         cards.forEach((card) => {
@@ -762,6 +785,201 @@
         parent.appendChild(script);
     }
 
+    const LANGUAGE_NAMES = {
+        ar: 'Arabic', cs: 'Czech', da: 'Danish', de: 'German', el: 'Greek', en: 'English',
+        es: 'Spanish', fi: 'Finnish', fr: 'French', he: 'Hebrew', hi: 'Hindi', hu: 'Hungarian',
+        id: 'Indonesian', it: 'Italian', ja: 'Japanese', ko: 'Korean', ms: 'Malay', nl: 'Dutch',
+        no: 'Norwegian', pl: 'Polish', pt: 'Portuguese', ro: 'Romanian', ru: 'Russian',
+        sv: 'Swedish', th: 'Thai', tr: 'Turkish', uk: 'Ukrainian', vi: 'Vietnamese', zh: 'Chinese'
+    };
+    let languageDisplayNames = null;
+    let cachedUserLanguage = null;
+    let uptimeTicker = null;
+
+    try {
+        if (typeof Intl !== 'undefined' && Intl.DisplayNames) {
+            languageDisplayNames = new Intl.DisplayNames(['en'], { type: 'language' });
+        }
+    } catch (error) {
+        languageDisplayNames = null;
+    }
+
+    function getUserLanguageCode() {
+        if (cachedUserLanguage) return cachedUserLanguage;
+        let raw = '';
+        try {
+            raw = document.documentElement.getAttribute('data-language-code')
+                || document.documentElement.getAttribute('data-languageCode')
+                || document.documentElement.lang
+                || navigator.language
+                || 'en';
+        } catch (error) {
+            raw = 'en';
+        }
+        const code = String(raw).toLowerCase().split(/[-_]/)[0];
+        cachedUserLanguage = /^[a-z]{2}$/.test(code) ? code : 'en';
+        return cachedUserLanguage;
+    }
+
+    function getLanguageName(code) {
+        const key = String(code || '').toLowerCase();
+        if (!key) return '';
+        try {
+            if (languageDisplayNames) {
+                const name = languageDisplayNames.of(key);
+                if (name && name.toLowerCase() !== key) return name;
+            }
+        } catch (error) {}
+        return LANGUAGE_NAMES[key] || key.toUpperCase();
+    }
+
+    function toEpochMs(value) {
+        if (value === null || value === undefined || value === '') return null;
+        const numeric = typeof value === 'number' ? value : Number(value);
+        if (Number.isFinite(numeric) && numeric > 0) {
+            return Math.round(numeric < 1e12 ? numeric * 1000 : numeric);
+        }
+        const parsed = Date.parse(value);
+        return Number.isNaN(parsed) ? null : parsed;
+    }
+
+    function formatUptime(ms) {
+        if (typeof ms !== 'number' || !Number.isFinite(ms) || ms < 0) return '';
+        const totalMinutes = Math.floor(ms / 60000);
+        const days = Math.floor(totalMinutes / 1440);
+        const hours = Math.floor((totalMinutes % 1440) / 60);
+        const minutes = totalMinutes % 60;
+        if (days > 0) return `${days}d ${hours}h`;
+        if (hours > 0) return `${hours}h ${minutes}m`;
+        if (minutes > 0) return `${minutes}m`;
+        return `${Math.max(0, Math.floor(ms / 1000))}s`;
+    }
+
+    function findLanguageMatches(payload) {
+        if (!payload || typeof payload !== 'object') return null;
+        const queue = [{ value: payload, depth: 0 }];
+        while (queue.length) {
+            const current = queue.shift();
+            if (!current.value || typeof current.value !== 'object' || current.depth > 3) continue;
+            for (const key of Object.keys(current.value)) {
+                const entry = current.value[key];
+                if (typeof entry === 'number' && /language.*match|match.*language/i.test(key)) return entry;
+                if (entry && typeof entry === 'object') queue.push({ value: entry, depth: current.depth + 1 });
+            }
+        }
+        return null;
+    }
+
+    function pickLanguageMatches(first, second, third) {
+        const candidates = [first, second, third];
+        for (const candidate of candidates) {
+            if (typeof candidate === 'number' && Number.isFinite(candidate) && candidate >= 0) {
+                return candidate;
+            }
+        }
+        return null;
+    }
+
+    async function fetchLanguageMatchCounts(placeId) {
+        const url = `https://games.roblox.com/v2/games/${placeId}/servers/Public?limit=100&excludeFullGames=false`;
+        let response;
+        try {
+            response = await fetch(url, { credentials: 'include' });
+        } catch (error) {
+            try {
+                response = await fetch(url);
+            } catch (innerError) {
+                return null;
+            }
+        }
+        if (!response || !response.ok) return null;
+        try {
+            const data = await response.json();
+            const entries = data && Array.isArray(data.data) ? data.data : [];
+            const counts = new Map();
+            entries.forEach((entry) => {
+                const id = normalizeServerId(entry && entry.id);
+                const count = entry ? entry.languageMatchCount : null;
+                if (id && typeof count === 'number' && Number.isFinite(count) && count >= 0) {
+                    counts.set(id, count);
+                }
+            });
+            return counts.size ? counts : null;
+        } catch (error) {
+            return null;
+        }
+    }
+
+    function updateUptimeLabels() {
+        document.querySelectorAll('[data-purpura-started-ms]').forEach((span) => {
+            const startedMs = Number(span.getAttribute('data-purpura-started-ms'));
+            if (!startedMs) return;
+            const duration = formatUptime(Date.now() - startedMs);
+            if (!duration) return;
+            span.textContent = duration;
+            span.title = t('serverInfo_uptimeTooltip', [duration, new Date(startedMs).toLocaleString()]);
+        });
+    }
+
+    function ensureUptimeTicker() {
+        if (uptimeTicker) return;
+        uptimeTicker = setInterval(() => {
+            if (!document.querySelector('[data-purpura-started-ms]')) {
+                clearInterval(uptimeTicker);
+                uptimeTicker = null;
+                return;
+            }
+            updateUptimeLabels();
+        }, 1000);
+    }
+
+    function applyServerUptime(badge, regionData) {
+        const span = badge.querySelector('.purpura-uptime');
+        if (!span) return;
+        const container = span.closest('.purpura-uptime-container');
+        const startedMs = regionData && typeof regionData.startedMs === 'number' ? regionData.startedMs : null;
+        if (!startedMs || startedMs > Date.now()) {
+            span.removeAttribute('data-purpura-started-ms');
+            if (container) container.style.setProperty('display', 'none', 'important');
+            return;
+        }
+        const duration = formatUptime(Date.now() - startedMs) || t('serverInfo_na');
+        span.setAttribute('data-purpura-started-ms', String(startedMs));
+        span.textContent = duration;
+        span.title = t('serverInfo_uptimeTooltip', [duration, new Date(startedMs).toLocaleString()]);
+        if (container) container.style.setProperty('display', 'flex', 'important');
+        ensureUptimeTicker();
+    }
+
+    function applyServerLanguage(badge, regionData, serverData) {
+        const span = badge.querySelector('.purpura-language');
+        if (!span) return;
+        const container = span.closest('.purpura-language-container');
+        const regionMatches = regionData && typeof regionData.languageMatches === 'number' ? regionData.languageMatches : null;
+        const listMatches = pickLanguageMatches(
+            findLanguageMatches(serverData),
+            serverData?.languageMatchCount,
+            serverData?.language_match_count
+        );
+        const matches = regionMatches !== null ? regionMatches : listMatches;
+        if (matches === null || matches < 0) {
+            if (container) container.style.setProperty('display', 'none', 'important');
+            return;
+        }
+        const code = getUserLanguageCode().toUpperCase();
+        const language = getLanguageName(getUserLanguageCode());
+        const playing = serverData && typeof serverData.playing === 'number' && serverData.playing > 0 ? serverData.playing : null;
+        if (playing) {
+            const percent = Math.min(100, Math.round((matches / playing) * 100));
+            span.textContent = `${code} ${percent}%`;
+            span.title = t('serverInfo_languageTooltip', [String(matches), String(playing), language]);
+        } else {
+            span.textContent = `${code} ${matches}`;
+            span.title = `${code} · ${language}`;
+        }
+        if (container) container.style.setProperty('display', 'flex', 'important');
+    }
+
     async function resolveRegionFromCrowd(placeId, serverId, gameId, placeVersion) {
         const crowd = window.__PurpuraCrowd;
         if (!crowd || typeof crowd.lookup !== 'function') return null;
@@ -865,7 +1083,7 @@
 
         if (!cleared) return;
 
-        document.querySelectorAll('.rbx-public-game-server-item, li.rbx-public-game-server-item').forEach((card) => {
+        document.querySelectorAll(SERVER_CARD_SELECTOR).forEach((card) => {
             if (card.querySelector('.purpura-server-region')) {
                 card.setAttribute('data-purpura-pending', 'true');
             }
@@ -910,6 +1128,12 @@
                 const placeVersion = joinScript?.PlaceVersion || joinScript?.placeVersion;
                 const dataCenterId = joinScript?.DataCenterId || joinScript?.dataCenterId || joinScript?.DataCenterID;
                 const serverIp = joinScript?.UdmuxEndpoints?.[0]?.Address || joinScript?.MachineAddress || null;
+                const startedMs = toEpochMs(joinScript?.serverClaimedTime ?? joinScript?.ServerClaimedTime ?? joinScript?.startedMs ?? joinScript?.StartedMs);
+                const languageMatches = pickLanguageMatches(
+                    findLanguageMatches(joinScript),
+                    findLanguageMatches(data),
+                    joinScript?.languageMatchCount ?? data?.languageMatchCount ?? data?.language_match_count
+                );
 
                 if (data && data.status) {
                     if (data.status === 5) return { regionCode: 'Inactive', regionName: t('serverInfo_inactive'), reason: 'inactive', gameId, placeVersion };
@@ -918,7 +1142,7 @@
                         const crowdFull = await resolveRegionFromCrowd(placeId, serverId, gameId, placeVersion);
                         if (crowdFull) return crowdFull;
                         reportSightingToCrowd(placeId, serverId, null, placeVersion, serverIp);
-                        return { regionCode: 'Full', regionName: t('serverInfo_full'), reason: 'full_server', isQueued: true, gameId, placeVersion };
+                        return { regionCode: 'Full', regionName: t('serverInfo_full'), reason: 'full_server', isQueued: true, gameId, placeVersion, startedMs, languageMatches };
                     }
                 }
 
@@ -926,7 +1150,7 @@
                     const crowdUnknown = await resolveRegionFromCrowd(placeId, serverId, gameId, placeVersion);
                     if (crowdUnknown) return crowdUnknown;
                     reportSightingToCrowd(placeId, serverId, null, placeVersion, serverIp);
-                    return { regionCode: 'N/A', reason: 'no_dataCenterId', gameId, placeVersion };
+                    return { regionCode: 'N/A', reason: 'no_dataCenterId', gameId, placeVersion, startedMs, languageMatches };
                 }
 
                 const loc = serverIpMap[dataCenterId] || null;
@@ -943,7 +1167,9 @@
                     location: loc, 
                     dataCenterId, 
                     gameId, 
-                    placeVersion 
+                    placeVersion,
+                    startedMs,
+                    languageMatches 
                 };
             }
             return { regionCode: 'N/A', reason: 'no_response' };
@@ -963,7 +1189,12 @@
         
         try {
             let url = `https://games.roblox.com/v1/games/${placeId}/servers/Public?limit=100&excludeFullGames=false`;
-            let response = await fetch(url);
+            let response;
+            try {
+                response = await fetch(url, { credentials: 'include' });
+            } catch (error) {
+                response = await fetch(url);
+            }
             
             if (response.status === 429) {
                 if (retryCount < 2) {
@@ -976,7 +1207,18 @@
             if (response.ok) {
                 const data = await response.json();
                 if (data && data.data && data.data.length > 0) {
-                    return data.data;
+                    const entries = data.data;
+                    if (infoConfig.language !== false) {
+                        const counts = await fetchLanguageMatchCounts(placeId);
+                        if (counts) {
+                            entries.forEach((entry) => {
+                                const id = normalizeServerId(entry && entry.id);
+                                const count = id ? counts.get(id) : null;
+                                if (typeof count === 'number') entry.languageMatchCount = count;
+                            });
+                        }
+                    }
+                    return entries;
                 }
             }
         } catch (error) {
@@ -1013,6 +1255,10 @@
                     const result = isRegionResolved(live)
                         ? live
                         : (crowdEntryToRegion(await ledgerEntryFor(ledgerPromise, serverId), serverId, live && live.placeVersion) || live || { regionCode: 'N/A' });
+                    if (live && result !== live) {
+                        result.startedMs = result.startedMs || live.startedMs || null;
+                        result.languageMatches = typeof result.languageMatches === 'number' ? result.languageMatches : (typeof live.languageMatches === 'number' ? live.languageMatches : null);
+                    }
                     return { 
                         serverId, 
                         regionCode: result.regionCode || 'N/A',
@@ -1020,7 +1266,9 @@
                         isQueued: result.isQueued || false,
                         fromCrowd: result.fromCrowd === true,
                         gameId: result.gameId,
-                        placeVersion: result.placeVersion
+                        placeVersion: result.placeVersion,
+                        startedMs: result.startedMs || null,
+                        languageMatches: typeof result.languageMatches === 'number' ? result.languageMatches : null
                     };
                 } catch (error) {
                     const fallback = crowdEntryToRegion(await ledgerEntryFor(ledgerPromise, serverId), serverId);
@@ -1039,14 +1287,16 @@
 
             const batchResults = await Promise.all(batchPromises);
             
-            batchResults.forEach(({ serverId, regionCode, regionName, isQueued, fromCrowd, gameId, placeVersion }) => {
+            batchResults.forEach(({ serverId, regionCode, regionName, isQueued, fromCrowd, gameId, placeVersion, startedMs, languageMatches }) => {
                 const regionData = {
                     region: regionCode,
                     regionName: regionName,
                     isQueued: isQueued,
                     fromCrowd: fromCrowd === true,
                     gameId: gameId || serverId,
-                    placeVersion: placeVersion
+                    placeVersion: placeVersion,
+                    startedMs: startedMs || null,
+                    languageMatches: typeof languageMatches === 'number' ? languageMatches : null
                 };
                 regionMap[serverId] = regionData;
                 serverRegionCache[serverId] = regionData;
@@ -1066,6 +1316,34 @@
         return regionMap;
     }
 
+    function setStatVisibility(element, visible) {
+        if (!element) return;
+        element.style.setProperty('display', visible ? 'flex' : 'none', 'important');
+    }
+
+    function balanceInfoRows(badge) {
+        if (!badge) return;
+
+        badge.querySelectorAll('.purpura-info-grid, .purpura-dev-grid').forEach((grid) => {
+            const items = Array.from(grid.children).filter((child) => child.nodeType === 1);
+            const visible = items.filter((child) => child.style.display !== 'none');
+
+            visible.forEach((child, index) => {
+                const alone = visible.length % 2 === 1 && index === visible.length - 1;
+                child.style.gridColumn = alone ? '1 / -1' : '';
+            });
+
+            grid.style.setProperty('display', visible.length ? 'grid' : 'none', 'important');
+        });
+
+        let visibleCount = 0;
+        Array.from(badge.children).forEach((child) => {
+            if (child.style.display !== 'none') visibleCount += 1;
+        });
+
+        badge.style.setProperty('display', visibleCount ? 'flex' : 'none', 'important');
+    }
+
     function addRegionInfo(serverElement, playerGauge) {
         if (!isServerInfoEnabled) {
             return;
@@ -1078,10 +1356,12 @@
         const showRegion = infoConfig.region !== false;
         const showPing = infoConfig.ping !== false;
         const showFps = infoConfig.fps !== false;
+        const showUptime = infoConfig.uptime !== false;
+        const showLanguage = infoConfig.language !== false;
         const showServerVersion = infoConfig.serverVersion === true;
         const showServerId = infoConfig.serverId === true;
         
-        if (!showRegion && !showPing && !showFps && !showServerVersion && !showServerId) {
+        if (!showRegion && !showPing && !showFps && !showUptime && !showLanguage && !showServerVersion && !showServerId) {
             return;
         }
 
@@ -1114,8 +1394,8 @@
                 gap: 6px !important;
                 padding: 6px 10px !important;
                 background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%) !important;
-                border-left: 3px solid #8b5cf6 !important;
-                border-radius: 5px !important;
+                border: none !important;
+                border-radius: 4px !important;
                 transition: all 0.2s ease !important;
                 backdrop-filter: blur(8px) !important;
             ">
@@ -1141,11 +1421,12 @@
             </div>`;
         }
         
-        if (showPing || showFps) {
-            const gridCols = (showPing && showFps) ? '1fr 1fr' : '1fr';
+        if (showPing || showFps || showUptime || showLanguage) {
+            const infoStatCount = [showPing, showFps, showUptime, showLanguage].filter(Boolean).length;
+            const gridCols = infoStatCount > 1 ? '1fr 1fr' : '1fr';
             
             innerHTML += `
-            <div style="
+            <div class="purpura-info-grid" style="
                 display: grid !important;
                 grid-template-columns: ${gridCols} !important;
                 gap: 5px !important;
@@ -1153,7 +1434,7 @@
             
             if (showPing) {
                 innerHTML += `
-                <div style="
+                <div class="purpura-ping-container" style="
                     display: flex !important;
                     align-items: center !important;
                     gap: 5px !important;
@@ -1179,7 +1460,7 @@
             
             if (showFps) {
                 innerHTML += `
-                <div style="
+                <div class="purpura-fps-container" style="
                     display: flex !important;
                     align-items: center !important;
                     gap: 5px !important;
@@ -1203,6 +1484,53 @@
                 </div>`;
             }
             
+            if (showUptime) {
+                innerHTML += `
+                <div class="purpura-uptime-container" style="
+                    display: none !important;
+                    align-items: center !important;
+                    gap: 5px !important;
+                    padding: 5px 8px !important;
+                    background: rgba(245, 158, 11, 0.08) !important;
+                    border-radius: 4px !important;
+                    transition: all 0.2s ease !important;
+                ">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="flex-shrink: 0;">
+                        <circle cx="12" cy="12" r="9" stroke="#fbbf24" stroke-width="1.4"></circle>
+                        <path d="M12 7.5V12l3 1.8" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    <span class='purpura-uptime' style="
+                        font-size: 12px !important;
+                        font-weight: 600 !important;
+                        color: #fbbf24 !important;
+                        white-space: nowrap !important;
+                    "></span>
+                </div>`;
+            }
+            
+            if (showLanguage) {
+                innerHTML += `
+                <div class="purpura-language-container" style="
+                    display: none !important;
+                    align-items: center !important;
+                    gap: 5px !important;
+                    padding: 5px 8px !important;
+                    background: rgba(45, 212, 191, 0.08) !important;
+                    border-radius: 4px !important;
+                    transition: all 0.2s ease !important;
+                ">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="flex-shrink: 0;">
+                        <path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.5A8.4 8.4 0 0 1 12 3.1a8.4 8.4 0 0 1 9 8.4Z" stroke="#2dd4bf" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    <span class='purpura-language' style="
+                        font-size: 12px !important;
+                        font-weight: 600 !important;
+                        color: #2dd4bf !important;
+                        white-space: nowrap !important;
+                    "></span>
+                </div>`;
+            }
+            
             innerHTML += `</div>`;
         }
         
@@ -1210,7 +1538,7 @@
             const devGridCols = (showServerVersion && showServerId) ? '1fr 1fr' : '1fr';
             
             innerHTML += `
-            <div style="
+            <div class="purpura-dev-grid" style="
                 display: grid !important;
                 grid-template-columns: ${devGridCols} !important;
                 gap: 4px !important;
@@ -1219,7 +1547,7 @@
             
             if (showServerVersion) {
                 innerHTML += `
-                <div style="
+                <div class="purpura-version-container" style="
                     display: flex !important;
                     align-items: center !important;
                     gap: 4px !important;
@@ -1244,7 +1572,7 @@
             
             if (showServerId) {
                 innerHTML += `
-                <div style="
+                <div class="purpura-id-container" style="
                     display: flex !important;
                     align-items: center !important;
                     gap: 4px !important;
@@ -1293,7 +1621,6 @@
         serverElement.setAttribute('data-purpura-pending', 'true');
     }
 
-
     async function processAllServers() {
         if (isProcessingServers) {
             return;
@@ -1333,16 +1660,18 @@
                 }
             });
             
-            const visibleServerIds = [];
-            const serverElementMap = new Map();
+            const idsByPlace = new Map();
+            const queuedIds = new Set();
+            const serverElementMap = [];
             const resolvedServers = await Promise.all(pendingElements.map(async (serverElement, index) => {
+                const recent = isRecentCard(serverElement);
                 let serverId = getServerIdFromElement(serverElement);
 
-                if (!serverId) {
+                if (!serverId && !recent) {
                     serverId = await extractServerIdFromFiber(serverElement);
                 }
 
-                if (!serverId && serverDataForPlace[index]) {
+                if (!serverId && !recent && serverDataForPlace[index]) {
                     serverId = normalizeServerId(serverDataForPlace[index].id);
                 }
 
@@ -1358,11 +1687,14 @@
                 serverElement.setAttribute('data-purpura-serverid', serverId);
                 serverElement.removeAttribute('data-purpura-id-attempts');
 
+                const ownPlaceId = recent ? Number(serverElement.getAttribute('data-placeid')) : 0;
                 return {
                     serverId,
                     serverElement,
                     index,
-                    serverData: serverDataById.get(serverId) || serverDataForPlace[index] || null
+                    recent,
+                    placeId: Number.isSafeInteger(ownPlaceId) && ownPlaceId > 0 ? String(ownPlaceId) : placeId,
+                    serverData: serverDataById.get(serverId) || (recent ? null : serverDataForPlace[index]) || null
                 };
             }));
 
@@ -1371,28 +1703,31 @@
                     return;
                 }
 
-                if (!serverElementMap.has(resolved.serverId)) {
-                    serverElementMap.set(resolved.serverId, {
-                        element: resolved.serverElement,
-                        index: resolved.index,
-                        serverData: resolved.serverData
-                    });
-                }
+                serverElementMap.push([resolved.serverId, {
+                    element: resolved.serverElement,
+                    index: resolved.index,
+                    recent: resolved.recent,
+                    serverData: resolved.serverData
+                }]);
 
-                if (!serverRegionCache[resolved.serverId] && !visibleServerIds.includes(resolved.serverId)) {
-                    visibleServerIds.push(resolved.serverId);
+                if (!serverRegionCache[resolved.serverId] && !queuedIds.has(resolved.serverId)) {
+                    queuedIds.add(resolved.serverId);
+                    if (!idsByPlace.has(resolved.placeId)) idsByPlace.set(resolved.placeId, []);
+                    idsByPlace.get(resolved.placeId).push(resolved.serverId);
                 }
             });
 
-            const regionMap = visibleServerIds.length > 0 ? 
-                await fetchAllServerRegions(placeId, visibleServerIds) : {};
+            const regionMap = {};
+            for (const [groupPlaceId, ids] of idsByPlace) {
+                Object.assign(regionMap, await fetchAllServerRegions(groupPlaceId, ids));
+            }
             
-            for (const [serverId, { element: serverElement, index, serverData: mappedServerData }] of serverElementMap) {
+            for (const [serverId, { element: serverElement, index, recent, serverData: mappedServerData }] of serverElementMap) {
                 const badge = serverElement.querySelector('.purpura-server-region');
                 
                 if (badge) {
                     const regionData = regionMap[serverId] || serverRegionCache[serverId];
-                    const cachedServerData = mappedServerData || (serverDataCache[placeId] && serverDataCache[placeId][index]) || null;
+                    const cachedServerData = mappedServerData || (!recent && serverDataCache[placeId] && serverDataCache[placeId][index]) || null;
                     const regionSpan = badge.querySelector('.purpura-region');
                     const regionFlag = badge.querySelector('.purpura-region-flag');
                     const regionContainer = badge.querySelector('.purpura-region-container');
@@ -1431,25 +1766,19 @@
                             }
                         }
 
-                        if (regionContainer) regionContainer.style.display = "flex";
-                    } else {
-                        if (regionSpan) {
-                            regionSpan.textContent = "N/A";
-                            regionSpan.title = "Region unavailable";
-                        }
-                        if (regionFlag) {
-                            regionFlag.src = chrome.runtime.getURL('images/flags/unknown.png');
-                            regionFlag.style.display = 'block';
-                            regionFlag.alt = 'Unknown';
-                            regionFlag.removeAttribute('data-purpura-flag-code');
-                        }
-                        if (regionContainer) regionContainer.style.display = "flex";
+                        setStatVisibility(regionContainer, true);
+                    } else if (regionContainer) {
+                        regionContainer.style.setProperty('display', 'none', 'important');
                     }
                     
                     const pingSpan = badge.querySelector('.purpura-ping');
                     const fpsSpan = badge.querySelector('.purpura-fps');
                     const serverVersionSpan = badge.querySelector('.purpura-server-version');
                     const serverIdSpan = badge.querySelector('.purpura-server-id');
+                    const pingContainer = badge.querySelector('.purpura-ping-container');
+                    const fpsContainer = badge.querySelector('.purpura-fps-container');
+                    const versionContainer = badge.querySelector('.purpura-version-container');
+                    const idContainer = badge.querySelector('.purpura-id-container');
                     
                     if (regionData) {
                         if (serverVersionSpan) {
@@ -1458,12 +1787,11 @@
                             if (placeVersionValue) {
                                 serverVersionSpan.textContent = `v${placeVersionValue}`;
                                 serverVersionSpan.title = `Place Version: ${placeVersionValue}`;
-                            } else if (latestPlaceVersion === undefined && regionData.region !== 'Full') {
-                                serverVersionSpan.textContent = '…';
-                                serverVersionSpan.title = 'Fetching version...';
+                                setStatVisibility(versionContainer, true);
                             } else {
-                                serverVersionSpan.textContent = 'N/A';
-                                serverVersionSpan.title = regionData.region === 'Full' ? 'Version unavailable for full server' : 'Version unavailable';
+                                serverVersionSpan.textContent = '';
+                                serverVersionSpan.removeAttribute('title');
+                                setStatVisibility(versionContainer, false);
                             }
                         }
                         
@@ -1471,6 +1799,7 @@
                             const resolvedGameId = normalizeServerId(regionData.gameId) || serverId;
 
                             if (resolvedGameId) {
+                                setStatVisibility(idContainer, true);
                                 const shortId = resolvedGameId.length > 12 ? resolvedGameId.substring(0, 12) + '...' : resolvedGameId;
                                 const previousCopyTimeout = parseInt(serverIdSpan.getAttribute('data-purpura-copy-timeout') || '', 10);
                                 if (previousCopyTimeout) {
@@ -1507,9 +1836,10 @@
                                     }
                                 };
                             } else {
-                                serverIdSpan.textContent = 'N/A';
-                                serverIdSpan.title = 'Server ID unavailable';
+                                serverIdSpan.textContent = '';
+                                serverIdSpan.removeAttribute('title');
                                 serverIdSpan.style.cursor = 'default';
+                                setStatVisibility(idContainer, false);
                                 const pendingTimeout = parseInt(serverIdSpan.getAttribute('data-purpura-copy-timeout') || '', 10);
                                 if (pendingTimeout) {
                                     clearTimeout(pendingTimeout);
@@ -1533,9 +1863,11 @@
                                 else if (ping >= 120) pingQuality = t('serverInfo_average');
                                 else if (ping >= 60) pingQuality = t('serverInfo_good');
                                 pingSpan.title = t('serverInfo_pingQualityTooltip', [pingQuality]);
+                                setStatVisibility(pingContainer, true);
                             } else {
-                                pingSpan.textContent = t('serverInfo_na');
-                                pingSpan.title = t('serverInfo_pingUnavailableTooltip');
+                                pingSpan.textContent = '';
+                                pingSpan.removeAttribute('title');
+                                setStatVisibility(pingContainer, false);
                             }
                         }
                         
@@ -1547,21 +1879,32 @@
                                 else if (fps < 45) fpsQuality = t('serverInfo_average');
                                 else if (fps < 60) fpsQuality = t('serverInfo_good');
                                 fpsSpan.title = t('serverInfo_performanceTooltip', [fpsQuality]);
+                                setStatVisibility(fpsContainer, true);
                             } else {
-                                fpsSpan.textContent = t('serverInfo_na');
-                                fpsSpan.title = t('serverInfo_fpsUnavailableTooltip');
+                                fpsSpan.textContent = '';
+                                fpsSpan.removeAttribute('title');
+                                setStatVisibility(fpsContainer, false);
                             }
                         }
                     } else {
                         if (pingSpan) {
-                            pingSpan.textContent = t('serverInfo_na');
-                            pingSpan.title = t('serverInfo_pingUnavailableTooltip');
+                            pingSpan.textContent = '';
+                            pingSpan.removeAttribute('title');
                         }
                         if (fpsSpan) {
-                            fpsSpan.textContent = t('serverInfo_na');
-                            fpsSpan.title = t('serverInfo_fpsUnavailableTooltip');
+                            fpsSpan.textContent = '';
+                            fpsSpan.removeAttribute('title');
                         }
+                        setStatVisibility(pingContainer, false);
+                        setStatVisibility(fpsContainer, false);
                     }
+                }
+                if (badge) {
+                    const serverInfoData = regionMap[serverId] || serverRegionCache[serverId];
+                    const serverPlayerData = mappedServerData || (!recent && serverDataCache[placeId] && serverDataCache[placeId][index]) || null;
+                    applyServerUptime(badge, serverInfoData);
+                    applyServerLanguage(badge, serverInfoData, serverPlayerData);
+                    balanceInfoRows(badge);
                 }
                 serverElement.removeAttribute('data-purpura-pending');
             }
@@ -1602,7 +1945,10 @@
                             )) {
                                 shouldUpdate = true;
                             }
-                            else if (node.querySelector && node.querySelector('.rbx-public-game-server-item')) {
+                            else if (node.matches && node.matches(SERVER_CARD_SELECTOR + ', #' + RECENT_SECTION_ID)) {
+                                shouldUpdate = true;
+                            }
+                            else if (node.querySelector && node.querySelector(SERVER_CARD_SELECTOR)) {
                                 shouldUpdate = true;
                             }
                             else if (node.querySelector && node.querySelector('[class*="gauge"]')) {
