@@ -9,7 +9,7 @@
     "build:firefox": "vite build && node .github/scripts/build-firefox.js"
   },
   "devDependencies": {
-    "archiver": "7.0.1",
+    "archiver": "8.0.0",
     "terser": "5.48.0",
     "vite": "^8.2.2"
   }
