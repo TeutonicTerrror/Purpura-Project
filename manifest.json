@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "minimum_chrome_version": "120",
   "name": "__MSG_extensionName__",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "__MSG_extensionDescription__",
   "default_locale": "en",
   "permissions": [
@@ -93,6 +93,11 @@
     },
     {
       "matches": ["*://*.roblox.com/purpura-time*"],
+      "css": ["css/purpura-page.css"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["*://*.roblox.com/purpura-wrapped*"],
       "css": ["css/purpura-page.css"],
       "run_at": "document_start"
     }

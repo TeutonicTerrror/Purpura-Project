@@ -1,0 +1,81 @@
+name: Bug report
+description: Something in Purpura is broken or behaves unexpectedly.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Include the console output if you can — most Roblox page bugs are only reproducible with it.
+        For a security problem, use the private report link instead of this form.
+  - type: input
+    id: version
+    attributes:
+      label: Purpura version
+      description: Shown in the popup footer; also `version` in `manifest.json`.
+      placeholder: "1.0.7"
+    validations:
+      required: true
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options:
+        - Chrome
+        - Edge
+        - Brave
+        - Firefox
+        - Helium
+        - Other Chromium
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: Roblox page
+      description: The URL where it happened.
+      placeholder: https://www.roblox.com/users/123/profile
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Enable ...
+        2. Open ...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs actual
+    validations:
+      required: true
+  - type: textarea
+    id: console
+    attributes:
+      label: Console output
+      description: DevTools → Console, paste any Purpura errors. Write "none" if it is clean.
+      render: shell
+    validations:
+      required: true
+  - type: dropdown
+    id: ai
+    attributes:
+      label: Was AI used to draft this report?
+      description: Disclosure is required, for reports as much as for code. Name the tool under "Anything else".
+      options:
+        - "No"
+        - "Yes"
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: Screenshots, other extensions that might conflict (RoSeal, BTRoblox, …), AI tool names.
+    validations:
+      required: false

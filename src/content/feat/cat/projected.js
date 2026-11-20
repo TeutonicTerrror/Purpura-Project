@@ -12,6 +12,18 @@
     let nextAttempt = 0;
     let pending = false;
     const text = (key, fallback) => chrome.i18n.getMessage(key) || fallback;
+    function ensureStyle() {
+        if (document.getElementById('purpura-projected-style')) return;
+        const style = document.createElement('style');
+        style.id = 'purpura-projected-style';
+        style.textContent = [
+            '.purpura-projected-warning{--pw-border:var(--purpura-warning,#d97706);--pw-link:var(--purpura-linkColor,#4f8ef7);--pw-text:var(--purpura-mainText,inherit);--pw-bg:rgba(217,119,6,0.08);padding:12px;margin:12px 0;border:1px solid var(--pw-border);border-radius:8px;color:var(--pw-text);background:var(--pw-bg);}',
+            'html.light-theme .purpura-projected-warning,body.light-theme .purpura-projected-warning{--pw-border:var(--purpura-warning,#b45309);--pw-link:var(--purpura-linkColor,#2563eb);--pw-bg:rgba(180,83,9,0.07);}',
+            '.purpura-projected-link{color:var(--pw-link)!important;text-decoration:none;font-weight:500;cursor:pointer;}',
+            '.purpura-projected-link:hover{color:var(--purpura-linkHover,var(--pw-link))!important;text-decoration:underline;}'
+        ].join('');
+        (document.head || document.documentElement).appendChild(style);
+    }
     function clear() { document.getElementById('purpura-projected-warning')?.remove(); }
     function render() {
         if (!enabled || state !== 'projected') { clear(); return; }
@@ -24,14 +36,15 @@
         warning.id = 'purpura-projected-warning';
         warning.setAttribute('role', 'note');
         warning.setAttribute('data-state', state);
-        warning.style.cssText = 'padding:12px;margin:12px 0;border:1px solid #d97706;border-radius:8px;color:inherit;';
+        ensureStyle();
+        warning.className = 'purpura-projected-warning';
         warning.textContent = text('projected_warning', 'Projected item: its RAP may be inflated. Verify its value before trading') + ' ';
         const link = document.createElement('a');
         const match = /^\/catalog\/([1-9]\d*)/.exec(path);
         link.href = `https://www.rolimons.com/item/${match[1]}`;
         link.target = '_blank'; link.rel = 'noopener noreferrer';
         link.textContent = '(Source)';
-        link.style.cssText = 'color:#4f8ef7;text-decoration:none;font-weight:500;cursor:pointer;';
+        link.className = 'purpura-projected-link';
         warning.appendChild(link);
         warning.appendChild(document.createTextNode('.'));
         host.prepend(warning);

@@ -189,7 +189,7 @@
     "message": "Item Explorer"
   },
   "extensionDescription": {
-    "message": "The ultimate Roblox enhancement suite with themes, a redesigned sidebar, and quality-of-life features."
+    "message": "Roblox enhanced, free forever. Always private. Themes, server regions, playtime, trading, and constant quality-of-life upgrades."
   },
   "extensionName": {
     "message": "Purpura | Roblox Enhanced"
@@ -1330,6 +1330,18 @@
   "settings_bulkUnfriend_label": {
     "message": "Bulk Unfriend"
   },
+  "settings_bestFriends_homeStar_label": {
+    "message": "Home page star"
+  },
+  "settings_bestFriends_homeStar_desc": {
+    "message": "Shows the star button on friends in the home page carousel. Turn it off to keep best friends pinned without the star there."
+  },
+  "settings_bestFriends_label": {
+    "message": "Best Friends"
+  },
+  "settings_bestFriends_desc": {
+    "message": "Star a friend on their card to keep them at the front of your friends list and the home carousel, whatever their status."
+  },
   "settings_mostPlayedTogether_desc": {
     "message": "Shows which games you and your friends have played together the most."
   },
@@ -2403,32 +2415,86 @@
   "settings_r6WarningRemover_desc": {
     "message": "Removes the R6 Warning banner when switching from R15 to R6."
   },
-  "settings_priceFloor_label": {
-    "message": "Marketplace Price Floor"
+  "settings_verifiedBadge_label": {
+    "message": "Verified badge"
   },
-  "settings_priceFloor_desc": {
-    "message": "Shows the price floor of items and if said items are at the price floor."
+  "settings_verifiedBadge_desc": {
+    "message": "Shows the verified checkmark next to your own name across Roblox. Only you can see it."
   },
-  "priceFloor_label": {
-    "message": "Price Floor"
+  "settings_robloxWrapped_label": {
+    "message": "Roblox Wrapped"
   },
-  "priceFloor_status": {
-    "message": "{{difference}} {{status}}"
+  "settings_robloxWrapped_desc": {
+    "message": "A year-in-review of your Robux spending, with your top experiences, creators and biggest purchases, plus an image to share. Everything stays in your browser."
   },
-  "priceFloor_statusTypes_above": {
-    "message": "above floor"
+  "settings_robloxWrapped_nye_label": {
+    "message": "New Year's Eve popup"
   },
-  "priceFloor_statusTypes_below": {
-    "message": "below floor"
+  "settings_robloxWrapped_nye_desc": {
+    "message": "On December 31, shows your Wrapped image for the year the first time you open Roblox."
   },
-  "priceFloor_statusTypes_at": {
-    "message": "At floor price"
+  "settings_robloxWrapped_open": {
+    "message": "Open Roblox Wrapped"
   },
-  "priceFloor_difference": {
-    "message": "{{diff}}"
+  "settings_gameBlocker_label": {
+    "message": "Game Blocker"
   },
-  "priceFloor_description": {
-    "message": "The minimum price this item can be listed for. Roblox adjusts it based on the item type and configuration."
+  "settings_gameBlocker_desc": {
+    "message": "Hide experiences you never want to see from Home, Charts, search and recommendations. Block single experiences, everything by a creator, or anything whose name matches a keyword."
+  },
+  "settings_gameBlocker_manage": {
+    "message": "Manage blocked"
+  },
+  "settings_gameBlocker_cardButton_label": {
+    "message": "Block button on game cards"
+  },
+  "settings_gameBlocker_cardButton_desc": {
+    "message": "Shows a block button when you hover over a game card."
+  },
+  "settings_gameBlocker_pageButton_label": {
+    "message": "Block button on game pages"
+  },
+  "settings_gameBlocker_pageButton_desc": {
+    "message": "Adds a Block button next to Favorite on game pages, with an option to block the creator."
+  },
+  "settings_mostPlayed_label": {
+    "message": "Most Played"
+  },
+  "settings_mostPlayed_desc": {
+    "message": "Shows a compact panel of your most played games in the top right of the home page, ranked by time played over the past 7 days, 30 days or all time. Requires Play Time Tracker."
+  },
+  "mostPlayed_range7Short": {
+    "message": "7d"
+  },
+  "mostPlayed_range30Short": {
+    "message": "30d"
+  },
+  "mostPlayed_rangeAllShort": {
+    "message": "All"
+  },
+  "mostPlayed_title": {
+    "message": "Most played"
+  },
+  "mostPlayed_range7": {
+    "message": "Past 7 days"
+  },
+  "mostPlayed_range30": {
+    "message": "Past 30 days"
+  },
+  "mostPlayed_rangeAll": {
+    "message": "All time"
+  },
+  "mostPlayed_sessions": {
+    "message": "sessions"
+  },
+  "mostPlayed_emptyRange": {
+    "message": "No playtime recorded in this period yet."
+  },
+  "mostPlayed_empty": {
+    "message": "Play a game and it will show up here. Purpura tracks your playtime while Roblox runs."
+  },
+  "mostPlayed_openTracker": {
+    "message": "Open Play Time Tracker"
   },
   "settings_offsaleLegacyPrices_label": {
     "message": "Offsale Item Legacy Prices"

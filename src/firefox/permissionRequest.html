@@ -1,0 +1,87 @@
+<!--
+  Purpura Extension
+  Copyright © 2026 TeutonicTerror
+  Licensed under the GNU General Public License v3.0.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Purpura permission</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            font-family: "DM Sans", "Segoe UI", sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px;
+            background: #111219;
+            color: #f0eeff;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 18px;
+        }
+
+        p {
+            margin: 0 0 16px;
+            color: #a89ec4;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        ul {
+            margin: 0 0 20px;
+            padding-left: 20px;
+            color: #d8d0f4;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        button {
+            padding: 8px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 8px;
+            background: #1c1d28;
+            color: #f0eeff;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        button:hover {
+            background: #242536;
+        }
+
+        #allow {
+            border-color: transparent;
+            background: #9b6dff;
+            color: #0b0c10;
+            font-weight: 700;
+        }
+
+        #allow:hover {
+            background: #b18cff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Purpura needs your permission</h1>
+    <p>Firefox requires this permission to be approved from a visible window. Purpura only requests it when you enable the related feature.</p>
+    <ul id="permissions"></ul>
+    <div class="actions">
+        <button id="cancel" type="button">Not now</button>
+        <button id="allow" type="button">Allow</button>
+    </div>
+    <script src="firefox-permission-request.js"></script>
+</body>
+</html>

@@ -21,7 +21,9 @@
     "enabled": true,
     "region": "US|Virginia|Ashburn"
   },
+  "srm": true,
   "plt": true,
+  "mpl": true,
   "glw": false,
   "go": {
     "enabled": true,
@@ -243,6 +245,8 @@
   "ce": true,
   "fo": true,
   "mpt": true,
+  "bff": true,
+  "bffStar": true,
   "bf": true,
   "lo": true,
   "rat": {
@@ -259,7 +263,12 @@
   "aa": true,
   "eo": true,
   "rvp": true,
-  "pfl": true,
+  "rwr": true,
+  "gb": true,
+  "gbBtn": true,
+  "gbPageBtn": false,
+  "rwrNye": false,
+  "vb": false,
   "oilp": true,
   "es": {
     "enabled": true,

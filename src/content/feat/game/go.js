@@ -72,6 +72,15 @@
             '--go-no-thumb-text': '#888'
         };
 
+        // Theme Editor (thm.js) variables win when a theme is active; Roblox light/dark values are the fallback.
+        var roThemer = {
+            '--go-bg': '--purpura-surface200',
+            '--go-surface': '--purpura-surface300',
+            '--go-border': '--purpura-borderColor',
+            '--go-text': '--purpura-mainText',
+            '--go-text-muted': '--purpura-secondaryText'
+        };
+
         let styleTag = document.getElementById('purpura-outfits-theme-vars');
         if (!styleTag) {
             styleTag = document.createElement('style');
@@ -79,9 +88,9 @@
             document.head.appendChild(styleTag);
         }
 
-        let css = ':root {';
+        let css = ':root, body {';
         for (const [prop, val] of Object.entries(styles)) {
-            css += `${prop}: ${val};`;
+            css += roThemer[prop] ? `${prop}: var(${roThemer[prop]}, ${val});` : `${prop}: ${val};`;
         }
         css += '}';
         styleTag.textContent = css;

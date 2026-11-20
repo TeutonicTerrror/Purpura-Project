@@ -5,6 +5,7 @@
  */
 (function () {
     'use strict';
+    if (window.__PurpuraSettings && window.__PurpuraSettings.ready) return;
     var READY_PROMISE;
     var _readyResolve;
     READY_PROMISE = new Promise(function (r) { _readyResolve = r; });
@@ -24,7 +25,9 @@
         qs: 'sync',
         explr: 'sync',
         pg: 'sync',
+        mpl: 'sync',
         pgr: 'sync',
+        srm: 'sync',
         go: 'sync',
         grev: 'sync',
         sho: 'sync',
@@ -97,7 +100,13 @@
         aa: 'sync',
         eo: 'sync',
         rvp: 'sync',
-        pfl: 'sync',
+        rwr: 'sync',
+        gb: 'sync',
+        gbBtn: 'sync',
+        gbPageBtn: 'sync',
+        bffStar: 'sync',
+        rwrNye: 'sync',
+        vb: 'sync',
         oilp: 'sync',
     };
     const CACHE = {};

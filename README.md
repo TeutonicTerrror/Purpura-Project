@@ -17,7 +17,7 @@
   <a href="https://chromewebstore.google.com/detail/purpura-roblox-enhanced/lpneoiebggmkhlldeongbcipekohjepc"><img alt="Chrome Web Store" src="https://img.shields.io/chrome-web-store/users/lpneoiebggmkhlldeongbcipekohjepc?label=Chrome%20Users&logo=googlechrome&logoColor=white&color=4285F4"></a>
   <a href="https://chromewebstore.google.com/detail/purpura-roblox-enhanced/lpneoiebggmkhlldeongbcipekohjepc"><img alt="Chrome Web Store Rating" src="https://img.shields.io/chrome-web-store/stars/lpneoiebggmkhlldeongbcipekohjepc?label=Rating"></a>
   <a href="https://discord.gg/TT4sgtEkNV"><img alt="Discord" src="https://img.shields.io/discord/1143867106765570088?logo=discord&logoColor=white&label=Discord&color=5865F2"></a>
-  <a href="License.md"><img alt="License" src="https://img.shields.io/badge/License-GPL--3.0-blue.svg"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/License-GPL--3.0-blue.svg"></a>
 </p>
 
 ---
@@ -69,7 +69,7 @@ npm install
 npm run build
 ```
 
-Then open `chrome://extensions`, enable **Developer Mode**, and load the `build/chromium` folder unpacked. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full development workflow.
+`npm run build` produces both browser targets. In Chrome, open `chrome://extensions`, enable **Developer Mode**, and load the `build/chromium` folder unpacked. In Firefox, open `about:debugging#/runtime/this-firefox`, choose **Load Temporary Add-on**, and select `build/firefox/manifest.json`. The packaged Firefox build is `build/purpura_firefox.zip`. See [`CONTRIBUTING.md`](.github/CONTRIBUTING.md) for the full development workflow.
 
 </details>
 
@@ -77,7 +77,7 @@ Then open `chrome://extensions`, enable **Developer Mode**, and load the `build/
 
 ## License
 
-Purpura source code is licensed under the **GNU General Public License v3.0** unless otherwise stated. See [`License.md`](License.md) for the full license text.
+Purpura source code is licensed under the **GNU General Public License v3.0** unless otherwise stated. See [`LICENSE`](LICENSE) for the full license text.
 
 The following assets are **not** covered by GPL-3.0:
 

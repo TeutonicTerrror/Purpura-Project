@@ -5,6 +5,7 @@
  */
 if (!window.pinnedGamesInitialized) { window.pinnedGamesInitialized = true;
 (() => {
+    const fetch = window.__purpuraFirefoxFetch || window.fetch.bind(window);
     function t(key, substitutions) { return chrome.i18n.getMessage(key, substitutions) || key; }
 
     let pinnedGames = [];

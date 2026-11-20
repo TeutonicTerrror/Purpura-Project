@@ -189,7 +189,7 @@
     "message": "Explorador de artículos"
   },
   "extensionDescription": {
-    "message": "La suite definitiva de mejoras para Roblox con temas, una barra lateral rediseñada y funciones de calidad de vida."
+    "message": "Roblox enhanced, free forever. Always private. Temas, regiones, tiempo de juego, intercambios y mejoras de calidad de vida."
   },
   "extensionName": {
     "message": "Purpura | Roblox Enhanced"
@@ -2379,32 +2379,92 @@
   "settings_r6WarningRemover_desc": {
     "message": "Elimina el aviso de R6 al cambiar de R15 a R6."
   },
-  "settings_priceFloor_label": {
-    "message": "Precio Minimo del Mercado"
+  "settings_verifiedBadge_label": {
+    "message": "Insignia verificada"
   },
-  "settings_priceFloor_desc": {
-    "message": "Muestra el precio minimo de los objetos y si estan en el precio minimo."
+  "settings_verifiedBadge_desc": {
+    "message": "Muestra la insignia de verificado junto a tu nombre en Roblox. Solo tu puedes verla."
   },
-  "priceFloor_label": {
-    "message": "Precio minimo"
+  "settings_robloxWrapped_label": {
+    "message": "Roblox Wrapped"
   },
-  "priceFloor_status": {
-    "message": "{{difference}} {{status}}"
+  "settings_robloxWrapped_desc": {
+    "message": "Un resumen anual de tus gastos de Robux, con tus experiencias, creadores y compras principales, mas una imagen para compartir. Todo se queda en tu navegador."
   },
-  "priceFloor_statusTypes_above": {
-    "message": "por encima del minimo"
+  "settings_robloxWrapped_nye_label": {
+    "message": "Ventana de Nochevieja"
   },
-  "priceFloor_statusTypes_below": {
-    "message": "por debajo del minimo"
+  "settings_robloxWrapped_nye_desc": {
+    "message": "El 31 de diciembre, muestra tu imagen de Wrapped del ano la primera vez que abres Roblox."
   },
-  "priceFloor_statusTypes_at": {
-    "message": "En el precio minimo"
+  "settings_robloxWrapped_open": {
+    "message": "Abrir Roblox Wrapped"
   },
-  "priceFloor_difference": {
-    "message": "{{diff}}"
+  "settings_bestFriends_homeStar_label": {
+    "message": "Estrella en el inicio"
   },
-  "priceFloor_description": {
-    "message": "El precio minimo al que se puede listar este objeto. Roblox lo ajusta segun el tipo de objeto y su configuracion."
+  "settings_bestFriends_homeStar_desc": {
+    "message": "Muestra el boton de estrella en los amigos del carrusel de la pagina de inicio. Desactivalo para mantener a tus mejores amigos fijados sin la estrella ahi."
+  },
+  "settings_gameBlocker_label": {
+    "message": "Bloqueador de juegos"
+  },
+  "settings_gameBlocker_desc": {
+    "message": "Oculta las experiencias que no quieres ver en Inicio, Listas, busqueda y recomendaciones. Bloquea experiencias, todo lo de un creador o lo que coincida con una palabra clave."
+  },
+  "settings_gameBlocker_manage": {
+    "message": "Administrar bloqueos"
+  },
+  "settings_gameBlocker_cardButton_label": {
+    "message": "Boton de bloqueo en las tarjetas"
+  },
+  "settings_gameBlocker_cardButton_desc": {
+    "message": "Muestra un boton de bloqueo al pasar el cursor sobre una tarjeta de juego."
+  },
+  "settings_gameBlocker_pageButton_label": {
+    "message": "Boton de bloqueo en las paginas de juego"
+  },
+  "settings_gameBlocker_pageButton_desc": {
+    "message": "Agrega un boton de Bloquear junto a Favorito en las paginas de juego, con opcion de bloquear al creador."
+  },
+  "settings_mostPlayed_label": {
+    "message": "Mas Jugados"
+  },
+  "settings_mostPlayed_desc": {
+    "message": "Muestra un panel compacto con tus juegos mas jugados arriba a la derecha de la pagina de inicio, ordenados por tiempo de juego en los ultimos 7 dias, 30 dias o todo el tiempo. Requiere el Rastreador de Tiempo."
+  },
+  "mostPlayed_range7Short": {
+    "message": "7d"
+  },
+  "mostPlayed_range30Short": {
+    "message": "30d"
+  },
+  "mostPlayed_rangeAllShort": {
+    "message": "Todo"
+  },
+  "mostPlayed_title": {
+    "message": "Mas jugados"
+  },
+  "mostPlayed_range7": {
+    "message": "Ultimos 7 dias"
+  },
+  "mostPlayed_range30": {
+    "message": "Ultimos 30 dias"
+  },
+  "mostPlayed_rangeAll": {
+    "message": "Todo el tiempo"
+  },
+  "mostPlayed_sessions": {
+    "message": "sesiones"
+  },
+  "mostPlayed_emptyRange": {
+    "message": "Aun no hay tiempo de juego registrado en este periodo."
+  },
+  "mostPlayed_empty": {
+    "message": "Juega un juego y aparecera aqui. Purpura registra tu tiempo de juego mientras Roblox esta abierto."
+  },
+  "mostPlayed_openTracker": {
+    "message": "Abrir el Rastreador de Tiempo"
   },
   "settings_offsaleLegacyPrices_label": {
     "message": "Precios heredados de artículos fuera de venta"

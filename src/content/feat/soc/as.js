@@ -9,6 +9,7 @@
     if (window.purpuraAvatarSearchInitialized) return;
     window.purpuraAvatarSearchInitialized = true;
 
+    const fetch = window.__purpuraFirefoxFetch || window.fetch.bind(window);
     let config = { enabled: true, filters: true };
     let observer = null;
     let urlCheckInterval = null;
@@ -36,6 +37,7 @@
         if (document.getElementById('purpura-as-vars')) return;
         var s = document.createElement('style');
         s.id = 'purpura-as-vars';
+        var lightTheme = 'html.light-theme,body.light-theme,html[data-theme="light"],body[data-theme="light"],html.theme-light,body.theme-light';
         s.textContent = ':root{' +
             '--purpura-as-accent:#9b6dff;' +
             '--purpura-as-accent-light:#b89dff;' +
@@ -57,7 +59,29 @@
             '--purpura-as-placeholder:#888;' +
             '--purpura-as-btn-text:#fff;' +
             '--purpura-as-loading-bg:rgba(0,0,0,0.8);' +
-            '--purpura-as-loading-text:white}';
+            '--purpura-as-loading-text:white}' +
+            lightTheme + '{' +
+            '--purpura-as-accent:#7c3aed;' +
+            '--purpura-as-accent-light:#6d28d9;' +
+            '--purpura-as-accent-hover:#6d28d9;' +
+            '--purpura-as-accent-bg:rgba(124,58,237,0.10);' +
+            '--purpura-as-accent-glow:rgba(124,58,237,0.14);' +
+            '--purpura-as-accent-border:rgba(124,58,237,0.40);' +
+            '--purpura-as-surface-1:#ffffff;' +
+            '--purpura-as-surface-2:#f5f5f7;' +
+            '--purpura-as-text:#111113;' +
+            '--purpura-as-text-muted:#5b5b66;' +
+            '--purpura-as-stroke:rgba(0,0,0,0.12);' +
+            '--purpura-as-stroke-light:rgba(0,0,0,0.08);' +
+            '--purpura-as-stroke-lighter:rgba(0,0,0,0.06);' +
+            '--purpura-as-toggle-knob:#fff;' +
+            '--purpura-as-toggle-knob-shadow:rgba(0,0,0,0.20);' +
+            '--purpura-as-dropdown-shadow:rgba(0,0,0,0.18);' +
+            '--purpura-as-toggle-bg:#c8c8d0;' +
+            '--purpura-as-placeholder:#777;' +
+            '--purpura-as-btn-text:#fff;' +
+            '--purpura-as-loading-bg:rgba(255,255,255,0.9);' +
+            '--purpura-as-loading-text:#111113}';
         document.head.appendChild(s);
     }
 

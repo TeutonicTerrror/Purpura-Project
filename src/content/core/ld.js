@@ -204,7 +204,7 @@ if (!window.purpuraLoadedLogged) {
 (function() {
     var _x1 = 'purpura-kofi-abc';
     var _x2 = 'https://ko-fi.com/teutonic';
-    var _x3 = 'https://storage.ko-fi.com/cdn/cup-border.png';
+    var _x3 = '<img src="' + chrome.runtime.getURL('images/kofi.png') + '" alt="" aria-hidden="true" draggable="false">';
     var _s = 'purpura-kofi-sidebar-style';
 
     function _styles() {
@@ -218,7 +218,8 @@ if (!window.purpuraLoadedLogged) {
             '#purpura-kofi-abc>a:active{transform:none!important;box-shadow:0 1px 4px rgba(0,0,0,.18)!important}',
             '#purpura-kofi-abc>a:focus-visible{outline:2px solid var(--purpura-playButton,var(--color-action-primary-background,#1a8fc0))!important;outline-offset:2px!important}',
             '#purpura-kofi-abc .purpura-kofi-icon{display:flex!important;align-items:center!important;justify-content:center!important;flex:0 0 24px!important;width:24px!important;height:24px!important;border-radius:7px!important;background-color:var(--purpura-playButton,var(--color-action-primary-background,#1a8fc0))!important;background-image:linear-gradient(rgba(0,0,0,.22),rgba(0,0,0,.22))!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)!important;overflow:hidden!important}',
-            '#purpura-kofi-abc .purpura-kofi-icon img{display:block!important;width:16px!important;height:auto!important;margin:0!important;padding:0!important;border:0!important;filter:none!important}',
+            '#purpura-kofi-abc .purpura-kofi-icon{color:#fff!important}',
+            '#purpura-kofi-abc .purpura-kofi-icon img{display:block!important;width:16px!important;height:16px!important;margin:0!important;padding:0!important;border:0!important;object-fit:contain!important}',
             '#purpura-kofi-abc .purpura-kofi-label{flex:0 1 auto!important;min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;color:inherit!important;font:inherit!important}',
             '@media (prefers-reduced-motion:reduce){#purpura-kofi-abc>a{transition:none!important}}'
         ].join('\n');
@@ -240,10 +241,7 @@ if (!window.purpuraLoadedLogged) {
         a.setAttribute('title', 'Support Purpura on Ko-fi');
         var w = document.createElement('span');
         w.className = 'purpura-kofi-icon';
-        var _i = document.createElement('img');
-        _i.src = _x3;
-        _i.alt = '';
-        w.appendChild(_i);
+        w.innerHTML = _x3;
         var l = document.createElement('span');
         l.className = 'purpura-kofi-label';
         l.textContent = 'Support Purpura';

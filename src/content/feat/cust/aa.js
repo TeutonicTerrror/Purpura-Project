@@ -9,6 +9,7 @@
     if (window.__purpuraAdjustAccessoriesLoaded) return;
     window.__purpuraAdjustAccessoriesLoaded = true;
 
+    var fetch = window.__purpuraFirefoxFetch || window.fetch.bind(window);
     var STORAGE_KEY = 'aa';
     var BUTTON_ID = 'purpura-adjust-accessories-btn';
     var BUTTON_WRAP_ID = 'purpura-adjust-accessories-wrap';
@@ -16,6 +17,8 @@
     var STYLE_ID = 'purpura-adjust-accessories-style';
     var OVERLAY_ID = 'purpura-adjust-accessories-overlay';
     var DIALOG_ID = 'purpura-adjust-accessories-dialog';
+    var REQUEST_TIMEOUT_MS = 30000;
+    var VERIFY_TIMEOUT_MS = 8000;
 
     var EDIT_ICON_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 -960 960 960" fill="currentColor" class="roseal-icon"><path d="M427-120v-225h60v83h353v60H487v82h-60Zm-307-82v-60h247v60H120Zm187-166v-82H120v-60h187v-84h60v226h-60Zm120-82v-60h413v60H427Zm166-165v-225h60v82h187v60H653v83h-60Zm-473-83v-60h413v60H120Z"></path></svg>';
     var CLOSE_ICON_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
@@ -354,14 +357,14 @@
 
     function fetchJson(url, options) {
         var opts = Object.assign({ credentials: 'include' }, options || {});
-        return fetch(url, opts).then(function (resp) {
+        return withRequestTimeout(fetch(url, opts).then(function (resp) {
             if (!resp.ok) {
                 var err = new Error('HTTP ' + resp.status);
                 err.status = resp.status;
                 throw err;
             }
-            return resp.json();
-        });
+            return resp.json().then(function (data) { return cloneValue(data); });
+        }));
     }
 
     function postRobloxJson(url, bodyObj) {
@@ -385,15 +388,71 @@
                     return attempt(headerToken, true);
                 }
                 if (!resp.ok) {
-                    var err = new Error('HTTP ' + resp.status);
-                    err.status = resp.status;
-                    throw err;
+                    return resp.text().catch(function () { return ''; }).then(function (text) {
+                        var detail = '';
+                        try {
+                            var parsed = JSON.parse(text);
+                            if (parsed && parsed.errors && parsed.errors[0] && parsed.errors[0].message) {
+                                detail = String(parsed.errors[0].message);
+                            } else if (parsed && typeof parsed.message === 'string') {
+                                detail = parsed.message;
+                            }
+                        } catch (_) {}
+                        var err = new Error('HTTP ' + resp.status + (detail ? ': ' + detail : ''));
+                        err.status = resp.status;
+                        err.detail = detail;
+                        throw err;
+                    });
                 }
-                return resp.json().catch(function () { return { success: true }; });
+                return resp.json().catch(function () { return { success: true }; }).then(function (data) { return cloneValue(data); });
             });
         }
 
-        return attempt(token, false);
+        try {
+            return withRequestTimeout(attempt(token, false));
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    }
+
+    function withRequestTimeout(promise, timeoutMs) {
+        return new Promise(function (resolve, reject) {
+            var settled = false;
+            var timer = setTimeout(function () {
+                if (settled) return;
+                settled = true;
+                reject(new Error('The request timed out.'));
+            }, timeoutMs || REQUEST_TIMEOUT_MS);
+            promise.then(function (value) {
+                if (settled) return;
+                settled = true;
+                clearTimeout(timer);
+                resolve(value);
+            }, function (error) {
+                if (settled) return;
+                settled = true;
+                clearTimeout(timer);
+                reject(error);
+            });
+        });
+    }
+
+    function sendWearingAssets(payloadAssets) {
+        try {
+            return postRobloxJson('https://avatar.roblox.com/v2/avatar/set-wearing-assets', { assets: payloadAssets });
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    }
+
+    function requestErrorText(messageKey, error) {
+        var base = message(messageKey);
+        var status = Number(error && error.status);
+        var detail = error && typeof error.detail === 'string' ? error.detail : '';
+        if (!detail && error && /timed out/i.test(String(error.message || ''))) detail = 'request timed out';
+        if (status > 0) return base + ' (HTTP ' + status + (detail ? ': ' + detail : '') + ')';
+        if (detail) return base + ' (' + detail + ')';
+        return base;
     }
 
     function fetchAvatarData() {
@@ -739,64 +798,194 @@
         return num;
     }
 
+    function renderModalSafely() {
+        try {
+            renderModalContent();
+            return true;
+        } catch (error) {
+            console.error('[Purpura Adjust Accessories] Could not render the editor view:', error);
+            modalState.view = 'list';
+            modalState.selectedAsset = null;
+            try {
+                renderModalContent();
+                return true;
+            } catch (fallbackError) {
+                console.error('[Purpura Adjust Accessories] Could not render the asset list:', fallbackError);
+                return false;
+            }
+        }
+    }
+
+    // Firefox returns page-realm (Xray-wrapped) objects from fetch(). Storing
+    // those and writing to them throws "Not allowed to define cross-origin
+    // object as property", so the avatar is always rebuilt in our own realm.
+    function setWornAssets(assets) {
+        var next = cloneValue(modalState.avatar) || {};
+        next.assets = cloneValue(assets) || [];
+        modalState.avatar = next;
+    }
+
     function persistUpdatedAsset(nextAsset) {
         if (!modalState.avatar || !Array.isArray(modalState.avatar.assets)) return Promise.resolve(false);
+        var previousAssets = modalState.avatar.assets;
+        var previousSelected = modalState.selectedAsset;
         var updatedAssets = updateAssetInList(nextAsset, modalState.avatar.assets, false);
         var payloadAssets = serializeWearingAssets(updatedAssets);
-        modalState.saving = true;
+
+        // Apply the adjustment to the dialog immediately. The editor must never
+        // sit disabled while a write is in flight.
+        setWornAssets(updatedAssets);
+        modalState.selectedAsset = cloneValue(nextAsset);
         modalState.error = '';
         modalState.status = '';
-        renderModalContent();
+        renderModalSafely();
 
-        return postRobloxJson('https://avatar.roblox.com/v2/avatar/set-wearing-assets', { assets: payloadAssets })
-            .then(function (res) {
-                if (res && res.success === false) {
-                    throw new Error('set-wearing-assets returned success:false');
-                }
-                modalState.avatar.assets = updatedAssets;
-                modalState.selectedAsset = cloneValue(nextAsset);
-                modalState.saving = false;
-                modalState.status = message('adjustAccessories_saved');
-                renderModalContent();
+        function markSaved() {
+            modalState.status = message('adjustAccessories_saved');
+            modalState.error = '';
+            renderModalSafely();
+            try {
                 refresh2DPreviewAfterChange();
                 triggerAvatarViewerRefresh();
-                return true;
+            } catch (error) {
+                console.error('[Purpura Adjust Accessories] Saved, but the preview could not be refreshed:', error);
+            }
+            return true;
+        }
+
+        function revertSave(error) {
+            console.error('[Purpura Adjust Accessories] Save failed:', error);
+            setWornAssets(previousAssets);
+            modalState.selectedAsset = previousSelected;
+            modalState.error = requestErrorText('adjustAccessories_updateError', error);
+            renderModalSafely();
+            return false;
+        }
+
+        return sendWearingAssets(payloadAssets)
+            .then(function (res) {
+                if (res && res.success === false) {
+                    var err = new Error('set-wearing-assets returned success:false');
+                    err.detail = writeRejectionDetail(res);
+                    throw err;
+                }
+                return markSaved();
             })
-            .catch(function () {
-                modalState.saving = false;
-                modalState.error = message('adjustAccessories_updateError');
-                renderModalContent();
-                return false;
+            .catch(function (error) {
+                return confirmSaveApplied(nextAsset).then(function (state) {
+                    if (state === 'not-applied') return revertSave(error);
+                    return markSaved();
+                });
             });
+    }
+
+    function confirmSaveApplied(nextAsset) {
+        return withRequestTimeout(fetchAvatarData(), VERIFY_TIMEOUT_MS).then(function (avatar) {
+            var assets = avatar && Array.isArray(avatar.assets) ? avatar.assets : null;
+            if (!assets) return 'unknown';
+            var id = Number(nextAsset && nextAsset.id);
+            var match = null;
+            for (var i = 0; i < assets.length; i++) {
+                if (Number(assets[i] && assets[i].id) === id) {
+                    match = assets[i];
+                    break;
+                }
+            }
+            if (!match) return 'unknown';
+            return metaMatches(nextAsset.meta, match.meta) ? 'applied' : 'not-applied';
+        }).catch(function () {
+            return 'unknown';
+        });
+    }
+
+    function confirmRemoval(assetId) {
+        return withRequestTimeout(fetchAvatarData(), VERIFY_TIMEOUT_MS).then(function (avatar) {
+            var assets = avatar && Array.isArray(avatar.assets) ? avatar.assets : null;
+            if (!assets) return 'unknown';
+            var id = Number(assetId);
+            return assets.some(function (item) { return Number(item && item.id) === id; }) ? 'still-worn' : 'gone';
+        }).catch(function () {
+            return 'unknown';
+        });
+    }
+
+    function metaPart(meta, key) {
+        var part = meta && typeof meta === 'object' ? meta[key] : undefined;
+        return JSON.stringify(part === undefined ? null : part);
+    }
+
+    function metaMatches(expected, actual) {
+        var keys = ['order', 'scale', 'position', 'rotation'];
+        for (var i = 0; i < keys.length; i++) {
+            if (metaPart(expected, keys[i]) !== metaPart(actual, keys[i])) return false;
+        }
+        return true;
+    }
+
+    function writeRejectionDetail(res) {
+        if (res && typeof res === 'object' && Array.isArray(res.invalidAssetIds) && res.invalidAssetIds.length) {
+            return 'rejected asset ids: ' + res.invalidAssetIds.join(', ');
+        }
+        return 'server reported success:false';
     }
 
     function removeAssetFromAvatar(assetId) {
         if (!modalState.avatar || !Array.isArray(modalState.avatar.assets)) return Promise.resolve(false);
-        var remaining = modalState.avatar.assets.filter(function (a) {
+        var previousAssets = modalState.avatar.assets;
+        var previousSelected = modalState.selectedAsset;
+        var previousView = modalState.view;
+        var remaining = previousAssets.filter(function (a) {
             return Number(a && a.id) !== Number(assetId);
         });
         var payloadAssets = serializeWearingAssets(remaining);
-        modalState.saving = true;
-        modalState.error = '';
-        renderModalContent();
 
-        return postRobloxJson('https://avatar.roblox.com/v2/avatar/set-wearing-assets', { assets: payloadAssets })
-            .then(function (res) {
-                if (res && res.success === false) {
-                    throw new Error('set-wearing-assets returned success:false');
-                }
-                modalState.avatar.assets = remaining;
-                modalState.saving = false;
-                renderModalContent();
+        // Remove it from the dialog immediately, then confirm with Roblox.
+        setWornAssets(remaining);
+        if (modalState.selectedAsset && Number(modalState.selectedAsset.id) === Number(assetId)) {
+            modalState.selectedAsset = null;
+            modalState.view = 'list';
+        }
+        modalState.error = '';
+        modalState.status = '';
+        renderModalSafely();
+
+        function markRemoved() {
+            modalState.status = message('adjustAccessories_saved');
+            modalState.error = '';
+            renderModalSafely();
+            try {
                 refresh2DPreviewAfterChange();
                 triggerAvatarViewerRefresh();
-                return true;
+            } catch (error) {
+                console.error('[Purpura Adjust Accessories] Removed, but the preview could not be refreshed:', error);
+            }
+            return true;
+        }
+
+        function restoreRemoval(error) {
+            console.error('[Purpura Adjust Accessories] Remove failed:', error);
+            setWornAssets(previousAssets);
+            modalState.selectedAsset = previousSelected;
+            modalState.view = previousView;
+            modalState.error = requestErrorText('adjustAccessories_removeError', error);
+            renderModalSafely();
+            return false;
+        }
+
+        return sendWearingAssets(payloadAssets)
+            .then(function (res) {
+                if (res && res.success === false) {
+                    var err = new Error('set-wearing-assets returned success:false');
+                    err.detail = writeRejectionDetail(res);
+                    throw err;
+                }
+                return markRemoved();
             })
-            .catch(function () {
-                modalState.saving = false;
-                modalState.error = message('adjustAccessories_removeError');
-                renderModalContent();
-                return false;
+            .catch(function (error) {
+                return confirmRemoval(assetId).then(function (state) {
+                    if (state === 'still-worn') return restoreRemoval(error);
+                    return markRemoved();
+                });
             });
     }
 
@@ -1435,8 +1624,8 @@
                     renderModalContent();
                     return;
                 }
-                modalState.avatar = avatar;
-                modalState.avatarRules = rules;
+                modalState.avatar = cloneValue(avatar);
+                modalState.avatarRules = cloneValue(rules);
                 renderModalContent();
 
                 var ids = avatar.assets.map(function (a) { return a && a.id; }).filter(Boolean);

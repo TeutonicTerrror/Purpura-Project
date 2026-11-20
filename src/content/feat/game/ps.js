@@ -506,6 +506,29 @@
         return { thumbnailMap, statsMap };
     }
 
+    function dropBlockedGames(games) {
+        return new Promise(resolve => {
+            try {
+                chrome.storage.sync.get('gb', sync => {
+                    if (sync && sync.gb === false) return resolve();
+                    chrome.storage.local.get('gbList', local => {
+                        const blocked = (local && local.gbList && Array.isArray(local.gbList.games)) ? local.gbList.games : [];
+                        if (blocked.length) {
+                            const places = new Set(blocked.map(g => g.p).filter(Boolean));
+                            const universes = new Set(blocked.map(g => g.u).filter(Boolean));
+                            for (let i = games.length - 1; i >= 0; i--) {
+                                if (places.has(games[i].placeId) || (games[i].universeId && universes.has(games[i].universeId))) games.splice(i, 1);
+                            }
+                        }
+                        resolve();
+                    });
+                });
+            } catch (e) {
+                resolve();
+            }
+        });
+    }
+
     async function tryInject() {
         if (injected || alreadyInjected()) {
             injected = true;
@@ -523,6 +546,7 @@
 
         const shuffledGames = shuffleArray(CURATED_GAMES);
         const { thumbnailMap, statsMap } = await fetchAndBuild(shuffledGames);
+        await dropBlockedGames(shuffledGames);
 
         if (!isChartsPage()) { injected = false; return; }
         if (alreadyInjected()) return;

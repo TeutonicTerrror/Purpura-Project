@@ -172,7 +172,23 @@ type: "checkbox",
 storageKey: "ce",
 storageType: "sync",
 default: true
-},        bulkUnfriend: {
+},        bestFriends: {
+            type: "checkbox",
+            label: e("settings_bestFriends_label"),
+            description: [ e("settings_bestFriends_desc") ],
+            storageKey: "bff",
+            storageType: "sync",
+            default: true,
+            subSettings: {
+                homeStar: {
+                    label: e("settings_bestFriends_homeStar_label"),
+                    description: e("settings_bestFriends_homeStar_desc"),
+                    storageKey: "bffStar",
+                    default: true
+                }
+            }
+        },
+        bulkUnfriend: {
             type: "checkbox",
             label: e("settings_bulkUnfriend_label"),
             description: [ e("settings_bulkUnfriend_desc") ],
@@ -335,14 +351,6 @@ storageKey: "rr",
 storageType: "sync",
 default: true
 },
-priceFloor: {
-label: e("settings_priceFloor_label"),
-description: [ e("settings_priceFloor_desc") ],
-type: "checkbox",
-storageKey: "pfl",
-storageType: "sync",
-default: true
-},
 offsaleLegacyPrices: {
 label: e("settings_offsaleLegacyPrices_label"),
 description: [ e("settings_offsaleLegacyPrices_desc") ],
@@ -469,6 +477,29 @@ default: true
 Games: {
 title: e("settings_cat_games"),
 settings: {
+gameBlocker: {
+label: e("settings_gameBlocker_label"),
+description: [ e("settings_gameBlocker_desc") ],
+type: "checkbox",
+storageKey: "gb",
+storageType: "sync",
+default: true,
+manageGameBlockerAction: true,
+subSettings: {
+cardButton: {
+label: e("settings_gameBlocker_cardButton_label"),
+description: e("settings_gameBlocker_cardButton_desc"),
+storageKey: "gbBtn",
+default: true
+},
+pageButton: {
+label: e("settings_gameBlocker_pageButton_label"),
+description: e("settings_gameBlocker_pageButton_desc"),
+storageKey: "gbPageBtn",
+default: false
+}
+}
+},
 preferredGameRegions: {
 label: "Preferred Game Regions",
 description: [ "Adds a secondary play-button that joins your preferred server region when joining a game if available." ],
@@ -477,6 +508,14 @@ regionPicker: true,
 storageKey: "pgr",
 storageType: "sync",
 storagePath: "enabled",
+default: true
+},
+serverRegionsMap: {
+label: "Server Regions Map",
+description: [ "Adds an interactive globe beside the server list showing where public servers are hosted, with region counts and direct join buttons." ],
+type: "checkbox",
+storageKey: "srm",
+storageType: "sync",
 default: true
 },
 botDetector: {
@@ -512,6 +551,14 @@ storageKey: "plt",
 storageType: "sync",
 default: true,
 openTrackerAction: true
+},
+mostPlayed: {
+label: e("settings_mostPlayed_label"),
+description: [ e("settings_mostPlayed_desc") ],
+type: "checkbox",
+storageKey: "mpl",
+storageType: "sync",
+default: true
 },
 serverInfo: {
 label: e("settings_serverInfo_label"),
@@ -927,6 +974,14 @@ storageType: "local",
 storagePath: "enabled",
 default: false
 },
+verifiedBadge: {
+label: e("settings_verifiedBadge_label"),
+description: [ e("settings_verifiedBadge_desc") ],
+type: "checkbox",
+storageKey: "vb",
+storageType: "sync",
+default: false
+},
 }
 },
 Security: {
@@ -1120,6 +1175,23 @@ default: ""
 Miscellaneous: {
 title: e("settings_cat_miscellaneous"),
 settings: {
+robloxWrapped: {
+label: e("settings_robloxWrapped_label"),
+description: [ e("settings_robloxWrapped_desc") ],
+type: "checkbox",
+storageKey: "rwr",
+storageType: "sync",
+default: true,
+openWrappedAction: true,
+subSettings: {
+newYearsEve: {
+label: e("settings_robloxWrapped_nye_label"),
+description: e("settings_robloxWrapped_nye_desc"),
+storageKey: "rwrNye",
+default: false
+}
+}
+},
 pageBinds: {
 label: e("settings_pageBinds_label"),
 description: [ e("settings_pageBinds_desc1"), e("settings_pageBinds_desc2") ],
@@ -1258,11 +1330,11 @@ robuxBonusItem: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fil
 bundleItemViewer: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6h-3V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>`,
 itemExplorer: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
 saveLotsRobux: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8 9h5a2 2 0 0 1 0 4h-2a2 2 0 0 0 0 4h5"/></svg>`,
-priceFloor: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8 9h5a2 2 0 0 1 0 4h-2a2 2 0 0 0 0 4h5"/></svg>`,
 offsaleLegacyPrices: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 1 7 7c0 3.9-3.6 8.5-7 13-3.4-4.5-7-9.1-7-13a7 7 0 0 1 7-7z"/><path d="M12 8v6"/><path d="M9 11h6"/></svg>`,
 remainingRobux: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-4a2 2 0 1 0 0 4h2a2 2 0 1 1 0 4H8"/><path d="M12 6v2"/><path d="M12 16v2"/></svg>`,
 ghostProfiles: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`,
 mostPlayedTogether: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`,
+bestFriends: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
 bulkUnfriend: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>`,
 lastOnline: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
 rolimonsProfile: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>`,
@@ -1275,6 +1347,7 @@ avatarCycler: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill=
 extraOutfits: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h4"/><path d="M18 14v8"/><path d="M14 18h8"/></svg>`,
 adjustAccessories: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor" stroke="none"><path d="M427-120v-225h60v83h353v60H487v82h-60Zm-307-82v-60h247v60H120Zm187-166v-82H120v-60h187v-84h60v226h-60Zm120-82v-60h413v60H427Zm166-165v-225h60v82h187v60H653v83h-60Zm-473-83v-60h413v60H120Z"/></svg>`,
 preferredGameRegions: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>`,
+serverRegionsMap: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14.5 14.5 0 0 1 0 18a14.5 14.5 0 0 1 0-18z"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></svg>`,
 botDetector: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>`,
 gameLauncherWidget: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`,
 pinnedGames: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 7 3 3H7l3-3-1-7Z"/></svg>`,
@@ -1304,6 +1377,10 @@ freeRobloxPlusThemes: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 2
 crowdServers: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
 gameOutfits: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg>`,
 playtime: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+verifiedBadge: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg>`,
+robloxWrapped: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>`,
+gameBlocker: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/></svg>`,
+mostPlayed: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>`,
 purpurasSelection: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
 robloxAgeTheme: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>`,
 hideDownloadButton: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
@@ -2029,6 +2106,12 @@ if (n.openTrackerAction) {
 r += `<button type="button" class="purpura-reset-btn" id="purpura-open-tracker-btn" data-parent-setting="playtime" style="margin-top:10px;background:var(--p-accent-glow);border-color:var(--p-accent-glow-strong);color:var(--p-accent);">Open Tracker</button>`;
 r += `<button type="button" class="purpura-reset-btn" id="purpura-import-ropro-btn" data-parent-setting="playtime" style="margin-top:10px;background:var(--p-accent-glow);border-color:var(--p-accent-glow-strong);color:var(--p-accent);">${e("settings_playtime_import_title")}</button>`;
 }
+if (n.manageGameBlockerAction) {
+r += `<button type="button" class="purpura-reset-btn" id="purpura-manage-gb-btn" data-parent-setting="gameBlocker" style="margin-top:10px;background:var(--p-accent-glow);border-color:var(--p-accent-glow-strong);color:var(--p-accent);">${e("settings_gameBlocker_manage")}</button>`;
+}
+if (n.openWrappedAction) {
+r += `<button type="button" class="purpura-reset-btn" id="purpura-open-wrapped-btn" data-parent-setting="robloxWrapped" style="margin-top:10px;background:var(--p-accent-glow);border-color:var(--p-accent-glow-strong);color:var(--p-accent);">${e("settings_robloxWrapped_open")}</button>`;
+}
 if (n.setupGuideAction) {
 r += `<button type="button" class="purpura-reset-btn" id="purpura-setup-guide-btn" data-parent-setting="saveLotsRobux" style="margin-top:10px;background:var(--p-accent-glow);border-color:var(--p-accent-glow-strong);color:var(--p-accent);">Setup Guide</button>`;
 }
@@ -2134,6 +2217,12 @@ r += `<button type="button" class="purpura-reset-btn" id="purpura-edit-layout-bt
 if (n.openTrackerAction) {
 r += `<button type="button" class="purpura-reset-btn" id="purpura-open-tracker-btn" data-parent-setting="playtime" style="margin-top:10px;background:var(--p-accent-glow);border-color:var(--p-accent-glow-strong);color:var(--p-accent);">Open Tracker</button>`;
 r += `<button type="button" class="purpura-reset-btn" id="purpura-import-ropro-btn" data-parent-setting="playtime" style="margin-top:10px;background:var(--p-accent-glow);border-color:var(--p-accent-glow-strong);color:var(--p-accent);">${e("settings_playtime_import_title")}</button>`;
+}
+if (n.manageGameBlockerAction) {
+r += `<button type="button" class="purpura-reset-btn" id="purpura-manage-gb-btn" data-parent-setting="gameBlocker" style="margin-top:10px;background:var(--p-accent-glow);border-color:var(--p-accent-glow-strong);color:var(--p-accent);">${e("settings_gameBlocker_manage")}</button>`;
+}
+if (n.openWrappedAction) {
+r += `<button type="button" class="purpura-reset-btn" id="purpura-open-wrapped-btn" data-parent-setting="robloxWrapped" style="margin-top:10px;background:var(--p-accent-glow);border-color:var(--p-accent-glow-strong);color:var(--p-accent);">${e("settings_robloxWrapped_open")}</button>`;
 }
 if (n.setupGuideAction) {
 r += `<button type="button" class="purpura-reset-btn" id="purpura-setup-guide-btn" data-parent-setting="saveLotsRobux" style="margin-top:10px;background:var(--p-accent-glow);border-color:var(--p-accent-glow-strong);color:var(--p-accent);">Setup Guide</button>`;
@@ -2848,6 +2937,26 @@ if (!s) ye(t, false);
 });
 });
 }
+if (n.type === "checkbox" && !this.checked && n.subSettings) {
+Object.entries(n.subSettings).forEach(([e, r]) => {
+if (r.type !== "checkbox" || !r.storageKey || r.storageKey === n.storageKey) return;
+const a = (r.storageType || n.storageType || "sync") === "local" ? chrome.storage.local : chrome.storage.sync;
+a.get([ r.storageKey ], t => {
+let s = X(t[r.storageKey], r.storageKey);
+if (r.storagePath) {
+if (!s || typeof s !== "object") s = {};
+s[r.storagePath] = false;
+} else {
+s = false;
+}
+a.set({
+[r.storageKey]: s
+});
+});
+const input = document.querySelector(`[data-sub-setting-input="${t}_${e}"]`);
+if (input && input.type === "checkbox") input.checked = false;
+});
+}
 Me(t, this.checked);
 document.querySelectorAll(`[data-parent="${t}"]`).forEach(e => {
 e.querySelectorAll("[data-sub-setting-input]").forEach(e => {
@@ -2899,6 +3008,18 @@ Te();
 }
 });
 
+document.addEventListener("click", function(e) {
+const t = e.target.closest && e.target.closest("#purpura-manage-gb-btn") || null;
+if (t && !t.disabled && window.__PurpuraGameBlocker) {
+window.__PurpuraGameBlocker.openManager();
+}
+});
+document.addEventListener("click", function(e) {
+const t = e.target.closest && e.target.closest("#purpura-open-wrapped-btn") || null;
+if (t && !t.disabled) {
+window.location.href = 'https://www.roblox.com/purpura-wrapped';
+}
+});
 document.addEventListener("click", function(e) {
 const t = e.target.closest && e.target.closest("#purpura-open-tracker-btn") || null;
 if (t && !t.disabled) {
@@ -3149,7 +3270,8 @@ const d = document.createElement("ul");
 d.style.cssText = "list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;";
 let g = null;
 o.forEach(e => {
-const t = s[e] || e;
+if (!s[e]) return;
+const t = s[e];
 const r = n[e] === true;
 const a = document.createElement("li");
 a.draggable = true;

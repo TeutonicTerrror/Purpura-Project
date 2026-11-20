@@ -693,6 +693,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             sendResponse({ servers: [] });
         });
         return true;
+    } else if (request.action === "probeServerRegions") {
+        probeServerRegions(request.placeId, request.serverIds, sender && sender.tab ? sender.tab.id : null).then(result => {
+            sendResponse(result);
+        }).catch(() => {
+            sendResponse({ servers: [], checked: 0 });
+        });
+        return true;
     } else if (request.action === "getAllServerRegions") {
         getAllServerRegions(request.placeId).then(result => {
             sendResponse(result);
@@ -1582,6 +1589,160 @@ async function getServerRegionsBatch(placeId, serverIds, tabId) {
         return { servers };
     } catch (error) {
         return { servers: [] };
+    }
+}
+
+const MAX_PROBE_REGION_SERVERS = 300;
+
+async function probeServerRegions(placeId, serverIds, tabId) {
+    const ids = Array.isArray(serverIds)
+        ? serverIds.filter(function (id) { return typeof id === 'string' && id.length > 0 && id.length <= 64; }).slice(0, MAX_PROBE_REGION_SERVERS)
+        : [];
+    const numericPlaceId = parseInt(placeId, 10);
+    if (!ids.length || !numericPlaceId) return { servers: [], checked: 0 };
+
+    if (!serverIpMap) await loadServerListData();
+
+    try {
+        let targetTabId = tabId;
+        if (!targetTabId) {
+            const tabs = await chrome.tabs.query({url: "*://*.roblox.com/*"});
+            if (!tabs.length) return { servers: [], checked: 0 };
+            targetTabId = tabs[0].id;
+        }
+
+        const result = await chrome.scripting.executeScript({
+            target: { tabId: targetTabId },
+            world: 'MAIN',
+            func: async (placeId, ids) => {
+                const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+                async function getCsrfToken() {
+                    try {
+                        const response = await fetch('https://auth.roblox.com/v2/logout', {
+                            method: 'POST',
+                            credentials: 'include'
+                        });
+                        return response.headers.get('x-csrf-token');
+                    } catch (_) {
+                        return null;
+                    }
+                }
+
+                let csrfToken = await getCsrfToken();
+                if (!csrfToken) return [];
+
+                let pauseUntil = 0;
+                const output = [];
+
+                async function probe(serverId) {
+                    for (let attempt = 0; attempt < 4; attempt += 1) {
+                        const wait = pauseUntil - Date.now();
+                        if (wait > 0) await sleep(wait);
+
+                        const joinAttemptId = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
+                            ? crypto.randomUUID()
+                            : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
+                                const value = Math.random() * 16 | 0;
+                                return (char === 'x' ? value : (value & 0x3 | 0x8)).toString(16);
+                            });
+                        const controller = new AbortController();
+                        const timeout = setTimeout(() => controller.abort(), 5000);
+                        try {
+                            const response = await fetch('https://gamejoin.roblox.com/v1/join-game-instance', {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                    'X-Csrf-Token': csrfToken
+                                },
+                                body: JSON.stringify({
+                                    placeId: placeId,
+                                    isTeleport: false,
+                                    gameId: serverId,
+                                    gameJoinAttemptId: joinAttemptId,
+                                    isPlayTogetherGame: false
+                                }),
+                                credentials: 'include',
+                                signal: controller.signal
+                            });
+
+                            if (response.status === 429) {
+                                pauseUntil = Date.now() + 4000;
+                                await sleep(1000);
+                                continue;
+                            }
+                            if (response.status === 403 && attempt < 2) {
+                                const nextToken = await getCsrfToken();
+                                if (nextToken) {
+                                    csrfToken = nextToken;
+                                    continue;
+                                }
+                            }
+                            if (!response.ok) return null;
+
+                            const data = await response.json();
+                            const joinScript = data && data.joinScript;
+                            if (!joinScript) return null;
+
+                            const dataCenterId = joinScript.DataCenterId != null ? String(joinScript.DataCenterId) : null;
+                            let ipAddress = null;
+                            const endpoints = [];
+                            if (Array.isArray(joinScript.UdmuxEndpoints)) endpoints.push.apply(endpoints, joinScript.UdmuxEndpoints);
+                            if (Array.isArray(joinScript.ServerConnections)) endpoints.push.apply(endpoints, joinScript.ServerConnections);
+
+                            for (const endpoint of endpoints) {
+                                const raw = endpoint && endpoint.Address ? String(endpoint.Address) : '';
+                                const host = raw.split(':')[0];
+                                if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) {
+                                    ipAddress = host;
+                                    break;
+                                }
+                            }
+
+                            if (!dataCenterId && !ipAddress) return null;
+                            return { serverId: serverId, dataCenterId: dataCenterId, ipAddress: ipAddress };
+                        } catch (_) {
+                            await sleep(250);
+                        } finally {
+                            clearTimeout(timeout);
+                        }
+                    }
+                    return null;
+                }
+
+                let cursor = 0;
+                async function worker() {
+                    while (cursor < ids.length) {
+                        const index = cursor;
+                        cursor += 1;
+                        const entry = await probe(ids[index]);
+                        if (entry) output.push(entry);
+                        await sleep(100);
+                    }
+                }
+
+                await Promise.all([worker(), worker(), worker(), worker()]);
+                return output;
+            },
+            args: [numericPlaceId, ids]
+        });
+
+        const resolved = Array.isArray(result?.[0]?.result) ? result[0].result : [];
+        const servers = [];
+        resolved.forEach((entry) => {
+            if (!entry || !entry.serverId) return;
+            const datacenter = entry.dataCenterId ? findDatacenter(entry.dataCenterId) : null;
+            if (!datacenter || !datacenter.location) return;
+            servers.push({
+                serverId: entry.serverId,
+                dataCenterId: entry.dataCenterId,
+                location: datacenter.location
+            });
+        });
+        return { servers: servers, checked: resolved.length };
+    } catch (error) {
+        return { servers: [], checked: 0 };
     }
 }
 
@@ -2734,6 +2895,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 }
             }
 
+            // Roblox hands out its CSRF token on a rejected state-changing
+            // request. Retrying here keeps the content script from needing to
+            // read the header itself (which Firefox may not expose).
+            // Never retry the logout endpoint: callers POST it only to harvest a token,
+            // and a retry carrying a valid token really logs the user out.
+            const isLogoutEndpoint = /^https:\/\/auth\.roblox\.com\/v\d+\/logout\b/i.test(request.url);
+            if (response.status === 403 && method !== 'GET' && method !== 'HEAD' && !isLogoutEndpoint) {
+                const refreshedCsrfToken = response.headers.get('x-csrf-token') || '';
+                if (refreshedCsrfToken && refreshedCsrfToken !== headers.get('X-CSRF-TOKEN')) {
+                    headers.set('X-CSRF-TOKEN', refreshedCsrfToken);
+                    response = await executeFetch();
+                }
+            }
+
             if (request.responseType === 'arraybuffer') {
                 const bodyBuffer = await response.arrayBuffer();
                 sendResponse({
@@ -3040,6 +3215,7 @@ var PT_DAILY_KEY = 'purpura_playtime_daily';
 var PT_SESSION_KEY = 'purpura_playtime_sessions';
 var PT_TRACKING_KEY = 'purpura_playtime_tracking';
 var PT_USER_ID_KEY = 'purpura_playtime_userid';
+var PT_USER_SCOPED_KEYS = [PT_STORAGE_KEY, PT_DAILY_KEY, PT_SESSION_KEY, PT_TRACKING_KEY];
 var PT_ALARM_NAME = 'purpura-playtime-poll';
 var PT_POLL_MINUTES = 0.5;
 var PT_MIN_SESSION_MS = 30000;
@@ -3053,7 +3229,13 @@ var ptTracking = null;
 var ptPollInFlight = false;
 var ptInitPromise = null;
 
+// Playtime data is stored per Roblox account: purpura_playtime_<key>_<userId>.
+function ptScopedKey(key) {
+    return ptUserId && PT_USER_SCOPED_KEYS.indexOf(key) !== -1 ? key + '_' + ptUserId : key;
+}
+
 function ptGetStorage(key, fallback) {
+    key = ptScopedKey(key);
     return new Promise(function(resolve) {
         chrome.storage.local.get([key], function(data) {
             resolve(data[key] !== undefined ? data[key] : fallback);
@@ -3062,6 +3244,7 @@ function ptGetStorage(key, fallback) {
 }
 
 function ptSetStorage(key, value) {
+    key = ptScopedKey(key);
     return new Promise(function(resolve) {
         var obj = {};
         obj[key] = value;
@@ -3074,22 +3257,51 @@ function ptGetDateKey(ts) {
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
 
+// Moves pre-per-account data onto the first account seen, so existing users keep their history.
+async function ptMigrateLegacyData(uid) {
+    var legacy = await new Promise(function(resolve) { chrome.storage.local.get(PT_USER_SCOPED_KEYS, resolve); });
+    var scopedNames = PT_USER_SCOPED_KEYS.map(function(k) { return k + '_' + uid; });
+    var existing = await new Promise(function(resolve) { chrome.storage.local.get(scopedNames, resolve); });
+    var moved = {};
+    PT_USER_SCOPED_KEYS.forEach(function(k, i) {
+        if (legacy[k] !== undefined && existing[scopedNames[i]] === undefined) moved[scopedNames[i]] = legacy[k];
+    });
+    if (Object.keys(moved).length) await new Promise(function(resolve) { chrome.storage.local.set(moved, resolve); });
+    await new Promise(function(resolve) { chrome.storage.local.remove(PT_USER_SCOPED_KEYS, resolve); });
+}
+
 async function ptGetUserId() {
-    if (ptUserId) return ptUserId;
-    var cached = await ptGetStorage(PT_USER_ID_KEY, null);
-    if (cached) { ptUserId = parseInt(cached, 10); return ptUserId; }
+    // Checked on every poll so an account switch is noticed within one poll interval.
+    var fresh = null;
     try {
         var resp = await fetch('https://users.roblox.com/v1/users/authenticated', { credentials: 'include' });
         if (resp.ok) {
             var data = await resp.json();
-            if (data && data.id) {
-                ptUserId = data.id;
-                await ptSetStorage(PT_USER_ID_KEY, ptUserId);
-                return ptUserId;
-            }
+            if (data && data.id) fresh = data.id;
         }
     } catch (e) {}
-    return null;
+    if (!fresh) {
+        // Offline or signed out: keep the last known account rather than losing tracking.
+        if (!ptUserId) {
+            var cached = parseInt(await ptGetStorage(PT_USER_ID_KEY, null), 10);
+            if (cached) { ptUserId = cached; ptTracking = await ptGetStorage(PT_TRACKING_KEY, null); }
+        }
+        return ptUserId;
+    }
+    if (fresh === ptUserId) return ptUserId;
+    if (ptUserId && ptTracking) {
+        // Account switched mid-session: close it out under the old account's keys first.
+        var previous = ptTracking;
+        ptTracking = null;
+        await ptSetStorage(PT_TRACKING_KEY, null);
+        await ptRecordSession(previous.sessionStart, previous.universeId, previous.rootPlaceId, previous.gameName);
+    }
+    var firstResolve = !ptUserId;
+    ptUserId = fresh;
+    await ptSetStorage(PT_USER_ID_KEY, fresh);
+    if (firstResolve) await ptMigrateLegacyData(fresh);
+    ptTracking = await ptGetStorage(PT_TRACKING_KEY, null);
+    return ptUserId;
 }
 
 async function ptCheckPresence(uid) {
@@ -3185,10 +3397,8 @@ async function ptPoll() {
 
     try {
         await ptEnsureInitialized();
-        if (!ptEnabled) return;
-
         var uid = await ptGetUserId();
-        if (!uid) return;
+        if (!ptEnabled || !uid) return;
 
         var now = Date.now();
         var presence = await ptCheckPresence(uid);
@@ -3288,7 +3498,7 @@ async function ptInit() {
         chrome.storage.sync.get(['plt'], function(data) { resolve(data); });
     });
     ptEnabled = !!(syncData.plt && syncData.plt.enabled !== false);
-    ptTracking = await ptGetStorage(PT_TRACKING_KEY, null);
+    await ptGetUserId();
     if (ptTracking && !ptTracking.lastSeenAt) {
         ptTracking = null;
         await ptSetStorage(PT_TRACKING_KEY, null);

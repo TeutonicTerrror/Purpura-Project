@@ -13,6 +13,7 @@
     const STYLE_ID = 'purpura-remaining-robux-style';
     const CONTAINER_CLASS = 'purpura-remaining-robux-container';
     const MODAL_SELECTOR = '.modal-content, .unified-purchase-dialog-content, .foundation-web-dialog-content';
+    const firefoxFetch = window.__purpuraFirefoxFetch;
 
     let enabled = false;
     let observer = null;
@@ -34,6 +35,7 @@
     (function installFetchInterceptor() {
         const _wrappedFetch = window.fetch;
 
+        try {
         window.fetch = function(input, init) {
             const requestUrl = typeof input === 'string' ? input : (input instanceof Request ? input.url : '');
 
@@ -102,6 +104,10 @@
 
             return promise;
         };
+        } catch (error) {
+            // Firefox may not allow content scripts to replace window.fetch.
+            if (typeof firefoxFetch !== 'function') throw error;
+        }
     })();
 
 
@@ -214,7 +220,7 @@
         }
 
         try {
-            const response = await fetch('https://users.roblox.com/v1/users/authenticated', {
+            const response = await (firefoxFetch || fetch)('https://users.roblox.com/v1/users/authenticated', {
                 credentials: 'include'
             });
             if (!response.ok) return null;
@@ -239,7 +245,7 @@
                 const userId = await getAuthenticatedUserId();
                 if (!userId) return robuxBalance;
 
-                const response = await fetch(`https://economy.roblox.com/v1/users/${userId}/currency`, {
+                const response = await (firefoxFetch || fetch)(`https://economy.roblox.com/v1/users/${userId}/currency`, {
                     credentials: 'include'
                 });
                 if (!response.ok) return robuxBalance;
@@ -266,15 +272,33 @@
     function getPriceFromModal(modal) {
         if (!modal) return 0;
 
+        // Foundation purchase dialogs put the item price beside the Robux
+        // icon without a .text-robux class. Page fetches are not intercepted
+        // by Firefox content scripts, so the price cache may be empty there.
+        if (firefoxFetch) {
+            const itemInfo = modal.querySelector('.min-w-0.flex.flex-col.gap-small, .purchase-info-container');
+            if (itemInfo) {
+                const icons = itemInfo.querySelectorAll('.icon-regular-robux');
+                for (const icon of icons) {
+                    if (icon.closest(`.${CONTAINER_CLASS}`)) continue;
+                    const priceEl = icon.nextElementSibling;
+                    if (!priceEl || priceEl.closest(`.${CONTAINER_CLASS}`)) continue;
+                    const price = cleanPrice(priceEl.textContent);
+                    if (price > 0) return price;
+                }
+            }
+        }
+
         const cachedPrice = findCachedPrice(modal);
         if (cachedPrice > 0) return cachedPrice;
 
 
         const heading = modal.querySelector('#rbx-unified-purchase-heading, .purchase-heading, .modal-header h2, .dialog-header h2');
 
-        const exactPriceEl = modal.querySelector(
-            '[data-testid="purchase-total-price"], [data-testid*="purchase-total"], [data-testid*="price"], .purchase-total-price'
-        );
+        const exactPriceSelector = '[data-testid="purchase-total-price"], [data-testid*="purchase-total"], [data-testid*="price"], .purchase-total-price';
+        const exactPriceEl = firefoxFetch
+            ? Array.from(modal.querySelectorAll(exactPriceSelector)).find(el => !el.closest(`.${CONTAINER_CLASS}`) && !el.querySelector(`.${CONTAINER_CLASS}`))
+            : modal.querySelector(exactPriceSelector);
         if (exactPriceEl) {
             const price = cleanPrice(exactPriceEl.textContent);
             if (price > 0) return price;
@@ -282,7 +306,7 @@
 
         const allRobuxEls = modal.querySelectorAll('.text-robux-lg, .text-robux, .text-robux-md');
         for (const el of allRobuxEls) {
-            if (heading && heading.contains(el)) continue;
+            if ((heading && heading.contains(el)) || (firefoxFetch && (el.closest(`.${CONTAINER_CLASS}`) || el.querySelector(`.${CONTAINER_CLASS}`)))) continue;
 
             const price = cleanPrice(el.textContent);
             if (price > 0) return price;
@@ -290,7 +314,7 @@
 
         const candidates = modal.querySelectorAll('.icon-robux-container, .amount');
         for (const el of candidates) {
-            if (heading && heading.contains(el)) continue;
+            if ((heading && heading.contains(el)) || (firefoxFetch && (el.closest(`.${CONTAINER_CLASS}`) || el.querySelector(`.${CONTAINER_CLASS}`)))) continue;
             const price = cleanPrice(el.textContent);
             if (price > 0) return price;
         }
@@ -331,13 +355,14 @@
                 ? robuxBalance - currentPrice
                 : null;
 
+            let html;
             if (after === null) {
-                container.innerHTML = `
+                html = `
                     <span class="text-body-medium" style="color:var(--purpura-rr-text-secondary);font-size:13px;">
                         Loading your Robux balance...
                     </span>`;
             } else {
-                container.innerHTML = `
+                html = `
                     <span class="text-body-medium" style="color:var(--purpura-rr-text-secondary);font-size:13px;">
                         Your balance after this transaction will be
                         <span class="icon-robux-16x16" style="vertical-align: middle; position: relative; top: -1px;"></span>
@@ -345,6 +370,10 @@
                             ${formatNumber(after)}
                         </span>
                     </span>`;
+            }
+            if (!firefoxFetch || container.dataset.purpuraRrHtml !== html || !container.firstElementChild) {
+                container.innerHTML = html;
+                if (firefoxFetch) container.dataset.purpuraRrHtml = html;
             }
         };
 
@@ -404,6 +433,7 @@
     }
 
     function scheduleScan() {
+        if (firefoxFetch && scanTimer) return;
         if (scanTimer) clearTimeout(scanTimer);
         scanTimer = setTimeout(() => {
             scanTimer = 0;

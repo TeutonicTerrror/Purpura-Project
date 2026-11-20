@@ -19,8 +19,9 @@
     const STYLE_ID = 'purpura-tour-style';
     const SITE = 'https://www.roblox.com';
     const STATE_TTL_MS = 10 * 60 * 1000;
-    const TARGET_TIMEOUT_MS = 9000;
-    const STEP_ANIMATION_MS = 260;
+    const TARGET_TIMEOUT_MS = 5000;
+    const TARGET_POLL_MS = 40;
+    const STEP_ANIMATION_MS = 180;
 
     function t(key) {
         return chrome.i18n.getMessage(key) || key;
@@ -36,7 +37,7 @@
         {
             id: 'robux',
             route: '/home',
-            targets: [ '#nav-robux-icon', '.nav-robux-icon', '#nav-robux-amount' ],
+            targets: [ '#nav-robux', '#nav-robux-icon', '.nav-robux-icon', '#nav-robux-amount' ],
             titleKey: 'tour_step_robux_title',
             bodyKey: 'tour_step_robux_body'
         },
@@ -73,7 +74,7 @@
         {
             id: 'catalog',
             route: '/my/account?purpura=catalog',
-            targets: [ '[data-setting-card="robuxConversions"]', '#purpura-section-content' ],
+            targets: [ '[data-setting-card="robuxConversations"]', '#purpura-section-content' ],
             titleKey: 'tour_step_catalog_title',
             bodyKey: 'tour_step_catalog_body'
         }
@@ -406,12 +407,20 @@
         return wantSection === hereSection;
     }
 
-    function persist(index, navCount) {
+    function persist(index, navCount, done) {
+        let settled = false;
+        const finish = function() {
+            if (settled) return;
+            settled = true;
+            if (typeof done === 'function') done();
+        };
+
         try {
             chrome.storage.local.set({
                 [STATE_KEY]: { index: index, at: Date.now(), navCount: navCount || 0 }
-            });
+            }, finish);
         } catch (error) {
+            finish();
         }
     }
 
@@ -469,8 +478,6 @@
 
             const rect = element.getBoundingClientRect();
             if (rect.width < 8 || rect.height < 8) continue;
-            if (rect.bottom < 0 || rect.top > window.innerHeight) continue;
-            if (rect.right < 0 || rect.left > window.innerWidth) continue;
 
             const computed = window.getComputedStyle(element);
             if (computed.visibility === 'hidden' || computed.display === 'none') continue;
@@ -497,6 +504,19 @@
             element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
         } catch (error) {
         }
+    }
+
+    function revealTarget(step, index) {
+        if (!state.active || state.index !== index) return;
+
+        const target = state.target;
+        if (!target) return;
+
+        setTimeout(function() {
+            if (!state.active || state.index !== index || state.target !== target) return;
+            positionCard(true);
+            if (state.spotlight && targetBox()) state.spotlight.classList.add('is-visible');
+        }, step.prepare === 'sidebar' ? 80 : 16);
     }
 
     function renderDots() {
@@ -684,17 +704,17 @@
         collapseSidebar();
         state.prepared = null;
 
-        showPill();
-
         if (step.center) {
             hidePill();
             renderStep();
             return;
         }
 
+        hidePill();
+        renderStep();
         state.waitTimer = setTimeout(function() {
             beginWait(step, index, Date.now());
-        }, 120);
+        }, 16);
     }
 
     function beginWait(step, index, startedAt) {
@@ -707,23 +727,21 @@
             state.target = found;
             hidePill();
             scrollTargetIntoView(found);
-            setTimeout(function() {
-                if (!state.active) return;
-                renderStep();
-            }, step.prepare === 'sidebar' ? 420 : 40);
+            revealTarget(step, index);
             return;
         }
 
         if (Date.now() - startedAt > TARGET_TIMEOUT_MS) {
             clearTimeout(state.waitTimer);
             state.waitTimer = null;
-            advance(index + 1);
+            state.target = null;
+            hidePill();
             return;
         }
 
         state.waitTimer = setTimeout(function() {
             beginWait(step, index, startedAt);
-        }, 120);
+        }, TARGET_POLL_MS);
     }
 
     function advance(index) {
@@ -739,14 +757,15 @@
 
             if (state.navCount >= 2) {
                 state.navCount = 0;
-                advance(index + 1);
+                openStep(index);
                 return;
             }
 
             collapseSidebar();
             state.navCount += 1;
-            persist(index, state.navCount);
-            go(step.route);
+            persist(index, state.navCount, function() {
+                go(step.route);
+            });
             return;
         }
 
@@ -776,13 +795,19 @@
             return;
         }
 
-        try {
-            chrome.storage.local.set({ [OUTRO_KEY]: Date.now() });
-        } catch (error) {
-        }
+        let leaving = false;
+        const leave = function() {
+            if (leaving) return;
+            leaving = true;
+            finish();
+            window.location.assign(SITE + '/home');
+        };
 
-        finish();
-        window.location.assign(SITE + '/home');
+        try {
+            chrome.storage.local.set({ [OUTRO_KEY]: Date.now() }, leave);
+        } catch (error) {
+            leave();
+        }
     }
 
     function showOutro() {
@@ -834,8 +859,9 @@
         const step = STEPS[target];
         if (step.route && !routeMatches(step.route)) {
             collapseSidebar();
-            persist(target);
-            go(step.route);
+            persist(target, 0, function() {
+                go(step.route);
+            });
             return;
         }
 

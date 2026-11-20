@@ -16,19 +16,34 @@ var PT_MAX_IMPORT_GAMES = 500;
 var riEscHandler = null;
 var ROPRO_SCRIPT = "(async () => {\nconsole.group(\"%cRoPro Playtime Export\", \"color:#8b5cf6;font-weight:bold;\");\nconst userId = (await chrome.storage.sync.get(\"rpUserID\")).rpUserID;\nconst verification = Object.values(\n(await chrome.storage.sync.get(\"userVerification\")).userVerification\n)[0];\nconst headers = {\n\"ropro-id\": userId,\n\"ropro-verification\": verification\n};\nif (!headers[\"ropro-id\"]) {\nthrow new Error(\n\"Unable to access RoPro's authentication data.\\n\\n\" +\n\"Make sure RoPro is installed and you're running this script from the RoPro service worker.\"\n);\n}\nconst timeRanges = [7, 30, 365, 999];\nconst requests = timeRanges.map(async (time) => {\nconst response = await fetch(\n`https://api.ropro.io/getMostPlayedUniverse.php?time=${time}`,\n{\nmethod: \"POST\",\nheaders,\ncredentials: \"include\"\n}\n);\nif (!response.ok) {\nconst text = await response.text().catch(() => \"\");\nif (\ntext.includes(\"<!DOCTYPE\") ||\ntext.toLowerCase().includes(\"cloudflare\")\n) {\nthrow new Error(\n\"RoPro's API is currently unavailable or is being protected by Cloudflare. Please try again in a few minutes.\"\n);\n}\nthrow new Error(\n`Failed to fetch ${time}-day playtime data (HTTP ${response.status}).`\n);\n}\nconst text = await response.text();\nlet data;\ntry {\ndata = JSON.parse(text);\n} catch {\nif (\ntext.includes(\"<!DOCTYPE\") ||\ntext.toLowerCase().includes(\"cloudflare\")\n) {\nthrow new Error(\n\"RoPro's API is currently unavailable or is being protected by Cloudflare. Please try again in a few minutes.\"\n);\n}\nthrow new Error(\n`RoPro returned an unexpected response while fetching ${time}-day playtime data.`\n);\n}\nreturn { time, data };\n});\nconst results = await Promise.all(requests);\nconst games = {};\nfor (const { time, data } of results) {\nfor (const game of data) {\nif (!games[game.id]) {\ngames[game.id] = {\nid: game.id,\ntime_played: {\n7: 0,\n30: 0,\n365: 0,\n999: 0\n}\n};\n}\ngames[game.id].time_played[time] = game.time_played;\n}\n}\nconst gameList = Object.values(games);\nconsole.log(`✅ Export complete! Found ${gameList.length} games.`);\nconsole.log(\"📋 Right-click the array below and select 'Copy object' to export it.\");\nconsole.log(gameList);\nconsole.groupEnd();\n})().catch((error) => {\nconsole.groupEnd();\nconsole.error(\"❌ Export failed\");\nconsole.error(error.message);\n});";
 
-function getStorage(key, fallback) {
+// Playtime data is stored per Roblox account; the background tracker keeps the current id up to date.
+function scopedKey(key) {
     return new Promise(function(resolve) {
-        chrome.storage.local.get([key], function(data) {
-            resolve(data[key] !== undefined ? data[key] : fallback);
+        chrome.storage.local.get(['purpura_playtime_userid'], function(data) {
+            var meta = document.querySelector('meta[name="user-data"]');
+            var uid = (meta && meta.getAttribute('data-userid')) || data.purpura_playtime_userid;
+            resolve(uid ? key + '_' + uid : key);
+        });
+    });
+}
+
+function getStorage(key, fallback) {
+    return scopedKey(key).then(function(scoped) {
+        return new Promise(function(resolve) {
+            chrome.storage.local.get([scoped], function(data) {
+                resolve(data[scoped] !== undefined ? data[scoped] : fallback);
+            });
         });
     });
 }
 
 function setStorage(key, value) {
-    return new Promise(function(resolve) {
-        var obj = {};
-        obj[key] = value;
-        chrome.storage.local.set(obj, resolve);
+    return scopedKey(key).then(function(scoped) {
+        return new Promise(function(resolve) {
+            var obj = {};
+            obj[scoped] = value;
+            chrome.storage.local.set(obj, resolve);
+        });
     });
 }
 
@@ -188,24 +203,40 @@ function injectStyles() {
     style.id = 'purpura-ri-styles';
     style.textContent = ''
         + '#purpura-ri-overlay{'
-            + '--ri-bg:#0b0c12;'
-            + '--ri-bg-2:#111219;'
-            + '--ri-bg-3:#161720;'
-            + '--ri-text:#f0eeff;'
-            + '--ri-text-2:#a89ec4;'
-            + '--ri-text-3:#6d6487;'
-            + '--ri-accent:#9b6dff;'
-            + '--ri-accent-hover:#b088ff;'
+            + '--ri-bg:var(--purpura-surface0,#0b0c12);'
+            + '--ri-bg-2:var(--purpura-surface100,#111219);'
+            + '--ri-bg-3:var(--purpura-surface200,#161720);'
+            + '--ri-text:var(--purpura-mainText,#f0eeff);'
+            + '--ri-text-2:var(--purpura-secondaryText,#a89ec4);'
+            + '--ri-text-3:var(--purpura-mutedText,var(--purpura-tertiaryText,#6d6487));'
+            + '--ri-accent:var(--purpura-accent,#9b6dff);'
+            + '--ri-accent-hover:var(--purpura-accentHover,#b088ff);'
             + '--ri-accent-glow:rgba(155,109,255,0.15);'
-            + '--ri-border:rgba(255,255,255,0.07);'
-            + '--ri-border-2:rgba(255,255,255,0.12);'
-            + '--ri-success:#4ade80;'
+            + '--ri-border:var(--purpura-borderColor,rgba(255,255,255,0.07));'
+            + '--ri-border-2:var(--purpura-borderColor,rgba(255,255,255,0.12));'
+            + '--ri-success:var(--purpura-success,#4ade80);'
+            + '--ri-danger:var(--purpura-danger,#f87171);'
             + '--ri-ease:cubic-bezier(0.22,1,0.36,1);'
+        + '}'
+        + 'html.light-theme #purpura-ri-overlay,body.light-theme #purpura-ri-overlay{'
+            + '--ri-bg:var(--purpura-surface0,#ffffff);'
+            + '--ri-bg-2:var(--purpura-surface100,#f2f2f5);'
+            + '--ri-bg-3:var(--purpura-surface200,#e8e8ee);'
+            + '--ri-text:var(--purpura-mainText,#1a1a2e);'
+            + '--ri-text-2:var(--purpura-secondaryText,#4a4a5e);'
+            + '--ri-text-3:var(--purpura-mutedText,var(--purpura-tertiaryText,#8a8a95));'
+            + '--ri-accent:var(--purpura-accent,#7c4dff);'
+            + '--ri-accent-hover:var(--purpura-accentHover,#6d3df0);'
+            + '--ri-accent-glow:rgba(124,77,255,0.14);'
+            + '--ri-border:var(--purpura-borderColor,rgba(0,0,0,0.08));'
+            + '--ri-border-2:var(--purpura-borderColor,rgba(0,0,0,0.14));'
+            + '--ri-success:var(--purpura-success,#16a34a);'
+            + '--ri-danger:var(--purpura-danger,#dc2626);'
         + '}'
         + '#purpura-ri-overlay{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(5,4,10,0.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:var(--ri-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;opacity:0;transition:opacity 0.18s ease}'
         + '#purpura-ri-overlay.ri-visible{opacity:1}'
         + '#purpura-ri-overlay *{box-sizing:border-box}'
-        + '.ri-modal{position:relative;width:520px;max-width:100%;max-height:calc(100vh - 32px);overflow-y:auto;background:var(--ri-bg);border:1px solid var(--ri-border-2);border-radius:14px;padding:20px;box-shadow:0 24px 80px rgba(0,0,0,0.5);transform:translateY(14px) scale(0.97);transition:transform 0.22s var(--ri-ease)}'
+        + '.ri-modal{position:relative;width:520px;max-width:100%;max-height:calc(100vh - 32px);overflow-y:auto;background:var(--ri-bg);border:1px solid var(--ri-border-2);border-radius:14px;padding:20px;box-shadow:0 24px 80px rgba(0,0,0,0.35);transform:translateY(14px) scale(0.97);transition:transform 0.22s var(--ri-ease)}'
         + '#purpura-ri-overlay.ri-visible .ri-modal{transform:none}'
         + '.ri-modal-close{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:7px;border:1px solid transparent;background:none;color:var(--ri-text-2);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}'
         + '.ri-gist-link{display:inline-block;margin-top:6px;font-size:11px;color:var(--ri-accent-hover);text-decoration:none;border-bottom:1px solid var(--ri-accent);transition:opacity 0.15s}'
@@ -231,7 +262,7 @@ function injectStyles() {
         + '.ri-textarea{width:100%;box-sizing:border-box;margin-top:8px;background:var(--ri-bg-3);border:1px solid var(--ri-border-2);border-radius:8px;padding:10px;color:var(--ri-text);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;line-height:1.5;resize:vertical;min-height:54px;transition:border-color 0.15s}'
         + '.ri-textarea:focus{outline:none;border-color:var(--ri-accent);box-shadow:0 0 0 3px var(--ri-accent-glow)}'
         + '.ri-textarea::placeholder{color:var(--ri-text-3)}'
-        + '.ri-error{font-size:11px;color:#f87171;margin-top:6px;min-height:14px}'
+        + '.ri-error{font-size:11px;color:var(--ri-danger);margin-top:6px;min-height:14px}'
         + '.ri-modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--ri-border)}'
         + '.ri-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.18s;border:1px solid transparent}'
         + '.ri-btn-ghost{background:var(--ri-bg-3);border-color:var(--ri-border-2);color:var(--ri-text-2)}'

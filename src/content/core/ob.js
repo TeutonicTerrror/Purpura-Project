@@ -7,11 +7,22 @@
     if (window.__purpuraOnboardingLoaded) return;
     window.__purpuraOnboardingLoaded = true;
 
+    const fetch = window.__purpuraFirefoxFetch || window.fetch.bind(window);
     const STORAGE_KEY = 'ob';
     let showing = false;
 
     function isHomePage() {
         return location.pathname === '/home' || location.pathname.startsWith('/home/');
+    }
+
+    function isLightTheme() {
+        const root = document.documentElement;
+        const body = document.body;
+
+        if (root.classList.contains('light-theme') || root.classList.contains('theme-light') || root.getAttribute('data-theme') === 'light') return true;
+        if (root.classList.contains('dark-theme') || root.classList.contains('theme-dark') || root.getAttribute('data-theme') === 'dark') return false;
+        if (body && (body.classList.contains('light-theme') || body.classList.contains('theme-light') || body.getAttribute('data-theme') === 'light')) return true;
+        return false;
     }
 
     async function getDisplayName() {
@@ -31,12 +42,35 @@
     }
 
     function createOverlay(displayName) {
+        const light = isLightTheme();
+        const colors = light ? {
+            overlay: 'rgba(17,17,19,0.42)',
+            dialogBg: '#ffffff',
+            border: 'rgba(0,0,0,0.10)',
+            shadow: '0 16px 40px rgba(0,0,0,0.18)',
+            title: '#111113',
+            body: '#4b4b55',
+            controlBg: 'rgba(0,0,0,0.05)',
+            controlBorder: 'rgba(0,0,0,0.14)',
+            controlText: '#393b3d'
+        } : {
+            overlay: 'rgba(0,0,0,0.6)',
+            dialogBg: '#0e0f11',
+            border: 'rgba(255,255,255,0.12)',
+            shadow: '0 16px 40px rgba(0,0,0,0.55)',
+            title: '#f7f7f8',
+            body: 'rgba(247,247,248,0.9)',
+            controlBg: 'rgba(255,255,255,0.08)',
+            controlBorder: 'rgba(255,255,255,0.2)',
+            controlText: '#f7f7f8'
+        };
+
         const overlay = document.createElement('div');
         overlay.id = 'purpura-onboarding-overlay';
         overlay.style.cssText = `
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.6);
+            background: ${colors.overlay};
             z-index: 999999;
             display: flex;
             align-items: center;
@@ -48,12 +82,15 @@
         dialog.style.cssText = `
             width: min(550px, 100%);
             max-height: calc(100vh - 60px);
-            background: #0e0f11;
+            position: relative;
+            background: ${colors.dialogBg};
+            color: ${colors.title};
+            border: 1px solid ${colors.border};
             border-radius: 16px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 16px 40px rgba(0,0,0,0.55);
+            box-shadow: ${colors.shadow};
         `;
 
         const header = document.createElement('div');
@@ -62,7 +99,7 @@
             align-items: center;
             padding: 16px 20px;
             gap: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.12);
+            border-bottom: 1px solid ${colors.border};
         `;
 
         const icon = document.createElement('img');
@@ -72,7 +109,7 @@
 
         const title = document.createElement('span');
         title.textContent = 'Welcome to Purpura!';
-        title.style.cssText = 'font-weight: 700; font-size: 16px; color: #f7f7f8;';
+        title.style.cssText = `font-weight: 700; font-size: 16px; color: ${colors.title};`;
 
         header.appendChild(icon);
         header.appendChild(title);
@@ -81,7 +118,7 @@
         body.style.cssText = `
             padding: 18px 20px;
             overflow-y: auto;
-            color: rgba(247,247,248,0.9);
+            color: ${colors.body};
             font-size: 14px;
             line-height: 1.6;
         `;
@@ -101,7 +138,7 @@
         const screenshot = document.createElement('img');
         screenshot.src = chrome.runtime.getURL('images/onboarding.png');
         screenshot.alt = 'Purpura settings button guide';
-        screenshot.style.cssText = 'max-width: 100%; max-height: 220px; width: auto; height: auto; display: block; margin: 12px auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15);';
+        screenshot.style.cssText = `max-width: 100%; max-height: 220px; width: auto; height: auto; display: block; margin: 12px auto; border-radius: 8px; border: 1px solid ${colors.border};`;
 
         const tourHint = document.createElement('p');
         tourHint.textContent = 'Would you rather be shown around? The tour walks through the site and the settings with you, and you can leave it at any time.';
@@ -125,7 +162,7 @@
         const footer = document.createElement('div');
         footer.style.cssText = `
             padding: 14px 20px;
-            border-top: 1px solid rgba(255,255,255,0.12);
+            border-top: 1px solid ${colors.border};
             display: flex;
             justify-content: flex-end;
             gap: 10px;
@@ -136,9 +173,9 @@
         closeBtn.style.cssText = `
             padding: 10px 14px;
             border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.08);
-            color: #f7f7f8;
+            border: 1px solid ${colors.controlBorder};
+            background: ${colors.controlBg};
+            color: ${colors.controlText};
             cursor: pointer;
             font-weight: 600;
         `;
@@ -180,15 +217,18 @@
             right: 16px;
             width: 32px;
             height: 32px;
-            border: none;
-            background: rgba(255,255,255,0.08);
+            border: 1px solid ${colors.border};
+            background: ${colors.controlBg};
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
         `;
-        closeIcon.innerHTML = '<span style="color: rgba(247,247,248,0.9); font-size: 16px; line-height: 1;">✕</span>';
+        closeIcon.textContent = '✕';
+        closeIcon.style.color = colors.controlText;
+        closeIcon.style.fontSize = '16px';
+        closeIcon.style.lineHeight = '1';
         closeIcon.addEventListener('click', () => {
             chrome.storage.local.set({ [STORAGE_KEY]: true }, () => {
                 overlay.remove();

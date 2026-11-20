@@ -23,19 +23,34 @@ var dashboardRefreshTimerId = null;
 var dashboardPollInFlight = false;
 var dashboardRefreshInFlight = false;
 
-function getStorage(key, fallback) {
+// Playtime data is stored per Roblox account; the background tracker keeps the current id up to date.
+function scopedKey(key) {
     return new Promise(function(resolve) {
-        chrome.storage.local.get([key], function(data) {
-            resolve(data[key] !== undefined ? data[key] : fallback);
+        chrome.storage.local.get(['purpura_playtime_userid'], function(data) {
+            var meta = document.querySelector('meta[name="user-data"]');
+            var uid = (meta && meta.getAttribute('data-userid')) || data.purpura_playtime_userid;
+            resolve(uid ? key + '_' + uid : key);
+        });
+    });
+}
+
+function getStorage(key, fallback) {
+    return scopedKey(key).then(function(scoped) {
+        return new Promise(function(resolve) {
+            chrome.storage.local.get([scoped], function(data) {
+                resolve(data[scoped] !== undefined ? data[scoped] : fallback);
+            });
         });
     });
 }
 
 function setStorage(key, value) {
-    return new Promise(function(resolve) {
-        var obj = {};
-        obj[key] = value;
-        chrome.storage.local.set(obj, resolve);
+    return scopedKey(key).then(function(scoped) {
+        return new Promise(function(resolve) {
+            var obj = {};
+            obj[scoped] = value;
+            chrome.storage.local.set(obj, resolve);
+        });
     });
 }
 

@@ -1,10 +1,12 @@
 {
   "name": "purpura",
   "private": true,
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Purpura Project -- An all-in-one, always given free, Roblox extension.",
   "scripts": {
-    "build": "vite build"
+    "build": "vite build && node .github/scripts/build-firefox.js",
+    "build:chrome": "vite build",
+    "build:firefox": "vite build && node .github/scripts/build-firefox.js"
   },
   "devDependencies": {
     "archiver": "7.0.1",

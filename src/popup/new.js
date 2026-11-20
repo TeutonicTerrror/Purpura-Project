@@ -24,7 +24,7 @@ var PURPURA_EMOJIS = {
 };
 
 var CHG_TAGS = [
-    'Potentially Fixed', 'Sub-Toggle', 'Experimental', 'Optimized', 'Adjusted',
+    'Potentially Fixed', 'Sub-Toggle', 'Sub', 'Experimental', 'Optimized', 'Adjusted',
     'Reworked', 'Addition', 'Added', 'Fixed', 'Improved', 'Changed', 'Removed',
     'Renamed', 'Beta', 'New', 'Fix'
 ];
@@ -35,6 +35,10 @@ var CHG_TAG_RE = new RegExp(
     }).join('|') + ')\\s*:\\s*',
     'i'
 );
+
+// Optional "(Firefox) " / "(Chrome) " prefix: shown as a pill, hidden on the other browser.
+var CHG_BROWSER_RE = /^\((Firefox|Chrome)\)\s*/i;
+var CHG_BROWSER = location.protocol === 'moz-extension:' ? 'firefox' : 'chrome';
 
 document.getElementById('closeBtn').addEventListener('click', function () {
     window.close();
@@ -177,7 +181,10 @@ function renderSectionBody(lines) {
 }
 
 function renderEntries(entries, depth) {
-    return entries.map(function (entry) {
+    return entries.filter(function (entry) {
+        var browser = CHG_BROWSER_RE.exec(entry.text);
+        return !browser || browser[1].toLowerCase() === CHG_BROWSER;
+    }).map(function (entry) {
         var html = '<div class="' + (depth === 0 ? 'chg-item' : 'chg-node') + '">' +
             '<p class="' + (depth === 0 ? 'chg-text' : 'chg-sub') + '">' +
             formatItemText(entry.text) + '</p>';
@@ -191,6 +198,17 @@ function renderEntries(entries, depth) {
 }
 
 function formatItemText(raw) {
+    var browser = CHG_BROWSER_RE.exec(raw);
+    var browserPill = '';
+    if (browser) {
+        var name = browser[1].toLowerCase();
+        var label = name === 'firefox' ? 'Firefox' : 'Chrome';
+        browserPill = '<span class="chg-browser" data-browser="' + name + '">' +
+            '<img src="' + chrome.runtime.getURL('images/browsers/' + name + '.svg') + '" alt="" aria-hidden="true">' +
+            label + '</span>';
+        raw = raw.slice(browser[0].length);
+    }
+
     var match = CHG_TAG_RE.exec(raw);
     var tag = '';
     var text = raw;
@@ -200,7 +218,7 @@ function formatItemText(raw) {
     }
 
     var kind = tagKind(tag);
-    return (tag
+    return browserPill + (tag
         ? '<span class="chg-tag"' + (kind ? ' data-kind="' + kind + '"' : '') + '>' + escapeHtml(tag) + '</span>'
         : '') + formatLine(text);
 }
@@ -221,6 +239,7 @@ function tagKind(tag) {
         'removed': 'removed',
         'renamed': 'renamed',
         'sub-toggle': 'toggle',
+        'sub': 'toggle',
         'beta': 'beta',
         'experimental': 'experimental'
     };

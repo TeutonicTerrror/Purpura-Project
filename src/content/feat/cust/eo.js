@@ -10,6 +10,7 @@
     window.__purpuraExtraOutfitsLoaded = true;
     if (window.location.pathname.toLowerCase().indexOf('/my/avatar') === -1) return;
 
+    var fetch = window.__purpuraFirefoxFetch || window.fetch.bind(window);
     var STORAGE_KEY = 'eo';
     var DATA_KEY_PREFIX = 'eoOutfits_';
     var STYLE_ID = 'purpura-eo-style';

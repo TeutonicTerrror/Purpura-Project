@@ -40,6 +40,36 @@
                 overflow: visible !important;
             }
 
+            .purpura-store-banner,
+            .purpura-checkout-hub {
+                --ps-title: var(--purpura-mainText, #f5f3ff);
+                --ps-subtitle: var(--purpura-secondaryText, #6b7280);
+                --ps-text: var(--purpura-mainText, #ede9fe);
+                --ps-field-bg: rgba(255,255,255,0.04);
+                --ps-field-border: var(--purpura-borderColor, rgba(255,255,255,0.08));
+                --ps-list-bg: var(--purpura-surface200, rgba(18, 12, 28, 0.95));
+                --ps-arrow: var(--purpura-accent, #a78bfa);
+                --ps-option-hover: rgba(139,92,246,0.2);
+                --ps-option-selected: rgba(139,92,246,0.35);
+                --ps-shadow: rgba(0, 0, 0, 0.5);
+            }
+
+            html.light-theme .purpura-store-banner,
+            body.light-theme .purpura-store-banner,
+            html.light-theme .purpura-checkout-hub,
+            body.light-theme .purpura-checkout-hub {
+                --ps-title: var(--purpura-mainText, #1a1a2e);
+                --ps-subtitle: var(--purpura-secondaryText, #4a4a5e);
+                --ps-text: var(--purpura-mainText, #1a1a2e);
+                --ps-field-bg: rgba(0,0,0,0.03);
+                --ps-field-border: var(--purpura-borderColor, rgba(0,0,0,0.12));
+                --ps-list-bg: var(--purpura-surface200, rgba(255,255,255,0.98));
+                --ps-arrow: var(--purpura-accent, #7c3aed);
+                --ps-option-hover: rgba(124,58,237,0.10);
+                --ps-option-selected: rgba(124,58,237,0.18);
+                --ps-shadow: rgba(0, 0, 0, 0.18);
+            }
+
             .content::before {
                 content: '';
                 position: absolute;
@@ -74,8 +104,8 @@
                 font-family: 'Inter', sans-serif, system-ui;
                 font-size: 48px;
                 font-weight: 700;
-                color: #f5f3ff;
-                -webkit-text-fill-color: #f5f3ff;
+                color: var(--ps-title);
+                -webkit-text-fill-color: var(--ps-title);
                 letter-spacing: -1px;
                 margin: 0 0 12px;
                 line-height: 1.15;
@@ -84,7 +114,7 @@
             .purpura-store-subtitle {
                 font-family: 'Inter', sans-serif, system-ui;
                 font-size: 18px;
-                color: #6b7280;
+                color: var(--ps-subtitle);
                 max-width: 500px;
                 line-height: 1.65;
                 margin: 0;
@@ -113,11 +143,11 @@
                 appearance: none;
                 -webkit-appearance: none;
                 width: 100%;
-                background: rgba(255,255,255,0.04);
-                border: 1px solid rgba(255,255,255,0.08);
+                background: var(--ps-field-bg);
+                border: 1px solid var(--ps-field-border);
                 border-radius: 16px;
                 padding: 20px 52px 20px 24px;
-                color: #ede9fe;
+                color: var(--ps-text);
                 font-size: 20px;
                 font-family: 'Inter', sans-serif;
                 font-weight: 600;
@@ -145,12 +175,12 @@
                 bottom: calc(100% + 8px);
                 left: 0;
                 width: 100%;
-                background: rgba(18, 12, 28, 0.95);
+                background: var(--ps-list-bg);
                 backdrop-filter: blur(12px);
                 -webkit-backdrop-filter: blur(12px);
                 border: 1px solid rgba(139,92,246,0.3);
                 border-radius: 16px;
-                box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05);
+                box-shadow: 0 -10px 40px var(--ps-shadow), 0 0 0 1px var(--ps-field-border);
                 opacity: 0;
                 visibility: hidden;
                 transform: translateY(10px);
@@ -178,7 +208,7 @@
 
             .purpura-option {
                 padding: 14px 18px;
-                color: #ede9fe;
+                color: var(--ps-text);
                 font-family: 'Inter', sans-serif;
                 font-size: 18px;
                 font-weight: 500;
@@ -189,13 +219,13 @@
             }
 
             .purpura-option:hover {
-                background: rgba(139,92,246,0.2);
-                color: #fff;
+                background: var(--ps-option-hover);
+                color: var(--ps-text);
             }
 
             .purpura-option.selected {
-                background: rgba(139,92,246,0.35);
-                color: #fff;
+                background: var(--ps-option-selected);
+                color: var(--ps-text);
                 font-weight: 600;
             }
 
@@ -219,7 +249,7 @@
                 top: 50%;
                 transform: translateY(-50%);
                 pointer-events: none;
-                color: #a78bfa;
+                color: var(--ps-arrow);
                 display: flex;
                 align-items: center;
             }

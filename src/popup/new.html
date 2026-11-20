@@ -9,6 +9,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>What's New in Purpura</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="images/icons/default/Purpura_Default_Logo_32.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Quicksand:wght@700&display=swap" rel="stylesheet">
@@ -254,6 +255,20 @@
         }
         .chg-tag[data-kind="beta"] { background: rgba(59, 130, 246, 0.22); color: #b0d0ff; }
         .chg-tag[data-kind="experimental"] { background: rgba(245, 158, 11, 0.17); color: #f4bd88; }
+        .chg-browser {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-right: 6px;
+            padding: 1px 8px 1px 3px;
+            border-radius: 99px;
+            font-size: 10.5px;
+            font-weight: 600;
+            vertical-align: 0;
+        }
+        .chg-browser img { width: 13px; height: 13px; }
+        .chg-browser[data-browser="firefox"] { background: rgba(255, 113, 57, 0.12); border: 1px solid rgba(255, 113, 57, 0.35); color: #ffb08a; }
+        .chg-browser[data-browser="chrome"] { background: rgba(66, 133, 244, 0.12); border: 1px solid rgba(66, 133, 244, 0.38); color: #a8c7fa; }
         .chg-subs {
             margin-top: 6px;
             padding-left: 11px;
@@ -568,7 +583,7 @@
                 </a>
                 <a class="kofi-button" id="kofiLink" href="https://ko-fi.com/N0Q220I61C" target="_blank" rel="noopener noreferrer" title="Support me on ko-fi.com">
                     <span class="kofitext">
-                        <img class="kofiimg" src="https://storage.ko-fi.com/cdn/cup-border.png" alt="Ko-fi donations">
+                        <img class="kofiimg" src="images/kofi.png" alt="Ko-fi donations">
                         Support Purpura
                     </span>
                 </a>

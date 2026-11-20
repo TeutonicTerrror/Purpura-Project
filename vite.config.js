@@ -20,81 +20,7 @@ const ZIP_PATH = path.join(BUILD_DIR, 'purpura_chromium.zip');
 const SUMS_PATH = path.join(BUILD_DIR, 'checksums.txt');
 const EPOCH = new Date(Date.UTC(1980, 0, 1));
 
-const USE_COLOR = Boolean(process.stdout.isTTY && !process.env.NO_COLOR && process.env.TERM !== 'dumb' && !process.env.CI);
-const ANSI = {
-    reset: USE_COLOR ? '\x1b[0m' : '',
-    bold: USE_COLOR ? '\x1b[1m' : '',
-    dim: USE_COLOR ? '\x1b[2m' : '',
-    purple: USE_COLOR ? '\x1b[38;2;155;109;255m' : '',
-    green: USE_COLOR ? '\x1b[32m' : '',
-    cyan: USE_COLOR ? '\x1b[36m' : '',
-    gray: USE_COLOR ? '\x1b[90m' : '',
-    yellow: USE_COLOR ? '\x1b[33m' : '',
-    red: USE_COLOR ? '\x1b[31m' : '',
-};
-function paint(s, ...codes) { return USE_COLOR ? codes.join('') + s + ANSI.reset : s; }
-function fmtBytes(n) {
-    if (n < 1024) return n + ' B';
-    if (n < 1048576) return (n / 1024).toFixed(1) + ' kB';
-    return (n / 1048576).toFixed(2) + ' MB';
-}
-function fmtMs(ms) { return ms < 1000 ? ms + 'ms' : (ms / 1000).toFixed(2) + 's'; }
-function hr() { return paint('\u2500'.repeat(52), ANSI.dim); }
-function logHeader(version) {
-    const w = 52;
-    const top = '\u256d' + '\u2500'.repeat(w) + '\u256e';
-    const bot = '\u2570' + '\u2500'.repeat(w) + '\u256f';
-    const label = `\u2726 Purpura v${version || '?.?.?'}`;
-    const pad = Math.max(0, w - 2 - label.length);
-    console.log('');
-    console.log(paint(top, ANSI.purple));
-    console.log(paint('\u2502', ANSI.purple) + '  ' + paint(label, ANSI.bold) + ' '.repeat(pad) + paint('\u2502', ANSI.purple));
-    console.log(paint(bot, ANSI.purple));
-    console.log('');
-}
-function beginStep(label) {
-    const t0 = Date.now();
-    const frames = ['\u280b', '\u2819', '\u2839', '\u2838', '\u283c', '\u2834', '\u2826', '\u2827', '\u2807', '\u280f'];
-    let frame = 0;
-    let done = false;
-    const active = Boolean(USE_COLOR && process.stdout.isTTY && !process.env.CI);
-    let timer = null;
-    const clear = () => { if (active) process.stdout.write('\r' + ' '.repeat(72) + '\r'); };
-    if (active) {
-        timer = setInterval(() => {
-            if (done) return;
-            const dot = paint(frames[frame++ % frames.length], ANSI.purple);
-            process.stdout.write('\r  ' + dot + '  ' + paint(label + '\u2026', ANSI.dim) + '     ');
-        }, 70);
-    } else {
-        console.log(paint('  \u203a ' + label + '\u2026', ANSI.dim));
-    }
-    return {
-        ok(extra) {
-            done = true;
-            if (timer) clearInterval(timer);
-            const ms = fmtMs(Date.now() - t0);
-            if (active) {
-                clear();
-                console.log('  ' + paint('\u2714', ANSI.green, ANSI.bold) + '  ' + paint(label, ANSI.bold) + (extra ? '  ' + paint(extra + '  \u00b7  ' + ms, ANSI.dim) : '  ' + paint(ms, ANSI.dim)));
-            } else {
-                console.log('  \u2714 ' + label + (extra ? ' \u2014 ' + extra : '') + '  (' + ms + ')');
-            }
-        },
-        fail(msg) {
-            done = true;
-            if (timer) clearInterval(timer);
-            if (active) clear();
-            console.log('  ' + paint('\u2718', ANSI.red, ANSI.bold) + '  ' + paint(label, ANSI.bold) + '  ' + paint(msg || 'failed', ANSI.red));
-        },
-        _t0: t0,
-    };
-}
-function countFilesAndBytes(files) {
-    let bytes = 0;
-    for (const f of files) { try { bytes += fs.statSync(f).size; } catch (_) {} }
-    return { n: files.length, bytes };
-}
+const { fmtBytes, logHeader, beginStep, countFilesAndBytes } = require('./.github/scripts/log.js');
 
 const DEBUG_LOG_PATTERNS = [
     '[Purpura Settings] Setting change blocked',
@@ -262,9 +188,12 @@ const ISO_START_ORDER = [
     'content/ui/pst.js',
     'content/feat/cust/themes-page.js',
     'content/feat/game/pt-dashboard.js',
+    'content/feat/game/srm.js',
+    'content/feat/game/gb.js',
 ];
 
 const ISO_IDLE_ORDER = [
+    'content/core/settings.js',
     'content/core/smi.js',
     'content/feat/cust/unc.js',
     'content/feat/cat/rconv.js',
@@ -273,7 +202,6 @@ const ISO_IDLE_ORDER = [
     'content/feat/cat/biv.js',
     'content/feat/cat/slr.js',
     'content/feat/cat/rr.js',
-    'content/feat/cat/pfl.js',
     'content/feat/cat/oilp.js',
     'content/ui/pt.js',
     'content/ui/gr.js',
@@ -290,6 +218,7 @@ const ISO_IDLE_ORDER = [
     'content/feat/cust/cbg.js',
     'content/feat/misc/up.js',
     'content/feat/misc/tse.js',
+    'content/feat/misc/rwr.js',
     'content/feat/misc/tcs.js',
     'content/feat/cust/pb.js',
     'content/feat/cust/pcr.js',
@@ -303,6 +232,7 @@ const ISO_IDLE_ORDER = [
     'content/feat/cat/projected.js',
     'content/feat/misc/es.js',
     'content/feat/game/pt.js',
+    'content/feat/game/mpl.js',
     'content/feat/game/glw.js',
     'content/feat/soc/as.js',
     'content/feat/cat/explr.js',
@@ -314,6 +244,7 @@ const ISO_IDLE_ORDER = [
     'content/feat/soc/ce.js',
     'content/feat/soc/fo.js',
     'content/feat/soc/mpt.js',
+    'content/feat/soc/bff.js',
     'content/feat/soc/bf.js',
     'content/feat/soc/fm.js',
     'content/feat/serv/bd.js',
@@ -332,6 +263,7 @@ const ISO_IDLE_ORDER = [
     'content/feat/cust/ucp.js',
     'content/feat/cust/dav.js',
     'content/feat/cust/sbt.js',
+    'content/feat/cust/vb.js',
 ];
 const MAIN_ORDER = [
     'content/core/pcb.js',
@@ -377,7 +309,7 @@ async function terserBundle(source, label) {
     return s;
 }
 function buildFlatExtension() {
-    const rootFiles = ['manifest.json', 'permissions.txt', 'License.md'];
+    const rootFiles = ['manifest.json', 'permissions.txt', 'LICENSE'];
     for (const a of rootFiles) {
         const src = path.join(ROOT, a);
         if (fs.existsSync(src)) copyFile(src, path.join(FLAT_DIR, a));
@@ -407,9 +339,9 @@ function buildFlatExtension() {
 
 const PUBLIC_ROOT_FILES = [
     'manifest.json', 'vite.config.js', 'package.json', 'package-lock.json',
-    'License.md', 'README.md', 'CONTRIBUTING.md', '.editorconfig', '.gitattributes',
+    'LICENSE', 'README.md', '.editorconfig', '.gitattributes',
 ];
-const PUBLIC_SOURCE_DIRS = ['src', 'assets', '.vscode', '.agents'];
+const PUBLIC_SOURCE_DIRS = ['src', 'assets', '.vscode', '.agents', '.github'];
 const PRIVATE_PATHS = ['.teutonicterror', 'node_modules'];
 
 function assertNoPrivatePaths(dir, label) {
@@ -482,6 +414,7 @@ function rewriteHtmlForZip(srcText) {
     s = s.replace(/\bhref="css\//g, 'href="css/');
     s = s.replace(/\bsrc="js\//g, 'src="scripts/js/');
     s = s.replace(/\bsrc="images\//g, 'src="assets/images/');
+    s = s.replace(/\bhref="images\//g, 'href="assets/images/');
     s = s.replace(/url\((['"])fonts\//g, 'url($1assets/fonts/');
     return s;
 }
@@ -534,7 +467,7 @@ function buildZipStageFromFlat() {
         else if (rel.startsWith('js/')) destRel = 'scripts/' + rel;
         else if (rel.startsWith('content/')) destRel = 'scripts/' + rel;
         else if (rel.startsWith('css/') || rel.startsWith('data/') || rel.startsWith('_locales/')) destRel = rel;
-        else if (rel === 'permissions.txt' || rel === 'License.md') destRel = rel;
+        else if (rel === 'permissions.txt' || rel === 'LICENSE') destRel = rel;
         else continue;
         const destAbs = path.join(ZIP_STAGE_DIR, destRel);
         ensureDir(path.dirname(destAbs));
@@ -640,16 +573,13 @@ module.exports = () => {
                 closeBundle: {
                     order: 'post',
                     async handler() {
-                        const overall0 = Date.now();
                         let version = '';
                         try { version = JSON.parse(fs.readFileSync(path.join(ROOT, 'manifest.json'), 'utf8')).version; } catch (_) {}
                         logHeader(version);
 
-                        let s = beginStep('Prepare build dirs');
                         resetBuildDirs();
-                        s.ok();
 
-                        s = beginStep('Build extension');
+                        let s = beginStep('Build Extension');
                         buildFlatExtension();
                         assertNoPrivatePaths(FLAT_DIR, 'the extension output');
                         {
@@ -659,7 +589,7 @@ module.exports = () => {
                             s.ok(pre.n + ' files  \u00b7  ' + fmtBytes(pre.bytes));
                         }
 
-                        s = beginStep('Bundle content scripts');
+                        s = beginStep('Bundled Content Scripts');
                         const isoSrc = buildBundle(ISO_START_ORDER);
                         const idleSrc = buildBundle(ISO_IDLE_ORDER);
                         const mainSrc = buildBundle(MAIN_ORDER);
@@ -670,8 +600,8 @@ module.exports = () => {
                         fs.writeFileSync(path.join(FLAT_DIR, 'content', 'content_iso.js'), isoOut);
                         fs.writeFileSync(path.join(FLAT_DIR, 'content', 'content_iso_idle.js'), idleOut);
                         fs.writeFileSync(path.join(FLAT_DIR, 'content', 'content_main.js'), mainOut);
-                        s.ok('content_iso.js + content_iso_idle.js + content_main.js  \u00b7  ' + fmtBytes(Buffer.byteLength(isoOut) + Buffer.byteLength(idleOut) + Buffer.byteLength(mainOut)));
-                        const terserStep = beginStep('Minify extension scripts');
+                        s.ok();
+                        const terserStep = beginStep('Minify extension scripts', { silent: true });
                         const extraFiles = [
                             ['src/background/background.js', 'background.js'],
                             ['src/background/trading.js', 'js/trading.js'],
@@ -694,22 +624,22 @@ module.exports = () => {
                             if (fs.existsSync(srcP)) copyFile(srcP, destP);
                         }
                         if (fail > 0) { terserStep.fail(fail + ' file(s) failed'); throw new Error(fail + ' JS file(s) failed to minify'); }
-                        terserStep.ok(ok + ' files');
+                        terserStep.skip();
 
-                        s = beginStep('Write public snapshot');
+                        s = beginStep('Write public snapshot', { silent: true });
                         copyPublicSnapshot();
                         {
                             const pubFiles = [];
                             try { walkFiles(PUBLIC_DIR, pubFiles); } catch (_) {}
                             const pub = countFilesAndBytes(pubFiles);
-                            s.ok(pub.n + ' files  \u00b7  ' + fmtBytes(pub.bytes));
+                            s.skip();
                         }
 
-                        s = beginStep('Stage chromium package');
+                        s = beginStep('Stage chromium package', { silent: true });
                         const stageFiles = buildZipStageFromFlat();
                         {
                             const staged = countFilesAndBytes(stageFiles);
-                            s.ok(staged.n + ' files  \u00b7  ' + fmtBytes(staged.bytes));
+                            s.skip();
                         }
 
                         s = beginStep('Pack purpura_chromium.zip');
@@ -726,22 +656,6 @@ module.exports = () => {
                         fs.rmSync(path.join(BUILD_DIR, '.vite'), { recursive: true, force: true });
                         fs.rmSync(FLAT_DIR, { recursive: true, force: true });
 
-                        console.log('');
-                        console.log(hr());
-                        console.log('  ' + paint('\u2714', ANSI.green, ANSI.bold) + '  ' + paint('Build complete', ANSI.green, ANSI.bold) + '  ' + paint(fmtMs(Date.now() - overall0), ANSI.dim));
-                        {
-                            const relPublic = path.relative(ROOT, PUBLIC_DIR).split(path.sep).join('/');
-                            const relZip = path.relative(ROOT, ZIP_PATH).split(path.sep).join('/');
-                            const relStage = path.relative(ROOT, ZIP_STAGE_DIR).split(path.sep).join('/');
-                            const zipBytes2 = fs.statSync(ZIP_PATH).size;
-                            console.log('  ' + paint('sourcecode', ANSI.dim) + '  ' + paint(relPublic, ANSI.cyan) + paint('  \u2014 public repo snapshot', ANSI.dim));
-                            console.log('  ' + paint('chromium', ANSI.dim) + '    ' + paint(relStage, ANSI.cyan) + paint('  \u2014 load unpacked', ANSI.dim));
-                            console.log('  ' + paint('zip', ANSI.dim) + '         ' + paint(relZip + '  (' + fmtBytes(zipBytes2) + ')', ANSI.cyan));
-                            const hash = sums.trim().split(/\s+/)[0] || '';
-                            if (hash) console.log('  ' + paint('sha256', ANSI.dim) + '      ' + paint(hash.slice(0, 16), ANSI.gray) + paint('\u2026' + hash.slice(-8), ANSI.dim));
-                        }
-                        console.log(hr());
-                        console.log('');
                     },
                 },
             },

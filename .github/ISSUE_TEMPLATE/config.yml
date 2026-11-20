@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Discord
+    url: https://discord.gg/TT4sgtEkNV
+    about: Setup help, feature chat, and release announcements.
+  - name: Security report
+    url: https://github.com/TeutonicTerrror/Purpura-Project/security/advisories/new
+    about: Report a vulnerability privately instead of opening an issue. See SECURITY.md.

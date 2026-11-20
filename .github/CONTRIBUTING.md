@@ -7,19 +7,23 @@ This is a guide on how to contribute to Purpura.
 1. **Fork the repository** and clone it locally.
 2. Create a new branch for your feature or bug fix.
 3. Make your changes in `src/` or `assets/`.
-4. Run `npm install` once, then `npm run build` after each change and test in the browser.
+4. Run `npm install` once, then `npm run build` after each change and test the browser target you are working on.
 5. Submit a Pull Request with a clear description and test notes.
 
 ## Where Things Live
 
 * `manifest.json` - permissions, icons, bundle map
-* `src/background/background.js` - service worker
+* `src/background/background.js` - background script (Chrome service worker / Firefox event page)
 * `src/content/*/ - Content  Scripts
 * `src/popup/` - popup pages and scripts (`home.html`, `new.html`)
 * `src/css/` - Stylesheets
 * `src/data/` - Data files
 * `assets/images/` - images
 * `assets/_locales/` - Translations
+
+## Browser Targets
+
+`npm run build` writes both `build/chromium` and `build/firefox`. Feature code is shared between both targets. Firefox-specific behavior belongs in `.github/scripts/build-firefox.js` and `src/firefox/`; do not duplicate feature implementations for Chrome and Firefox.
 
 ## Adding a New Setting
 
@@ -91,7 +95,7 @@ The tester badge (`assets/images/pBadges/purpura_tester_badge.svg`) is not opt-i
 * Reuse inline SVG icons where possible instead of duplicating shapes.
 * All user-facing strings should use `chrome.i18n.getMessage` with locale support.
 * Do not intentionally obfuscate, conceal, or encode URLs or executable code.
-* Never change host/extension permissions or update `License.md` / branding (`assets/images/icons/PURPURA_TEXT.svg`, etc.) unless the PR is about them.
+* Never change host/extension permissions or update `LICENSE` / branding (`assets/images/icons/PURPURA_TEXT.svg`, etc.) unless the PR is about them.
 * Test on the actual Roblox pages your feature targets, with the setting both on and off. Check the console on unrelated pages for errors.
 
 ## AI Disclosure — Required on Every PR

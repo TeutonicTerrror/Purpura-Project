@@ -5,6 +5,7 @@
  */
 if (!window.purpuraUnpendingRobuxInitialized) {
     window.purpuraUnpendingRobuxInitialized = true;
+    const fetch = window.__purpuraFirefoxFetch || window.fetch.bind(window);
     function t(key, substitutions) { return chrome.i18n.getMessage(key, substitutions) || key; }
 
     const STORAGE_KEY = 'up';
@@ -725,6 +726,9 @@ if (!window.purpuraUnpendingRobuxInitialized) {
     async function showPendingOnHover(nav) {
         if (!state.enabled || !state.showPending || streamerHidesRobux()) return;
 
+        if (state.pendingTotal === null && state.pendingFailedAt && (Date.now() - state.pendingFailedAt) > 1000) {
+            state.pendingFailedAt = 0;
+        }
 
         if (state.pendingTotal !== null) {
             showPendingBadge(nav, state.pendingTotal);

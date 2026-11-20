@@ -724,6 +724,7 @@ if (!window.homePageTweaksInitialized) {
 
             currentOrder.forEach(type => {
                 if (type === 'pinnedGames' && !pgEnabled) return;
+                if (!SECTION_LABELS[type]) return;
 
             const label = SECTION_LABELS[type] || type;
             const isHidden = config[type] === true;

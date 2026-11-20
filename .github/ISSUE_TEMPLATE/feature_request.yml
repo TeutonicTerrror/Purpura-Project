@@ -1,0 +1,42 @@
+name: Feature request
+description: Suggest a feature or (combined with a bug report) a reference extension to draw from.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: The Roblox page and the friction, not just the feature name.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Where does it live (settings group, which page), what does it do, does it default on?
+    validations:
+      required: true
+  - type: input
+    id: reference
+    attributes:
+      label: Reference implementation
+      description: Optional — another extension or page that already does this well.
+    validations:
+      required: false
+  - type: dropdown
+    id: ai
+    attributes:
+      label: Was AI used to draft this request?
+      description: Disclosure is required. Name the tool under "Anything else".
+      options:
+        - "No"
+        - "Yes"
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+    validations:
+      required: false

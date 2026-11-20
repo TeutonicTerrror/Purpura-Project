@@ -9,6 +9,7 @@
     if (window.__purpuraAvatarCyclerLoaded) return;
     window.__purpuraAvatarCyclerLoaded = true;
 
+    var fetch = window.__purpuraFirefoxFetch || window.fetch.bind(window);
     var STORAGE_ENABLED = 'ac';
     var STORAGE_IDS = 'purpura_avatar_cycler_ids';
     var STORAGE_INTERVAL = 'purpura_avatar_cycler_interval';

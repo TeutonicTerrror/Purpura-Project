@@ -9,7 +9,7 @@ window.purpuraFriendOriginInitialized = true;
 
 (function() {
     var style = document.createElement('style');
-    style.textContent = ':root{--purpura-fo-label-color:rgba(255,255,255,0.5)}';
+    style.textContent = ':root{--purpura-fo-label-color:rgba(255,255,255,0.5)}:is(html,body).light-theme,:is(html,body).theme-light,:is(html,body)[data-theme="light"]{--purpura-fo-label-color:rgba(62,55,72,0.55)}';
     document.head.appendChild(style);
 })();
 

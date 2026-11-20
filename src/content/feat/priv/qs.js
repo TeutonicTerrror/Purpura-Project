@@ -110,6 +110,17 @@
         return null;
     }
 
+    function getPageThemeValue() {
+        const root = document.documentElement;
+        const body = document.body;
+        const matches = (element, classes, attr) => !!element && (
+            classes.some((name) => element.classList.contains(name)) || element.getAttribute('data-theme') === attr
+        );
+        if (matches(body, ['light-theme', 'theme-light'], 'light') || matches(root, ['light-theme', 'theme-light'], 'light')) return 'Light';
+        if (matches(body, ['dark-theme', 'theme-dark'], 'dark') || matches(root, ['dark-theme', 'theme-dark'], 'dark')) return 'Dark';
+        return null;
+    }
+
     function applyPurpuraTheme(value) {
         if (!window.PurpuraThemeEngine) return;
         if (value.startsWith('purpura:')) {
@@ -130,18 +141,19 @@
 
     function getCSSVars() {
         const dark = document.body.classList.contains('dark-theme');
+        const t = (name, fallback) => 'var(--purpura-' + name + ', ' + fallback + ')';
         return {
-            bg: dark ? '#191a1f' : '#f0f0f3',
-            surface: dark ? '#202227' : '#ffffff',
-            text: dark ? '#d5d7dd' : '#1a1c20',
-            textDim: dark ? '#bcbec8' : '#6b6f7a',
-            textBright: dark ? '#f7f7f8' : '#0d0e12',
-            border: dark ? 'rgba(208,217,251,0.12)' : 'rgba(0,0,0,0.10)',
-            borderHover: dark ? 'rgba(208,217,251,0.16)' : 'rgba(0,0,0,0.18)',
-            shadow: dark ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.12)',
-            hover: dark ? 'rgba(208,217,251,0.08)' : 'rgba(0,0,0,0.06)',
+            bg: t('surface100', dark ? '#191a1f' : '#f0f0f3'),
+            surface: t('surface200', dark ? '#202227' : '#ffffff'),
+            text: t('mainText', dark ? '#d5d7dd' : '#1a1c20'),
+            textDim: t('secondaryText', dark ? '#bcbec8' : '#6b6f7a'),
+            textBright: t('mainText', dark ? '#f7f7f8' : '#0d0e12'),
+            border: t('borderColor', dark ? 'rgba(208,217,251,0.12)' : 'rgba(0,0,0,0.10)'),
+            borderHover: t('borderColor', dark ? 'rgba(208,217,251,0.16)' : 'rgba(0,0,0,0.18)'),
+            shadow: t('shadow', dark ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.12)'),
+            hover: t('surface300', dark ? 'rgba(208,217,251,0.08)' : 'rgba(0,0,0,0.06)'),
             active: dark ? 'rgba(51,95,255,0.4)' : 'rgba(51,95,255,0.15)',
-            activeText: dark ? '#ebf1ff' : '#1a3ac5'
+            activeText: t('accent', dark ? '#ebf1ff' : '#1a3ac5')
         };
     }
 
@@ -623,7 +635,7 @@
             { value: 'SystemDefault', label: t('quickStatus_system') }
         ];
 
-        themeDropdown = createDropdown(baseThemeOpts, 'Light', async (val) => {
+        themeDropdown = createDropdown(baseThemeOpts, getPageThemeValue() || 'Light', async (val) => {
             if (val.startsWith('purpura:') || val.startsWith('purpura-custom:')) {
                 applyPurpuraTheme(val);
                 return;
@@ -722,7 +734,7 @@
             if (purpuraVal) {
                 themeDropdown.setValue(purpuraVal, true);
             } else {
-                const currentThemeVal = await fetchCurrentTheme();
+                const currentThemeVal = getPageThemeValue() || await fetchCurrentTheme();
                 themeDropdown.setValue(currentThemeVal, true);
             }
         } catch {}

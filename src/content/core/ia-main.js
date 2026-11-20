@@ -4,11 +4,17 @@
  * Licensed under the GNU General Public License v3.0.
  */
 var AccessoryAssetTypes = [8, 41, 42, 43, 44, 45, 46, 47], LayeredAssetTypes = [64, 65, 66, 67, 68, 69, 70, 71, 72, 41];
+var ClassicClothingAssetTypes = [2, 11, 12];
 (function () {
     'use strict';
     if (window.__PURPURA_IA_INTERCEPTOR_SETUP__) return;
     window.__PURPURA_IA_INTERCEPTOR_SETUP__ = true;
     var multiAccessoryEnabled = false;
+    var isMultiEquipType = function (assetTypeId) {
+        var id = Number(assetTypeId);
+        if (ClassicClothingAssetTypes.includes(id)) return false;
+        return AccessoryAssetTypes.includes(id) || LayeredAssetTypes.includes(id);
+    };
     document.addEventListener('purpura:infinite-avatar', function (event) {
         var detail = event.detail;
         if (!detail) return;
@@ -16,18 +22,15 @@ var AccessoryAssetTypes = [8, 41, 42, 43, 44, 45, 46, 47], LayeredAssetTypes = [
             window.purpuraInfiniteAvatarEnabled = detail.enabled;
             multiAccessoryEnabled = detail.enabled;
         }
-        if (Array.isArray(detail.accessories)) AccessoryAssetTypes = detail.accessories;
-        if (Array.isArray(detail.layered)) LayeredAssetTypes = detail.layered;
+        if (Array.isArray(detail.accessories)) AccessoryAssetTypes = detail.accessories.filter(function (id) { return !ClassicClothingAssetTypes.includes(Number(id)); });
+        if (Array.isArray(detail.layered)) LayeredAssetTypes = detail.layered.filter(function (id) { return !ClassicClothingAssetTypes.includes(Number(id)); });
     });
     var patchAvatarService = function (service) {
         if (!service || service.__purpura_patched) return;
         service.__purpura_patched = true;
         var originalGetLimit = service.getAdvancedAccessoryLimit;
         service.getAdvancedAccessoryLimit = function (assetTypeId) {
-            if (multiAccessoryEnabled) {
-                var id = Number(assetTypeId);
-                if (AccessoryAssetTypes.includes(id) || LayeredAssetTypes.includes(id)) return 100;
-            }
+            if (multiAccessoryEnabled && isMultiEquipType(assetTypeId)) return 100;
             return originalGetLimit ? originalGetLimit.call(this, assetTypeId) : 10;
         };
         var originalAddAsset = service.addAssetToAvatar;
@@ -35,7 +38,7 @@ var AccessoryAssetTypes = [8, 41, 42, 43, 44, 45, 46, 47], LayeredAssetTypes = [
             if (!multiAccessoryEnabled) return originalAddAsset.apply(this, arguments);
             var newAssetList = originalAddAsset.apply(this, arguments).filter(function (item) {
                 var typeId = item && item.assetType ? item.assetType.id : undefined;
-                return !AccessoryAssetTypes.includes(typeId) && !LayeredAssetTypes.includes(typeId);
+                return !isMultiEquipType(typeId);
             });
             var potentialAssets = [asset].concat(currentAssets);
             var uniqueMultiEquipAssets = [], seenIds = new Set();
@@ -43,7 +46,7 @@ var AccessoryAssetTypes = [8, 41, 42, 43, 44, 45, 46, 47], LayeredAssetTypes = [
                 var item = potentialAssets[i];
                 if (item && item.id && !seenIds.has(item.id)) {
                     var typeId = item.assetType ? item.assetType.id : undefined;
-                    if (AccessoryAssetTypes.includes(typeId) || LayeredAssetTypes.includes(typeId)) {
+                    if (isMultiEquipType(typeId)) {
                         uniqueMultiEquipAssets.push(item);
                         seenIds.add(item.id);
                     }
@@ -94,14 +97,33 @@ var AccessoryAssetTypes = [8, 41, 42, 43, 44, 45, 46, 47], LayeredAssetTypes = [
             return newAssetArr.reverse(), newAssetArr.push(assetToAdd), newAssetArr;
         };
         var originalDefineProperty = Object.defineProperty;
+        var wrapAddAsset = function (original) {
+            return function () {
+                var asset = arguments[0];
+                // 4th arg true = wearing a saved outfit, which must keep Roblox's replace behaviour.
+                var hijack = window.purpuraInfiniteAvatarEnabled && !arguments[3] && asset && asset.assetType && isMultiEquipType(asset.assetType.id);
+                return hijack ? customEquipAsset.apply(null, arguments) : original.apply(this, arguments);
+            };
+        };
         Object.defineProperty = function (obj, prop, descriptor) {
+            // Turbopack (new Next.js site) exports plain values on a sealed object, so wrap them as they are defined.
+            if (descriptor && typeof descriptor.value === 'function') {
+                if (prop === 'addAssetToAvatar') descriptor = Object.assign({}, descriptor, { value: wrapAddAsset(descriptor.value) });
+                else if (prop === 'getAdvancedAccessoryLimit') {
+                    var originalLimit = descriptor.value;
+                    descriptor = Object.assign({}, descriptor, { value: function (assetTypeId) {
+                        return multiAccessoryEnabled && isMultiEquipType(assetTypeId) ? 100 : originalLimit.apply(this, arguments);
+                    } });
+                }
+            }
             if (prop === '__esModule') setTimeout(function () {
-                if (Object.keys(obj).includes('addAssetToAvatar')) {
-                    var originalGetter = Object.getOwnPropertyDescriptor(obj, 'addAssetToAvatar').get, originalAddAssetToAvatar = originalGetter();
+                var exportDescriptor = Object.keys(obj).includes('addAssetToAvatar') && Object.getOwnPropertyDescriptor(obj, 'addAssetToAvatar');
+                if (exportDescriptor && exportDescriptor.get) {
+                    var originalGetter = exportDescriptor.get, originalAddAssetToAvatar = originalGetter();
                     Object.defineProperty(obj, 'addAssetToAvatar', {
                         get: function () {
                             return function () {
-                                var asset = arguments[0], isAccessory = AccessoryAssetTypes.includes(asset.assetType.id), isLayered = LayeredAssetTypes.includes(asset.assetType.id), needsHijack = isAccessory || isLayered;
+                                var asset = arguments[0], needsHijack = isMultiEquipType(asset.assetType.id);
                                 return window.purpuraInfiniteAvatarEnabled && needsHijack ? customEquipAsset.apply(null, arguments) : originalAddAssetToAvatar.apply(this, arguments);
                             };
                         },
