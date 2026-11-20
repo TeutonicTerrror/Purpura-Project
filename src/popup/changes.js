@@ -63,7 +63,7 @@ var PURPURA_CHANGELOG = [
             "- FIXED: **Infinite Avatar** and **Reworked Sidebar** not working on the Avatar Editor page for select users who got an update to NextJS framework.",
             "",
             "## :Purpura_Speaker: Developer Notes",
-            "Quite the update... I'm excited to see where this goes!",
+            "Purpura is now on Firefox, which is available via Github Releases. Additionally, lots of features and polishes this update.",
             ""
         ].join('\n')
     }
